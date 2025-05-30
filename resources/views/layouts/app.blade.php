@@ -1,3 +1,4 @@
+<!-- https://html.bdevs.net/manez.prev/ -->
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -10,6 +11,7 @@
     <link rel="stylesheet" href="{{ asset('css/animate.css') }}">
     <link rel="stylesheet" href="{{ asset('css/icomoon.css') }}">
     <link rel="stylesheet" href="{{ asset('css/fontawesome-pro.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/spacing.css') }}">
     <link rel="stylesheet" href="{{ asset('css/datatables.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/buttons.bootstrap5.css') }}">
     <link rel="stylesheet" href="{{ asset('css/jquery.dataTables.min.css') }}">
@@ -19,6 +21,7 @@
     <link rel="stylesheet" href="{{ asset('css/waves.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/nano.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/main.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 <body class="body-area">
     <!-- Preloader start -->
@@ -38,580 +41,119 @@
         <!-- app-sidebar-start -->
         <div class="app-sidebar" id="sidebar">
             <div class="main-sidebar-header">
-                <a href="index.html" class="header-logo">
-                <img class="main-logo" src="assets/images/logo/logo.svg" alt="logo">
-                <img class="dark-logo" src="assets/images/logo/logo-white.svg" alt="logo">
+                <a href="{{ route('home') }}" class="header-logo">
+                    <img class="main-logo" src="{{ asset('img/logo.png') }}" alt="logo">
                 </a>
             </div>
             <div class="main-sidebar" id="sidebar-scroll">
                 <nav class="main-menu-container nav nav-pills flex-column sub-open">
                     <div class="sidebar-left" id="sidebar-left"></div>
                     <ul class="main-menu">
-                        <li class="sidebar__menu-category"><span class="category-name">Main</span></li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <i class="fa-regular fa-angle-down side-menu__angle"></i>
+                        <li class="slide">
+                            <a href="{{ route('home') }}" class="sidebar__menu-item {{ Request::routeIs('home') ? 'active' : '' }}">
                                 <div class="side-menu__icon"><i class="icon-house"></i></div>
                                 <span class="sidebar__menu-label">Dashboards</span>
                             </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="index.html">HRM Dashboard</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="employee-dashboard.html">Employee Dashboard</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="crm-dashboard.html">CRM Analytics</a>
-                                </li>
-                            </ul>
                         </li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <i class="fa-regular fa-angle-down side-menu__angle"></i>
-                                <div class="side-menu__icon"><i class="icon-hrm"></i></div>
-                                <span class="sidebar__menu-label">HRM</span>
-                            </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="employee.html">Employee</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="employee-profile.html">Employee Profile</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="designations.html">Designations</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="attendance.html">Admin Attendance</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="employee-attendance.html">Employee Attendance</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="biometric-attendance.html">Biometric Attendance</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="office-loan.html">Office Loan</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="personal-loan.html">Personal Loan</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="leaves-employee.html">Employee leaves</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="leaves.html">Admin leaves</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="holidays.html">Holidays</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="timesheet.html">Time Sheet</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="schedule.html">Schedule</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="overtime.html">Overtime</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="warning.html">Warning</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <i class="fa-regular fa-angle-down side-menu__angle"></i>
-                                <div class="side-menu__icon"><i class="icon-crm"></i></div>
-                                <span class="sidebar__menu-label">CRM</span>
-                            </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide"><a class="sidebar__menu-item" href="leads.html">Leads</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="deals.html">Deals</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="crm-setup.html">CRM Setup</a></li>
-                            </ul>
-                        </li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <i class="fa-regular fa-angle-down side-menu__angle"></i>
-                                <div class="side-menu__icon"><i class="fa-sharp fa-light fa-grid-2"></i></div>
-                                <span class="sidebar__menu-label">Apps</span>
-                            </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide"><a class="sidebar__menu-item" href="app-chat.html">Chat</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="email-inbox.html">Email Inbox</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="email-read.html">Email Read</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="email-compose.html">Email Compose</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="contacts.html">Contacts</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="calendar.html">Calendar</a></li>
-                            </ul>
-                        </li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <i class="fa-regular fa-angle-down side-menu__angle"></i>
-                                <div class="side-menu__icon"><i class="fa-sharp fa-light fa-wallet"></i></div>
-                                <span class="sidebar__menu-label">Payroll</span>
-                            </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide"><a class="sidebar__menu-item" href="payroll.html">Pay List</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="payroll-payslip.html">Payslip</a></li>
-                            </ul>
-                        </li>
-                        <li class="slide">
-                            <a href="expense.html" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="icon-announcement"></i></div>
-                                <span class="sidebar__menu-label">Expense</span>
-                            </a>
-                        </li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <i class="fa-regular fa-angle-down side-menu__angle"></i>
-                                <div class="side-menu__icon"><i class="fa-sharp fa-light fa-wallet"></i></div>
-                                <span class="sidebar__menu-label">Company</span>
-                            </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide"><a class="sidebar__menu-item" href="companies.html">Company List</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="company-details.html">Company Details</a></li>
-                            </ul>
-                        </li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <i class="fa-regular fa-angle-down side-menu__angle"></i>
-                                <div class="side-menu__icon"><i class="fa-sharp fa-light fa-wallet"></i></div>
-                                <span class="sidebar__menu-label">Clients</span>
-                            </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide"><a class="sidebar__menu-item" href="clients.html">Clients</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="client-details.html">Client Details</a></li>
-                            </ul>
-                        </li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <i class="fa-regular fa-angle-down side-menu__angle"></i>
-                                <div class="side-menu__icon"><i class="icon-projects"></i></div>
-                                <span class="sidebar__menu-label">Projects</span>
-                            </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide"><a class="sidebar__menu-item" href="project.html">Projects</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="project-details.html">Projects Details</a>
-                                </li>
-                                <li class="slide"><a class="sidebar__menu-item" href="project-create.html">Projects Create</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="slide">
-                            <a href="activities.html" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="fa-sharp fa-regular fa-chart-network"></i></div>
-                                <span class="sidebar__menu-label">Activities</span>
-                            </a>
-                        </li>
-                        <li class="slide">
-                            <a href="training.html" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class=" icon-training"></i></div>
-                                <span class="sidebar__menu-label">Training</span>
-                            </a>
-                        </li>
-                        <li class="slide">
-                            <a href="resignation.html" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="icon-resignation"></i></div>
-                                <span class="sidebar__menu-label">Resignation</span>
-                            </a>
-                        </li>
-                        <li class="slide">
-                            <a href="promotion.html" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="icon-promotion"></i></div>
-                                <span class="sidebar__menu-label">Promotion</span>
-                            </a>
-                        </li>
-                        <li class="slide">
-                            <a href="award.html" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="icon-trophy"></i></div>
-                                <span class="sidebar__menu-label">Award</span>
-                            </a>
-                        </li>
-                        <li class="slide">
-                            <a href="meeting.html" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="icon-meeting"></i></div>
-                                <span class="sidebar__menu-label">Meeting</span>
-                            </a>
-                        </li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <i class="fa-regular fa-angle-down side-menu__angle"></i>
-                                <div class="side-menu__icon"><i class="icon-tickets1"></i></div>
-                                <span class="sidebar__menu-label">Tickets</span>
-                            </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide"><a class="sidebar__menu-item" href="tickets.html">Tickets List</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="tickets-reply.html">Tickets Reply</a></li>
-                            </ul>
-                        </li>
-                        <li class="slide">
-                            <a href="transfer.html" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="fa-sharp fa-regular fa-right-left"></i></div>
-                                <span class="sidebar__menu-label">Transfer</span>
-                            </a>
-                        </li>
-                        <li class="slide">
-                            <a href="termination.html" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="icon-termination"></i></div>
-                                <span class="sidebar__menu-label">Termination</span>
-                            </a>
-                        </li>
-                        <li class="slide">
-                            <a href="document.html" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="icon-document"></i></div>
-                                <span class="sidebar__menu-label">Document</span>
-                            </a>
-                        </li>
-                        <li class="slide">
-                            <a href="announcement.html" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="icon-announcement"></i></div>
-                                <span class="sidebar__menu-label">Announcement</span>
-                            </a>
-                        </li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <i class="fa-regular fa-angle-down side-menu__angle"></i>
-                                <div class="side-menu__icon"><i class="fa-light fa-book-blank"></i></div>
-                                <span class="sidebar__menu-label">Invoice</span>
-                            </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide"><a class="sidebar__menu-item" href="app-invoice-add.html">Invoice Create</a>
-                                </li>
-                                <li class="slide"><a class="sidebar__menu-item" href="app-invoice-preview.html">Invoice
-                                    Preview</a>
-                                </li>
-                                <li class="slide"><a class="sidebar__menu-item" href="app-invoice-edit.html">Invoice Edit</a>
-                                </li>
-                                <li class="slide"><a class="sidebar__menu-item" href="app-invoice-list.html">Invoice List</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="sidebar__menu-category"><span class="category-name">Pages</span></li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
+                        @can('role')
+                        <li class="slide has-sub {{ request()->routeIs('roles.*') ? 'active' : '' }}">
+                            <a href="javascript:void(0);" class="sidebar__menu-item {{ request()->routeIs('roles.*') ? 'active' : '' }}">
                                 <div class="side-menu__icon"><i class="fa-sharp fa-light fa-key"></i></div>
-                                <span class="sidebar__menu-label">Authentication</span>
+                                <span class="sidebar__menu-label">Roles</span>
                                 <i class="fa-regular fa-angle-down side-menu__angle"></i>
                             </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide has-sub">
-                                    <a href="javascript:void(0);" class="sidebar__menu-item">Sign In
-                                    <i class="fa-regular fa-angle-down side-menu__angle"></i></a>
-                                    <ul class="sidebar-menu child2">
-                                        <li class="slide">
-                                            <a class="sidebar__menu-item" href="signin-basic.html">Basic</a>
-                                        </li>
-                                        <li class="slide">
-                                            <a class="sidebar__menu-item" href="signin-cover.html">Cover</a>
-                                        </li>
-                                    </ul>
+                            <ul class="sidebar-menu child1 {{ request()->routeIs('roles.*') ? 'active' : '' }}">
+                                @can('create role')
+                                <li class="slide {{ Request::routeIs('roles.create') ? 'active' : '' }}">
+                                    <a href="{{ route('roles.create') }}" class="sidebar__menu-item {{ Request::routeIs('roles.create') ? 'active' : '' }}">Add Role</a>
                                 </li>
-                                <li class="slide has-sub">
-                                    <a href="javascript:void(0);" class="sidebar__menu-item">Sign Up
-                                    <i class="fa-regular fa-angle-down side-menu__angle"></i></a>
-                                    <ul class="sidebar-menu child2">
-                                        <li class="slide">
-                                            <a class="sidebar__menu-item" href="signup-basic.html">Basic</a>
-                                        </li>
-                                        <li class="slide">
-                                            <a class="sidebar__menu-item" href="signup-cover.html">Cover</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="slide has-sub">
-                                    <a href="javascript:void(0);" class="sidebar__menu-item">Reset Password
-                                    <i class="fa-regular fa-angle-down side-menu__angle"></i></a>
-                                    <ul class="sidebar-menu child2">
-                                        <li class="slide">
-                                            <a class="sidebar__menu-item" href="reset-password-basic.html">Basic</a>
-                                        </li>
-                                        <li class="slide">
-                                            <a class="sidebar__menu-item" href="reset-password-cover.html">Cover</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="slide has-sub">
-                                    <a href="javascript:void(0);" class="sidebar__menu-item">Forgot Password
-                                    <i class="fa-regular fa-angle-down side-menu__angle"></i></a>
-                                    <ul class="sidebar-menu child2">
-                                        <li class="slide">
-                                            <a class="sidebar__menu-item" href="forgot-password-basic.html">Basic</a>
-                                        </li>
-                                        <li class="slide">
-                                            <a class="sidebar__menu-item" href="forgot-password-cover.html">Cover</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="coming-soon.html">Coming Soon</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="maintenance.html">Under Maintenance</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="offline.html">Offline</a>
+                                @endcan
+                                <li class="slide {{ Request::routeIs('roles.index') ? 'active' : '' }}">
+                                    <a href="{{ route('roles.index') }}" class="sidebar__menu-item {{ Request::routeIs('roles.index') ? 'active' : '' }}">Role List</a>
                                 </li>
                             </ul>
                         </li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="fa-sharp fa-light fa-triangle-exclamation"></i></div>
-                                <span class="sidebar__menu-label">Error</span>
+                        @endcan
+                        @can('user')
+                        <li class="slide has-sub {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                            <a href="javascript:void(0);" class="sidebar__menu-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                                <div class="side-menu__icon"><i class="fa-sharp fa-light fa-user"></i></div>
+                                <span class="sidebar__menu-label">Users</span>
                                 <i class="fa-regular fa-angle-down side-menu__angle"></i>
                             </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="404-error-page.html">404 Page</a>
+                            <ul class="sidebar-menu child1 {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                                @can('create user')
+                                <li class="slide {{ Request::routeIs('users.create') ? 'active' : '' }}">
+                                    <a href="{{ route('users.create') }}" class="sidebar__menu-item {{ Request::routeIs('users.create') ? 'active' : '' }}">Add User</a>
                                 </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="404-error-page-2.html">404 Page 2</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="500-error-page.html">500 Page</a>
+                                @endcan
+                                <li class="slide {{ Request::routeIs('users.index') ? 'active' : '' }}">
+                                    <a href="{{ route('users.index') }}" class="sidebar__menu-item {{ Request::routeIs('users.index') ? 'active' : '' }}">User List</a>
                                 </li>
                             </ul>
                         </li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="fa-light fa-clone"></i></div>
-                                <span class="sidebar__menu-label">Pages</span>
+                        @endcan
+                        <li class="sidebar__menu-category"><span class="category-name">Listing</span></li>
+                        @can('make')
+                        <li class="slide has-sub {{ request()->routeIs('makes.*') ? 'active' : '' }}">
+                            <a href="javascript:void(0);" class="sidebar__menu-item {{ request()->routeIs('makes.*') ? 'active' : '' }}">
+                                <div class="side-menu__icon"><i class="fa-sharp fa-regular fa-right-left"></i></div>
+                                <span class="sidebar__menu-label">Make</span>
                                 <i class="fa-regular fa-angle-down side-menu__angle"></i>
                             </a>
-                            <ul class="sidebar-menu child1 pages-ul">
-                                <li class="slide">
-                                    <a href="search.html" class="sidebar__menu-item">Search</a>
+                            <ul class="sidebar-menu child1 {{ request()->routeIs('makes.*') ? 'active' : '' }}">
+                                @can('create make')
+                                <li class="slide {{ Request::routeIs('makes.create') ? 'active' : '' }}">
+                                    <a href="{{ route('makes.create') }}" class="sidebar__menu-item {{ Request::routeIs('makes.create') ? 'active' : '' }}">Add Make</a>
                                 </li>
-                                <li class="slide">
-                                    <a href="faq.html" class="sidebar__menu-item">Faq</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="terms-conditions.html">Terms and Conditions</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="privacy-policy.html">Privacy and Policy</a>
-                                </li>
-                                <li class="slide">
-                                    <a class="sidebar__menu-item" href="blank-page.html">Blank Page</a>
-                                </li>
-                                <li class="slide has-sub">
-                                    <a href="javascript:void(0);" class="sidebar__menu-item">Blog
-                                    <i class="fa-regular fa-angle-down side-menu__angle"></i></a>
-                                    <ul class="sidebar-menu child2">
-                                        <li class="slide">
-                                            <a href="blog.html" class="sidebar__menu-item">Blog</a>
-                                        </li>
-                                        <li class="slide">
-                                            <a href="blog-details.html" class="sidebar__menu-item">Blog Details</a>
-                                        </li>
-                                        <li class="slide">
-                                            <a href="blog-create.html" class="sidebar__menu-item">Create Blog</a>
-                                        </li>
-                                    </ul>
+                                @endcan
+                                <li class="slide {{ Request::routeIs('makes.index') ? 'active' : '' }}">
+                                    <a href="{{ route('makes.index') }}" class="sidebar__menu-item {{ Request::routeIs('makes.index') ? 'active' : '' }}">Make List</a>
                                 </li>
                             </ul>
                         </li>
-                        <li class="sidebar__menu-category"><span class="category-name">General</span></li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="fa-light fa-notebook"></i></div>
-                                <span class="sidebar__menu-label">Forms</span>
+                        @endcan
+                        @can('model')
+                        <li class="slide has-sub {{ request()->routeIs('models.*') ? 'active' : '' }}">
+                            <a href="javascript:void(0);" class="sidebar__menu-item {{ request()->routeIs('models.*') ? 'active' : '' }}">
+                                <div class="side-menu__icon"><i class="fa-sharp fa-regular fa-right-left"></i></div>
+                                <span class="sidebar__menu-label">Model</span>
                                 <i class="fa-regular fa-angle-down side-menu__angle"></i>
                             </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide"><a class="sidebar__menu-item" href="form-style.html">Form Style</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="form-basic-input.html">Form Basic
-                                    Input</a>
+                            <ul class="sidebar-menu child1 {{ request()->routeIs('models.*') ? 'active' : '' }}">
+                                @can('create make')
+                                <li class="slide {{ Request::routeIs('models.create') ? 'active' : '' }}">
+                                    <a href="{{ route('models.create') }}" class="sidebar__menu-item {{ Request::routeIs('models.create') ? 'active' : '' }}">Add Model</a>
                                 </li>
-                                <li class="slide"><a class="sidebar__menu-item" href="forms-input-groups.html">Forms Input
-                                    Groups</a>
-                                </li>
-                                <li class="slide"><a class="sidebar__menu-item" href="forms-editors.html">Form Editors</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="forms-tags-selects.html">Tags Selects</a>
-                                </li>
-                                <li class="slide"><a class="sidebar__menu-item" href="forms-select2.html">Select2</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="forms-custom-options.html">Custom
-                                    Option</a>
-                                </li>
-                                <li class="slide"><a class="sidebar__menu-item" href="forms-date-and-time-pickr.html">Date &
-                                    Time Picker</a>
-                                </li>
-                                <li class="slide"><a class="sidebar__menu-item" href="forms-layouts.html">Forms Layouts</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="forms-wizard.html">Forms Wizard</a></li>
-                            </ul>
-                        </li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="fa-light fa-clone"></i></div>
-                                <span class="sidebar__menu-label">Base Ui</span>
-                                <i class="fa-regular fa-angle-down side-menu__angle"></i>
-                            </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide"><a class="sidebar__menu-item" href="alert.html">Alert</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="badge.html">Badge</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="buttons.html">Buttons</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="breadcrumb.html">Breadcrumb</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="template-color.html">Template Color</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="avatars.html">Avatars</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="progress-bar.html">Progress Bar</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="modal.html">Modal</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="popover.html">Popover</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="toasts.html">Toasts</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="accordions.html">Accordions</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="navs-tabs.html">Navs Tabs</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="dropdown.html">Dropdown</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="tooltip.html">Tooltip</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="video.html">Video</a></li>
-                            </ul>
-                        </li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="fa-light fa-feather"></i></div>
-                                <span class="sidebar__menu-label">Advanced UI</span>
-                                <i class="fa-regular fa-angle-down side-menu__angle"></i>
-                            </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide"><a class="sidebar__menu-item" href="custom-toaster.html">Custom Toaster</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="rating.html">Rating</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="dropzone.html">Dropzone</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="swiper.html">Swiper</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="ribbons.html">Ribbons</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="pagination.html">Pagination</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="steps.html">Steps</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="range-slider.html">Range Slider</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="team.html">Team</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="timeline.html">Timeline</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="grid.html">Grid</a></li>
-                            </ul>
-                        </li>
-                        <li class="sidebar__menu-category"><span class="category-name">Icons</span></li>
-                        <li class="slide">
-                            <a href="element-icon.html" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="icon-icons"></i></div>
-                                <span class="sidebar__menu-label">Icomoon</span>
-                            </a>
-                        </li>
-                        <li class="sidebar__menu-category"><span class="category-name">Tables & Charts</span></li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="fa-regular fa-pause"></i></div>
-                                <span class="sidebar__menu-label">Tables</span>
-                                <i class="fa-regular fa-angle-down side-menu__angle"></i>
-                            </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide"><a class="sidebar__menu-item" href="tables-basic.html">Table Basic</a></li>
-                                <li class="slide"><a class="sidebar__menu-item" href="tables-database.html">Table Database</a>
+                                @endcan
+                                <li class="slide {{ Request::routeIs('models.index') ? 'active' : '' }}">
+                                    <a href="{{ route('models.index') }}" class="sidebar__menu-item {{ Request::routeIs('models.index') ? 'active' : '' }}">Model List</a>
                                 </li>
                             </ul>
                         </li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="icon-apexcharts"></i></div>
-                                <span class="sidebar__menu-label">Charts</span>
+                        @endcan
+                        @can('body type')
+                        <li class="slide has-sub {{ request()->routeIs('body-types.*') ? 'active' : '' }}">
+                            <a href="javascript:void(0);" class="sidebar__menu-item {{ request()->routeIs('body-types.*') ? 'active' : '' }}">
+                                <div class="side-menu__icon"><i class="fa-sharp fa-regular fa-right-left"></i></div>
+                                <span class="sidebar__menu-label">Body Type</span>
                                 <i class="fa-regular fa-angle-down side-menu__angle"></i>
                             </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide has-sub">
-                                    <a href="javascript:void(0);" class="sidebar__menu-item">Apex Charts
-                                    <i class="fa-regular fa-angle-down side-menu__angle"></i></a>
-                                    <ul class="sidebar-menu child2">
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-line.html">line
-                                            Charts</a>
-                                        </li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-area.html">Area
-                                            Charts</a>
-                                        </li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-column.html">Column
-                                            Charts</a>
-                                        </li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-bar.html">Bar
-                                            Charts</a>
-                                        </li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-mixed.html">Mixed
-                                            Charts</a>
-                                        </li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-range.html">Range
-                                            Charts</a>
-                                        </li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-timeline.html">Timeline Charts</a></li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-funnel.html">Funnel
-                                            Charts</a>
-                                        </li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-candlestick.html">Candlestick Charts</a></li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-box-whisker.html">Box
-                                            & Whisker Charts</a>
-                                        </li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-pie.html">Pie
-                                            Charts</a>
-                                        </li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-radial-bar.html">Radial Bar Charts</a></li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-radar.html">Radar
-                                            Charts</a>
-                                        </li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-polar-area.html">Polar
-                                            Area Charts</a>
-                                        </li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-treemap.html">Tree Map
-                                            Charts</a>
-                                        </li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-heatmap.html">Heatmap
-                                            Charts</a>
-                                        </li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-bubble.html">Bubble
-                                            Charts</a>
-                                        </li>
-                                        <li class="slide"><a class="sidebar__menu-item" href="apex-charts-scatter.html">Scatter
-                                            Charts</a>
-                                        </li>
-                                    </ul>
+                            <ul class="sidebar-menu child1 {{ request()->routeIs('body-types.*') ? 'active' : '' }}">
+                                @can('create body type')
+                                <li class="slide {{ Request::routeIs('body-types.create') ? 'active' : '' }}">
+                                    <a href="{{ route('body-types.create') }}" class="sidebar__menu-item {{ Request::routeIs('body-types.create') ? 'active' : '' }}">Add Body Type</a>
+                                </li>
+                                @endcan
+                                <li class="slide {{ Request::routeIs('body-types.index') ? 'active' : '' }}">
+                                    <a href="{{ route('body-types.index') }}" class="sidebar__menu-item {{ Request::routeIs('body-types.index') ? 'active' : '' }}">Body Type List</a>
                                 </li>
                             </ul>
                         </li>
-                        <li class="sidebar__menu-category"><span class="category-name">MultiLevel</span></li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="sidebar__menu-item">
-                                <div class="side-menu__icon"><i class="fa-sharp fa-solid fa-arrow-turn-down"></i></div>
-                                <span class="sidebar__menu-label">MultiLevel Menu</span>
-                                <i class="fa-regular fa-angle-down side-menu__angle"></i>
-                            </a>
-                            <ul class="sidebar-menu child1">
-                                <li class="slide">
-                                    <a href="javascript:void(0);" class="sidebar__menu-item">Level-1.0</a>
-                                </li>
-                                <li class="slide has-sub">
-                                    <a href="javascript:void(0);" class="sidebar__menu-item">Level-2.0
-                                    <i class="fa-regular fa-angle-down side-menu__angle"></i></a>
-                                    <ul class="sidebar-menu child2">
-                                        <li class="slide">
-                                            <a href="javascript:void(0);" class="sidebar__menu-item">Level-2.1</a>
-                                        </li>
-                                        <li class="slide has-sub">
-                                            <a href="javascript:void(0);" class="sidebar__menu-item">Level-2.2
-                                            <i class="fa-regular fa-angle-down side-menu__angle"></i></a>
-                                            <ul class="sidebar-menu child3">
-                                                <li class="slide">
-                                                    <a href="javascript:void(0);" class="sidebar__menu-item">Level-3.0</a>
-                                                </li>
-                                                <li class="slide">
-                                                    <a href="leaves-employee.html" class="sidebar__menu-item">Level-3.0</a>
-                                                </li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
+                        @endcan
                     </ul>
                     <div class="sidebar-right" id="sidebar-right"></div>
                 </nav>
-                <div class="sidebar__thumb sidebar-bg" data-background="assets/images/bg/side-bar.png" style="background-image: url(&quot;assets/images/bg/side-bar.png&quot;);">
-                    <div class="sidebar__thumb-content">
-                        <p class="sidebar__thumb-title">Upgrade to PRO to get access all Features!</p>
-                        <a class="btn btn-white rounded-pill w-100" href="#">Get Pro Now!</a>
-                    </div>
-                </div>
             </div>
         </div>
         <div class="app__offcanvas-overlay"></div>
@@ -631,152 +173,12 @@
                                 </div>
                             </a>
                         </div>
-                        <h2 class="header__title">Hello Thomas <span><img src="assets/images/shape/hand.png"
+                        <h2 class="header__title">Hello {{ Auth::user()->name }} <span><img src="{{ asset('img/hand.png') }}"
                             alt="image"></span></h2>
                     </div>
                     <div class="app__header-right">
-                        <div class="app__herader-input p-relative">
-                            <input type="search" id="search-field" name="search-field" placeholder="Search Here . . .">
-                            <button><i class="icon-magnifying-glass"></i></button>
-                        </div>
                         <div class="app__header-action">
                             <ul>
-                                <li>
-                                    <div class="nav-item p-relative">
-                                        <a id="langdropdown" class="langdropdown" href="javascript:void(0)">
-                                            <span>
-                                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <g clip-path="url(#clip0_2045_21)">
-                                                        <path
-                                                            d="M18.5295 15.2207C19.4935 13.6502 20.0025 11.8429 20 10.0002C20.0025 8.15741 19.4935 6.34975 18.5295 4.77922L18.524 4.77065C17.6296 3.31298 16.3765 2.10901 14.8841 1.27379C13.3918 0.438574 11.7102 6.98837e-06 10 0C8.28987 -6.98804e-06 6.60828 0.438545 5.11595 1.27375C3.62361 2.10896 2.37039 3.31292 1.47604 4.77057L1.47048 4.77925C0.508875 6.35086 7.13768e-06 8.15752 0 10C-7.13739e-06 11.8425 0.508846 13.6491 1.47044 15.2207L1.47609 15.2295C2.37045 16.6871 3.62366 17.8911 5.11599 18.7263C6.60832 19.5615 8.28989 20 10 20C11.7102 20 13.3917 19.5615 14.8841 18.7262C16.3764 17.891 17.6296 16.6871 18.5239 15.2294L18.5295 15.2207ZM11.2782 18.2861C11.0876 18.47 10.8684 18.6215 10.6289 18.7345C10.4324 18.8279 10.2175 18.8764 10 18.8764C9.78245 18.8764 9.56755 18.8279 9.37109 18.7345C8.91545 18.5018 8.52543 18.1586 8.23666 17.7363C7.64692 16.8841 7.20987 15.9358 6.94506 14.9339C7.96235 14.8713 8.98065 14.8395 10 14.8383C11.0189 14.8383 12.0373 14.8702 13.0551 14.9339C12.9085 15.4491 12.7255 15.9532 12.5073 16.4423C12.2199 17.1302 11.8026 17.7563 11.2782 18.2861ZM1.14315 10.5618H5.17663C5.20289 11.6873 5.32488 12.8085 5.54129 13.9133C4.43869 14.0104 3.33891 14.1435 2.24195 14.3131C1.59959 13.1606 1.22409 11.8787 1.14315 10.5618ZM2.24195 5.68691C3.33847 5.85684 4.43865 5.99013 5.54245 6.08678C5.32561 7.19151 5.20335 8.31271 5.17699 9.43818H1.14315C1.22408 8.1213 1.59959 6.83936 2.24195 5.68691ZM8.72176 1.71385C8.91231 1.52998 9.13164 1.3785 9.37109 1.2654C9.56755 1.17203 9.78245 1.12358 10 1.12358C10.2175 1.12358 10.4324 1.17203 10.6289 1.2654C11.0845 1.49813 11.4745 1.84135 11.7634 2.26367C12.3531 3.11586 12.7901 4.06413 13.0549 5.06606C12.0376 5.12866 11.0194 5.16055 10 5.16174C8.98108 5.16173 7.96271 5.12983 6.94488 5.06605C7.09146 4.5509 7.27455 4.04685 7.49275 3.55771C7.78008 2.8698 8.19736 2.24375 8.72176 1.71385ZM18.8568 9.43818H14.8234C14.7971 8.31271 14.6751 7.19149 14.4587 6.08668C15.5614 5.98966 16.6611 5.8564 17.7581 5.68691C18.4005 6.83936 18.7759 8.1213 18.8568 9.43818ZM6.67136 13.8259C6.45163 12.751 6.32753 11.6586 6.30052 10.5618H13.6996C13.6728 11.6586 13.5489 12.751 13.3295 13.826C12.2208 13.7533 11.111 13.7161 10 13.7146C8.88978 13.7146 7.78024 13.7517 6.67136 13.8259ZM13.3286 6.17404C13.5484 7.24901 13.6725 8.34134 13.6995 9.43818H6.30039C6.32715 8.34134 6.45103 7.24899 6.67056 6.17398C7.77915 6.24672 8.88896 6.28383 10 6.28532C11.1102 6.28532 12.2197 6.24822 13.3286 6.17404ZM14.823 10.5618H18.8568C18.7759 11.8787 18.4004 13.1606 17.758 14.3131C16.6615 14.1431 15.5614 14.0098 14.4575 13.9132C14.6744 12.8085 14.7966 11.6873 14.823 10.5618ZM17.0844 4.65275C16.1256 4.79108 15.164 4.90059 14.1995 4.9813C14.0262 4.33593 13.8026 3.7051 13.5309 3.0946C13.2828 2.53279 12.9706 2.00154 12.6006 1.51138C14.3889 2.05982 15.9582 3.15928 17.0844 4.65275ZM3.72341 3.7234C4.74923 2.69661 6.01126 1.93712 7.39889 1.51152C7.37784 1.53878 7.35618 1.56485 7.33543 1.59267C6.62219 2.61941 6.10266 3.76789 5.80247 4.98147C4.83795 4.89978 3.87567 4.79021 2.91564 4.65275C3.16324 4.32479 3.43313 4.01427 3.72341 3.7234ZM2.91563 15.3472C3.87435 15.2089 4.83594 15.0994 5.80041 15.0187C5.97375 15.6641 6.19732 16.2949 6.46905 16.9054C6.71715 17.4672 7.02932 17.9985 7.39935 18.4886C5.61107 17.9402 4.0418 16.8406 2.91563 15.3472ZM16.2765 16.2765C15.2507 17.3034 13.9887 18.0629 12.6011 18.4885C12.6222 18.4612 12.6438 18.4352 12.6645 18.4073C13.3778 17.3805 13.8974 16.2321 14.1975 15.0185C15.1621 15.1002 16.1244 15.2098 17.0844 15.3473C16.8367 15.6752 16.5668 15.9857 16.2765 16.2765Z"
-                                                            fill="#7A7A7A" />
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_2045_21">
-                                                            <rect width="20" height="20" fill="white" />
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
-                                            </span>
-                                            <span class="language-text">English</span>
-                                        </a>
-                                        <div class="lang__dropdown">
-                                            <ul>
-                                                <li>
-                                                    <a class="lang__item" href="#">
-                                                        <div class="lang__icon">
-                                                            <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                <g clip-path="url(#clip0_647_364)">
-                                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0H28.5003V1.15386H0V0ZM0 2.30771H28.5003V3.46157H0V2.30771ZM0 4.61543H28.5003V5.76929H0V4.61543ZM0 6.92314H28.5003V8.077H0V6.92314ZM0 9.23086H28.5003V10.3847H0V9.23086ZM0 11.5386H28.5003V12.6924H0V11.5386ZM0 13.8463H28.5003V15.0001H0V13.8463Z" fill="#BD3D44" />
-                                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0 1.15381H28.5003V2.30767H0V1.15381ZM0 3.46152H28.5003V4.61538H0V3.46152ZM0 5.76924H28.5003V6.9231H0V5.76924ZM0 8.07695H28.5003V9.23081H0V8.07695ZM0 10.3847H28.5003V11.5385H0V10.3847ZM0 12.6924H28.5003V13.8462H0V12.6924Z" fill="white" />
-                                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0H11.4V8.07686H0V0Z" fill="#192F5D" />
-                                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.950137 0.345703L1.05385 0.664922H1.38953L1.11795 0.862236L1.22169 1.18146L0.950107 0.98417L0.678584 1.18146L0.782295 0.862236L0.510742 0.664922H0.846396L0.950137 0.345703ZM2.85013 0.345703L2.95387 0.664922H3.28955L3.01797 0.862236L3.12171 1.18146L2.85013 0.98417L2.5786 1.18146L2.68231 0.862236L2.41076 0.664922H2.74642L2.85013 0.345703ZM4.75021 0.345703L4.85392 0.664922H5.1896L4.91802 0.862236L5.02176 1.18146L4.75021 0.98417L4.47865 1.18146L4.58236 0.862236L4.31081 0.664922H4.64649L4.75021 0.345703ZM6.65017 0.345703L6.75388 0.664922H7.08953L6.81798 0.862236L6.92169 1.18146L6.65017 0.98417L6.37858 1.18146L6.48232 0.862236L6.21074 0.664922H6.54643L6.65017 0.345703ZM8.55021 0.345703L8.65393 0.664922H8.98961L8.71803 0.862236L8.82177 1.18146L8.55019 0.98417L8.27866 1.18146L8.38237 0.862236L8.11082 0.664922H8.44647L8.55021 0.345703ZM10.4503 0.345703L10.554 0.664922H10.8897L10.6181 0.862236L10.7218 1.18146L10.4503 0.98417L10.1787 1.18146L10.2825 0.862236L10.0109 0.664922H10.3466L10.4503 0.345703ZM1.90018 1.15342L2.00389 1.47264H2.33957L2.06799 1.66992L2.17176 1.98917L1.90018 1.79188L1.62862 1.98917L1.73233 1.66992L1.46078 1.47264H1.79646L1.90018 1.15342ZM3.80014 1.15342L3.90385 1.47264H4.2395L3.96795 1.66992L4.07166 1.98917L3.80014 1.79188L3.52855 1.98917L3.63229 1.66992L3.36071 1.47264H3.6964L3.80014 1.15342ZM5.70019 1.15342L5.8039 1.47264H6.13958L5.868 1.66992L5.97174 1.98917L5.70016 1.79188L5.42863 1.98917L5.53234 1.66992L5.26079 1.47264H5.59645L5.70019 1.15342ZM7.60023 1.15342L7.70395 1.47264H8.03963L7.76805 1.66992L7.87179 1.98917L7.60023 1.79188L7.32865 1.98917L7.43245 1.66992L7.16087 1.47264H7.49655L7.60023 1.15342ZM9.5002 1.15342L9.60391 1.47264H9.93956L9.66801 1.66992L9.77172 1.98917L9.5002 1.79188L9.22861 1.98917L9.33235 1.66992L9.06077 1.47264H9.39646L9.5002 1.15342ZM0.950137 1.9611L1.05385 2.28032H1.38953L1.11795 2.47764L1.22169 2.79686L0.950107 2.59957L0.678584 2.79686L0.782295 2.47764L0.510742 2.28032H0.846396L0.950137 1.9611ZM2.85013 1.9611L2.95387 2.28032H3.28955L3.01797 2.47764L3.12171 2.79686L2.85013 2.59957L2.5786 2.79686L2.68231 2.47764L2.41076 2.28032H2.74642L2.85013 1.9611ZM4.75021 1.9611L4.85392 2.28032H5.1896L4.91802 2.47764L5.02176 2.79686L4.75021 2.59957L4.47865 2.79686L4.58236 2.47764L4.31081 2.28032H4.64649L4.75021 1.9611ZM6.65017 1.9611L6.75388 2.28032H7.08953L6.81798 2.47764L6.92169 2.79686L6.65017 2.59957L6.37858 2.79686L6.48232 2.47764L6.21074 2.28032H6.54643L6.65017 1.9611ZM8.55021 1.9611L8.65393 2.28032H8.98961L8.71803 2.47764L8.82177 2.79686L8.55019 2.59957L8.27866 2.79686L8.38237 2.47764L8.11082 2.28032H8.44647L8.55021 1.9611ZM10.4503 1.9611L10.554 2.28032H10.8897L10.6181 2.47764L10.7218 2.79686L10.4503 2.59957L10.1787 2.79686L10.2825 2.47764L10.0109 2.28032H10.3466L10.4503 1.9611ZM1.90018 2.76879L2.00389 3.08804H2.33957L2.06799 3.28532L2.17176 3.60457L1.90018 3.40729L1.62862 3.60457L1.73233 3.28532L1.46078 3.08804H1.79646L1.90018 2.76879ZM3.80014 2.76879L3.90385 3.08804H4.2395L3.96795 3.28532L4.07166 3.60457L3.80014 3.40729L3.52855 3.60457L3.63229 3.28532L3.36071 3.08804H3.6964L3.80014 2.76879ZM5.70019 2.76879L5.8039 3.08804H6.13958L5.868 3.28532L5.97174 3.60457L5.70016 3.40729L5.42863 3.60457L5.53234 3.28532L5.26079 3.08804H5.59645L5.70019 2.76879ZM7.60023 2.76879L7.70395 3.08804H8.03963L7.76805 3.28532L7.87179 3.60457L7.60023 3.40729L7.32865 3.60457L7.43242 3.28532L7.16084 3.08804H7.49652L7.60023 2.76879ZM9.5002 2.76879L9.60391 3.08804H9.93956L9.66801 3.28532L9.77172 3.60457L9.5002 3.40729L9.22861 3.60457L9.33235 3.28532L9.06077 3.08804H9.39646L9.5002 2.76879ZM0.950137 3.5765L1.05385 3.89572H1.38953L1.11795 4.09304L1.22169 4.41226L0.950107 4.21497L0.678584 4.41226L0.782295 4.09304L0.510742 3.89572H0.846396L0.950137 3.5765ZM2.85013 3.5765L2.95387 3.89572H3.28955L3.01797 4.09304L3.12171 4.41226L2.85013 4.21497L2.5786 4.41226L2.68231 4.09304L2.41076 3.89572H2.74642L2.85013 3.5765ZM4.75021 3.5765L4.85392 3.89572H5.1896L4.91802 4.09304L5.02176 4.41226L4.75021 4.21497L4.47865 4.41226L4.58236 4.09304L4.31081 3.89572H4.64649L4.75021 3.5765ZM6.65017 3.5765L6.75388 3.89572H7.08953L6.81798 4.09304L6.92169 4.41226L6.65017 4.21497L6.37858 4.41226L6.48232 4.09304L6.21074 3.89572H6.54643L6.65017 3.5765ZM8.55021 3.5765L8.65393 3.89572H8.98961L8.71803 4.09304L8.82177 4.41226L8.55019 4.21497L8.27866 4.41226L8.38237 4.09304L8.11082 3.89572H8.44647L8.55021 3.5765ZM10.4503 3.5765L10.554 3.89572H10.8897L10.6181 4.09304L10.7218 4.41226L10.4503 4.21497L10.1787 4.41226L10.2825 4.09304L10.0109 3.89572H10.3466L10.4503 3.5765ZM1.90018 4.38419L2.00389 4.70344H2.33957L2.06799 4.90072L2.17176 5.21997L1.90018 5.02269L1.62862 5.21997L1.73233 4.90072L1.46078 4.70344H1.79646L1.90018 4.38419ZM3.80014 4.38419L3.90385 4.70344H4.2395L3.96795 4.90072L4.07166 5.21997L3.80014 5.02269L3.52855 5.21997L3.63229 4.90072L3.36071 4.70344H3.6964L3.80014 4.38419ZM5.70019 4.38419L5.8039 4.70344H6.13958L5.868 4.90072L5.97174 5.21997L5.70016 5.02269L5.42863 5.21997L5.53234 4.90072L5.26079 4.70344H5.59645L5.70019 4.38419ZM7.60023 4.38419L7.70395 4.70344H8.03963L7.76805 4.90072L7.87179 5.21997L7.60023 5.02269L7.32865 5.21997L7.43242 4.90072L7.16084 4.70344H7.49652L7.60023 4.38419ZM9.5002 4.38419L9.60391 4.70344H9.93956L9.66801 4.90072L9.77172 5.21997L9.5002 5.02269L9.22861 5.21997L9.33235 4.90072L9.06077 4.70344H9.39646L9.5002 4.38419ZM0.950137 5.1919L1.05385 5.51112H1.38953L1.11795 5.70844L1.22169 6.02766L0.950107 5.83037L0.678584 6.02766L0.782295 5.70844L0.510742 5.51112H0.846396L0.950137 5.1919ZM2.85013 5.1919L2.95387 5.51112H3.28955L3.01797 5.70844L3.12171 6.02766L2.85013 5.83037L2.5786 6.02766L2.68231 5.70844L2.41076 5.51112H2.74642L2.85013 5.1919ZM4.75021 5.1919L4.85392 5.51112H5.1896L4.91802 5.70844L5.02176 6.02766L4.75021 5.83037L4.47865 6.02766L4.58236 5.70844L4.31081 5.51112H4.64649L4.75021 5.1919ZM6.65017 5.1919L6.75388 5.51112H7.08953L6.81798 5.70844L6.92169 6.02766L6.65017 5.83037L6.37858 6.02766L6.48232 5.70844L6.21074 5.51112H6.54643L6.65017 5.1919ZM8.55021 5.1919L8.65393 5.51112H8.98961L8.71803 5.70844L8.82177 6.02766L8.55019 5.83037L8.27866 6.02766L8.38237 5.70844L8.11082 5.51112H8.44647L8.55021 5.1919ZM10.4503 5.1919L10.554 5.51112H10.8897L10.6181 5.70844L10.7218 6.02766L10.4503 5.83037L10.1787 6.02766L10.2825 5.70844L10.0109 5.51112H10.3466L10.4503 5.1919ZM1.90018 5.99959L2.00389 6.31884H2.33957L2.06799 6.51612L2.17176 6.83537L1.90018 6.63809L1.62862 6.83537L1.73233 6.51612L1.46078 6.31884H1.79646L1.90018 5.99959ZM3.80014 5.99959L3.90385 6.31884H4.2395L3.96795 6.51612L4.07166 6.83537L3.80014 6.63809L3.52855 6.83537L3.63229 6.51612L3.36071 6.31884H3.6964L3.80014 5.99959ZM5.70019 5.99959L5.8039 6.31884H6.13958L5.868 6.51612L5.97174 6.83537L5.70016 6.63809L5.42863 6.83537L5.53234 6.51612L5.26079 6.31884H5.59645L5.70019 5.99959ZM7.60023 5.99959L7.70395 6.31884H8.03963L7.76805 6.51612L7.87179 6.83537L7.60023 6.63809L7.32865 6.83537L7.43242 6.51612L7.16084 6.31884H7.49652L7.60023 5.99959ZM9.5002 5.99959L9.60391 6.31884H9.93956L9.66801 6.51612L9.77172 6.83537L9.5002 6.63809L9.22861 6.83537L9.33235 6.51612L9.06077 6.31884H9.39646L9.5002 5.99959ZM0.950137 6.8073L1.05385 7.12652H1.38953L1.11795 7.32384L1.22169 7.64306L0.950107 7.44577L0.678584 7.64306L0.782295 7.32384L0.510742 7.12652H0.846396L0.950137 6.8073ZM2.85013 6.8073L2.95387 7.12652H3.28955L3.01797 7.32384L3.12171 7.64306L2.85013 7.44577L2.5786 7.64306L2.68231 7.32384L2.41076 7.12652H2.74642L2.85013 6.8073ZM4.75021 6.8073L4.85392 7.12652H5.1896L4.91802 7.32384L5.02176 7.64306L4.75021 7.44577L4.47865 7.64306L4.58236 7.32384L4.31081 7.12652H4.64649L4.75021 6.8073ZM6.65017 6.8073L6.75388 7.12652H7.08953L6.81798 7.32384L6.92169 7.64306L6.65017 7.44577L6.37858 7.64306L6.48232 7.32384L6.21074 7.12652H6.54643L6.65017 6.8073ZM8.55021 6.8073L8.65393 7.12652H8.98961L8.71803 7.32384L8.82177 7.64306L8.55019 7.44577L8.27866 7.64306L8.38237 7.32384L8.11082 7.12652H8.44647L8.55021 6.8073ZM10.4503 6.8073L10.554 7.12652H10.8897L10.6181 7.32384L10.7218 7.64306L10.4503 7.44577L10.1787 7.64306L10.2825 7.32384L10.0109 7.12652H10.3466L10.4503 6.8073Z" fill="white" />
-                                                                </g>
-                                                                <defs>
-                                                                    <clipPath id="clip0_647_364">
-                                                                        <rect width="20" height="15" fill="white" />
-                                                                    </clipPath>
-                                                                </defs>
-                                                            </svg>
-                                                        </div>
-                                                        <div class="lang__country">
-                                                            <span>English</span>
-                                                        </div>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="lang__item" href="#">
-                                                        <div class="lang__icon">
-                                                            <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                <g clip-path="url(#clip0_650_408)">
-                                                                    <path d="M0 0H20V5H0V0Z" fill="#00732F" />
-                                                                    <path d="M0 5H20V10H0V5Z" fill="white" />
-                                                                    <path d="M0 10H20V15H0V10Z" fill="black" />
-                                                                    <path d="M0 0H6.875V15H0V0Z" fill="#FF0000" />
-                                                                </g>
-                                                                <defs>
-                                                                    <clipPath id="clip0_650_408">
-                                                                        <rect width="20" height="15" fill="white" />
-                                                                    </clipPath>
-                                                                </defs>
-                                                            </svg>
-                                                        </div>
-                                                        <div class="lang__country">
-                                                            <span>لعربية</span>
-                                                        </div>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="lang__item" href="#">
-                                                        <div class="lang__icon">
-                                                            <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                <g clip-path="url(#clip0_650_394)">
-                                                                    <path d="M0 0H20V15H0V0Z" fill="#DE2910" />
-                                                                    <path d="M2.4269 5.5725L3.74988 1.5L5.07287 5.5725L1.60791 3.0525H5.89186L2.4269 5.5725Z" fill="#FFDE00" />
-                                                                    <path d="M8.25704 1.56588L6.86593 1.88534L7.8037 0.809307L7.67681 2.23181L6.94284 1.00688L8.25704 1.56588Z" fill="#FFDE00" />
-                                                                    <path d="M9.66184 3.3445L8.25572 3.09942L9.53741 2.47132L8.86876 3.73327L8.66731 2.31955L9.66184 3.3445Z" fill="#FFDE00" />
-                                                                    <path d="M9.46176 5.84138L8.27787 5.04411L9.70428 4.99338L8.57909 5.87289L8.97174 4.49993L9.46176 5.84138Z" fill="#FFDE00" />
-                                                                    <path d="M7.69664 7.47561L6.91253 6.28295L8.24786 6.78708L6.87029 7.16375L7.76274 6.04899L7.69664 7.47561Z" fill="#FFDE00" />
-                                                                </g>
-                                                                <defs>
-                                                                    <clipPath id="clip0_650_394">
-                                                                        <rect width="20" height="15" fill="white" />
-                                                                    </clipPath>
-                                                                </defs>
-                                                            </svg>
-                                                        </div>
-                                                        <div class="lang__country">
-                                                            <span>简体中文</span>
-                                                        </div>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="lang__item" href="#">
-                                                        <div class="lang__icon">
-                                                            <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                <g clip-path="url(#clip0_651_428)">
-                                                                    <path d="M0 10H20V15.0001H0V10Z" fill="#FFCE00" />
-                                                                    <path d="M0 0H20V5H0V0Z" fill="black" />
-                                                                    <path d="M0 5H20V10H0V5Z" fill="#DD0000" />
-                                                                </g>
-                                                                <defs>
-                                                                    <clipPath id="clip0_651_428">
-                                                                        <rect width="20" height="15" fill="white" />
-                                                                    </clipPath>
-                                                                </defs>
-                                                            </svg>
-                                                        </div>
-                                                        <div class="lang__country">
-                                                            <span>Deutsch</span>
-                                                        </div>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="lang__item" href="#">
-                                                        <div class="lang__icon">
-                                                            <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                <g clip-path="url(#clip0_651_427)">
-                                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0H20V15H0V0Z" fill="white" />
-                                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0H6.66678V15H0V0Z" fill="#00267F" />
-                                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.333 0H19.9998V15H13.333V0Z" fill="#F31830" />
-                                                                </g>
-                                                                <defs>
-                                                                    <clipPath id="clip0_651_427">
-                                                                        <rect width="20" height="15" fill="white" />
-                                                                    </clipPath>
-                                                                </defs>
-                                                            </svg>
-                                                        </div>
-                                                        <div class="lang__country">
-                                                            <span>Français</span>
-                                                        </div>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </li>
                                 <li>
                                     <a href="#!" onclick="javascript:toggleFullScreen()">
                                         <div class="nav-item">
@@ -787,123 +189,6 @@
                                             </div>
                                         </div>
                                     </a>
-                                </li>
-                                <li>
-                                    <div class="nav-item p-relative">
-                                        <a id="emaildropdown" href="#">
-                                            <div class="notification__icon">
-                                                <svg width="22" height="16" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M20.0001 0H1.99998C0.895427 0 0 0.895428 0 2.00003V14.0001C0 15.1046 0.895427 16 1.99998 16H20C21.1046 16 22 15.1046 22 14.0001V2.00003C22 0.895428 21.1046 0 20.0001 0ZM1.99998 1.00001H20C20.1143 1.00074 20.2276 1.02103 20.335 1.06L11.68 9.71504C11.3083 10.0892 10.7036 10.0912 10.3295 9.71946C10.328 9.718 10.3265 9.7165 10.325 9.71504L1.665 1.06C1.77242 1.02103 1.88573 1.0007 1.99998 1.00001ZM1.00001 14V2.00003C0.9949 1.9418 0.9949 1.88324 1.00001 1.82502L7.19002 8.00002L1.00001 14.175C0.9949 14.1168 0.9949 14.0582 1.00001 14ZM20.0001 15H1.99998C1.88573 14.9993 1.77242 14.979 1.665 14.94L7.89999 8.70506L9.61501 10.4201C10.3771 11.185 11.6149 11.1873 12.3798 10.4253C12.3816 10.4236 12.3833 10.4218 12.385 10.4201L14.1 8.70506L20.335 14.94C20.2276 14.979 20.1143 14.9993 20.0001 15ZM21 14.175L14.81 8.00002L21 1.82502C21.0051 1.88324 21.0051 1.9418 21 2.00003V14.0001C21.0051 14.0582 21.0051 14.1168 21 14.175Z" fill="#7A7A7A" />
-                                                </svg>
-                                            </div>
-                                        </a>
-                                        <div class="email__dropdown">
-                                            <div class="notification__card card__scroll">
-                                                <div class="notification__header">
-                                                    <div class="notification__inner">
-                                                        <h5>Email Notifications</h5>
-                                                        <span>(8)</span>
-                                                    </div>
-                                                </div>
-                                                <div class="notification__item">
-                                                    <div class="notification__thumb">
-                                                        <a href="employee-profile.html"><img src="assets/images/avatar/avatar1.png" alt="image not found"></a>
-                                                    </div>
-                                                    <div class="notification__content">
-                                                        <p><a href="email-read.html">HRM: New policy updates available.</a></p>
-                                                        <div class="notification__time">
-                                                            <span>1h ago</span>
-                                                            <span class="status">HRM</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="notification__item">
-                                                    <div class="notification__thumb">
-                                                        <a href="employee-profile.html"><img src="assets/images/avatar/avatar2.png" alt="image not found"></a>
-                                                    </div>
-                                                    <div class="notification__content">
-                                                        <p><a href="email-read.html">CRM: Monthly performance report.</a></p>
-                                                        <div class="notification__time">
-                                                            <span>2h ago</span>
-                                                            <span class="status">CRM</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="notification__item">
-                                                    <div class="notification__thumb">
-                                                        <a href="employee-profile.html"><img src="assets/images/avatar/avatar3.png" alt="image not found"></a>
-                                                    </div>
-                                                    <div class="notification__content">
-                                                        <p><a href="email-read.html">HRM: Team meeting at 3 PM.</a></p>
-                                                        <div class="notification__time">
-                                                            <span>3h ago</span>
-                                                            <span class="status">HRM</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="notification__item">
-                                                    <div class="notification__thumb">
-                                                        <a href="employee-profile.html"><img src="assets/images/avatar/avatar4.png" alt="image not found"></a>
-                                                    </div>
-                                                    <div class="notification__content">
-                                                        <p><a href="email-read.html">CRM: New client inquiry from ABC Corp.</a></p>
-                                                        <div class="notification__time">
-                                                            <span>4h ago</span>
-                                                            <span class="status">CRM</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="notification__item">
-                                                    <div class="notification__thumb">
-                                                        <a href="employee-profile.html"><img src="assets/images/avatar/avatar5.png" alt="image not found"></a>
-                                                    </div>
-                                                    <div class="notification__content">
-                                                        <p><a href="email-read.html">HRM: Annual leave request approved.</a></p>
-                                                        <div class="notification__time">
-                                                            <span>5h ago</span>
-                                                            <span class="status">HRM</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="notification__item">
-                                                    <div class="notification__thumb">
-                                                        <a href="employee-profile.html"><img src="assets/images/avatar/avatar6.png" alt="image not found"></a>
-                                                    </div>
-                                                    <div class="notification__content">
-                                                        <p><a href="email-read.html">CRM: Follow-up required for DEF Ltd.</a></p>
-                                                        <div class="notification__time">
-                                                            <span>6h ago</span>
-                                                            <span class="status">CRM</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="notification__item">
-                                                    <div class="notification__thumb">
-                                                        <a href="employee-profile.html"><img src="assets/images/avatar/avatar7.png" alt="image not found"></a>
-                                                    </div>
-                                                    <div class="notification__content">
-                                                        <p><a href="email-read.html">HRM: Training session reminder.</a></p>
-                                                        <div class="notification__time">
-                                                            <span>7h ago</span>
-                                                            <span class="status">HRM</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="notification__item">
-                                                    <div class="notification__thumb">
-                                                        <a href="employee-profile.html"><img src="assets/images/avatar/avatar8.png" alt="image not found"></a>
-                                                    </div>
-                                                    <div class="notification__content">
-                                                        <p><a href="email-read.html">CRM: Client feedback received.</a></p>
-                                                        <div class="notification__time">
-                                                            <span>8h ago</span>
-                                                            <span class="status">CRM</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </li>
                                 <li>
                                     <div class="nav-item p-relative">
@@ -1038,10 +323,10 @@
                             <a id="userportfolio" href="#">
                                 <div class="user__portfolio">
                                     <div class="user__portfolio-thumb">
-                                        <img src="assets/images/avatar/avatar.png" alt="img not found">
+                                        <img src="{{ asset('img/avatar.png') }}" alt="img not found">
                                     </div>
                                     <div class="user__content">
-                                        <h5>Jhon Smith</h5>
+                                        <h5>{{ Auth::user()->name }}</h5>
                                         <span>online</span>
                                     </div>
                                 </div>
@@ -1049,7 +334,7 @@
                             <div class="user__dropdown">
                                 <ul>
                                     <li>
-                                        <a href="employee-employee-profile.html">
+                                        <a href="">
                                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <g clip-path="url(#clip0_643_344)">
                                                     <path d="M13.6569 10.3431C12.7855 9.47181 11.7484 8.82678 10.6168 8.43631C11.8288 7.60159 12.625 6.20463 12.625 4.625C12.625 2.07478 10.5502 0 8 0C5.44978 0 3.375 2.07478 3.375 4.625C3.375 6.20463 4.17122 7.60159 5.38319 8.43631C4.25162 8.82678 3.2145 9.47181 2.34316 10.3431C0.832156 11.8542 0 13.8631 0 16H1.25C1.25 12.278 4.27803 9.25 8 9.25C11.722 9.25 14.75 12.278 14.75 16H16C16 13.8631 15.1678 11.8542 13.6569 10.3431ZM8 8C6.13903 8 4.625 6.486 4.625 4.625C4.625 2.764 6.13903 1.25 8 1.25C9.86097 1.25 11.375 2.764 11.375 4.625C11.375 6.486 9.86097 8 8 8Z" fill="#7A7A7A" />
@@ -1064,34 +349,7 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="app-chat.html">
-                                            <svg width="18" height="17" viewBox="0 0 18 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M4.2 16.8C4.1118 16.8 4.023 16.7802 3.9396 16.7406C3.7326 16.6404 3.6 16.431 3.6 16.2V13.2H1.8C0.8076 13.2 0 12.3924 0 11.4V1.8C0 0.8076 0.8076 0 1.8 0H16.2C17.1924 0 18 0.8076 18 1.8V11.4C18 12.3924 17.1924 13.2 16.2 13.2H8.9106L4.575 16.6686C4.4664 16.7556 4.3338 16.8 4.2 16.8ZM1.8 1.2C1.4688 1.2 1.2 1.4694 1.2 1.8V11.4C1.2 11.7306 1.4688 12 1.8 12H4.2C4.5318 12 4.8 12.2682 4.8 12.6V14.952L8.325 12.1314C8.4318 12.0462 8.5632 12 8.7 12H16.2C16.5312 12 16.8 11.7306 16.8 11.4V1.8C16.8 1.4694 16.5312 1.2 16.2 1.2H1.8Z" fill="#7A7A7A" />
-                                                <path d="M13.8001 6.00005H4.2001C3.8683 6.00005 3.6001 5.73125 3.6001 5.40005C3.6001 5.06885 3.8683 4.80005 4.2001 4.80005H13.8001C14.1319 4.80005 14.4001 5.06885 14.4001 5.40005C14.4001 5.73125 14.1319 6.00005 13.8001 6.00005Z" fill="#7A7A7A" />
-                                                <path d="M9.0001 8.39995H4.2001C3.8683 8.39995 3.6001 8.13115 3.6001 7.79995C3.6001 7.46875 3.8683 7.19995 4.2001 7.19995H9.0001C9.3319 7.19995 9.6001 7.46875 9.6001 7.79995C9.6001 8.13115 9.3319 8.39995 9.0001 8.39995Z" fill="#7A7A7A" />
-                                            </svg>
-                                            chat
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="email-inbox.html">
-                                            <svg width="18" height="13" viewBox="0 0 18 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M16.418 0H1.58203C0.711492 0 0 0.708363 0 1.58203V11.0742C0 11.9482 0.711949 12.6562 1.58203 12.6562H16.418C17.2885 12.6562 18 11.9479 18 11.0742V1.58203C18 0.708152 17.2882 0 16.418 0ZM16.175 1.05469C15.6636 1.56786 9.65549 7.59551 9.40866 7.84315C9.2025 8.04994 8.79761 8.05008 8.59134 7.84315L1.82496 1.05469H16.175ZM1.05469 10.8803V1.77592L5.59213 6.32812L1.05469 10.8803ZM1.82496 11.6016L6.3367 7.07512L7.84438 8.58772C8.46221 9.20756 9.53803 9.20732 10.1557 8.58772L11.6633 7.07516L16.175 11.6016H1.82496ZM16.9453 10.8803L12.4079 6.32812L16.9453 1.77592V10.8803Z" fill="#7A7A7A" />
-                                            </svg>
-                                            inbox
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="signup-basic.html">
-                                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M12.9224 9.03197C12.5765 8.86754 12.2235 8.7259 11.8644 8.60724C13.0275 7.73424 13.7812 6.34413 13.7812 4.78125C13.7812 2.14488 11.6364 0 8.99999 0C6.36359 0 4.21874 2.14488 4.21874 4.78125C4.21874 6.34585 4.97418 7.73734 6.13943 8.61016C5.07181 8.96165 4.07003 9.50858 3.19323 10.2298C1.58546 11.5522 0.4676 13.3969 0.0456193 15.4239C-0.0866386 16.059 0.0718107 16.7114 0.480256 17.2136C0.886698 17.7134 1.48938 18 2.13373 18H10.793C11.1813 18 11.4961 17.6852 11.4961 17.2969C11.4961 16.9086 11.1813 16.5938 10.793 16.5938H2.13373C1.83356 16.5938 1.65247 16.4262 1.57126 16.3264C1.43102 16.1539 1.37674 15.9295 1.42234 15.7105C2.15201 12.2056 5.24351 9.64527 8.8136 9.55892C8.87544 9.56131 8.93756 9.56251 8.99999 9.56251C9.06303 9.56251 9.12578 9.56128 9.18822 9.55885C10.2823 9.58452 11.3345 9.8342 12.3187 10.3021C12.6694 10.4687 13.0888 10.3196 13.2556 9.96885C13.4223 9.61813 13.2731 9.19868 12.9224 9.03197ZM9.17149 8.15193C9.11443 8.15091 9.05726 8.15039 8.99999 8.15039C8.94325 8.15039 8.88651 8.15095 8.82984 8.152C7.04759 8.06309 5.62499 6.58519 5.62499 4.78125C5.62499 2.92026 7.139 1.40625 8.99999 1.40625C10.861 1.40625 12.375 2.92026 12.375 4.78125C12.375 6.58474 10.9531 8.06236 9.17149 8.15193Z" fill="#7A7A7A" />
-                                                <path d="M17.2969 13.957H15.3633V12.0234C15.3633 11.6351 15.0485 11.3203 14.6602 11.3203C14.2718 11.3203 13.957 11.6351 13.957 12.0234V13.957H12.0234C11.6351 13.957 11.3203 14.2718 11.3203 14.6602C11.3203 15.0485 11.6351 15.3633 12.0234 15.3633H13.957V17.2969C13.957 17.6852 14.2718 18 14.6602 18C15.0485 18 15.3633 17.6852 15.3633 17.2969V15.3633H17.2969C17.6852 15.3633 18 15.0485 18 14.6602C18 14.2718 17.6852 13.957 17.2969 13.957Z" fill="#7A7A7A" />
-                                            </svg>
-                                            add acount
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="signin-basic.html">
+                                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <g clip-path="url(#clip0_643_343)">
                                                     <path d="M17.4368 8.43771H10.312C10.0015 8.43771 9.74951 8.18572 9.74951 7.87523C9.74951 7.56474 10.0015 7.31274 10.312 7.31274H17.4368C17.7473 7.31274 17.9993 7.56474 17.9993 7.87523C17.9993 8.18572 17.7473 8.43771 17.4368 8.43771Z" fill="#7A7A7A" />
@@ -1108,6 +366,9 @@
                                             </svg>
                                             Log Out
                                         </a>
+                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                            @csrf
+                                        </form>
                                     </li>
                                 </ul>
                             </div>
@@ -1142,66 +403,6 @@
         </svg>
     </div>
 
-
-    <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav me-auto">
-
-                    </ul>
-
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ms-auto">
-                        <!-- Authentication Links -->
-                        @guest
-                            @if (Route::has('login'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                </li>
-                            @endif
-
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <main class="py-4">
-            @yield('content')
-        </main>
-    </div>
     <script src="{{ asset('js/jquery-3.7.0.js') }}"></script>
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/waypoints.min.js') }}"></script>

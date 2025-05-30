@@ -5621,7 +5621,7 @@ img {
   background-color: var(--clr-bg-card);
 }
 .app-sidebar .main-sidebar-header {
-  height: 70px;
+  /* height: 70px; */
   width: 256px;
   position: fixed;
   display: flex;
@@ -5633,6 +5633,7 @@ img {
   transition: all 0.05s ease;
   border-inline-end: 1px solid var(--clr-border-1);
   border-bottom: 1px solid var(--clr-border-1);
+  background-color: black;
 }
 [bd-theme=bd-theme-dark] .app-sidebar .main-sidebar-header {
   background-color: var(--clr-bg-card);
@@ -7795,7 +7796,7 @@ img {
 }
 
 .simplebar-mask {
-  top: 80px;
+  top: 105px;
 }
 
 .simplebar-track {

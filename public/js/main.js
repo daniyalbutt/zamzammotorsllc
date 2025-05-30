@@ -128,56 +128,7 @@
 	}
 
 	/* settings append in body Js */
-	function bd_settings_append($x) {
-		var settings = $('body');
-		let dark;
-		$x === true ? dark = 'd-block' : dark = 'd-none';
-		/* no need switcher then add 'd-none' */
-		var settings_html = `<div class="bd-theme-settings-area transition-3">
-		<div class="bd-theme-wrapper">
-		<div class="bd-theme-header text-center">
-		   <h4 class="bd-theme-header-title">Template Settings</h4>
-		</div>
-
-		<!-- THEME TOGGLER -->
-		<div class="bd-theme-toggle mb-20 ${dark}">
-		   <label class="bd-theme-toggle-main" for="bd-theme-toggler">
-		   <span class="bd-theme-toggle-dark"><i class="fa-light fa-moon"></i> Dark </span>
-				 <input type="checkbox" id="bd-theme-toggler">
-				 <i class="bd-theme-toggle-slide"></i>
-				 <span class="bd-theme-toggle-light active"><i class="fa-light fa-sun-bright"></i> Light</span>
-		   </label>
-		</div>
-
-		<!--  RTL SETTINGS  mb-20 -->
-		<div class="bd-theme-dir">
-		   <label class="bd-theme-dir-main" for="bd-dir-toggler">
-			  <span class="bd-theme-dir-rtl"> RTL</span>
-				 <input type="checkbox" id="bd-dir-toggler">
-				 <i class="bd-theme-dir-slide"></i>
-			  <span class="bd-theme-dir-ltr active"> LTR</span>
-		   </label>
-		</div>
-
-		<div class="bd-theme-settings">
-		   <div class="bd-theme-settings-wrapper">
-			  <div class="bd-theme-settings-open">
-				 <button class="bd-theme-settings-open-btn">
-					<span class="bd-theme-settings-gear">
-					   <i class="fa-light fa-gear"></i>
-					</span>
-					<span class="bd-theme-settings-close">
-					   <i class="fa-regular fa-xmark"></i>
-					</span>
-				 </button>
-			  </div>
-		   </div>
-		</div>
-	 </div>
-		 </div>`;
-		settings.append(settings_html);
-	}
-
+	
 	function bd_rtl_settings() {
 		$('#bd-dir-toggler').on("change", function () {
 			toggle_rtl();
@@ -233,7 +184,6 @@
 		bd_init_theme();
 	}
 	/* Append settings HTML  */
-	bd_settings_append(true); /* if you want to enable dark mode, send "true" */
 
 	/* Event listeners  */
 	$(".bd-theme-settings-open-btn").on("click", function () {
