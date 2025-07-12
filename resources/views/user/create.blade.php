@@ -46,7 +46,7 @@
 		                    <div class="col-md-3">
 		                        <div class="form-group">
 		                            <label class="form-label">Role <strong>*</strong></label>
-									<select name="role" id="role" class="form-control" required>
+									<select name="role" id="role" class="form-control select2" required multiple>
 										<option value="">Select Role</option>
 										@foreach($roles as $key => $value)
 										<option value="{{ $value->name }}">{{ $value->name }}</option>
@@ -73,5 +73,14 @@
 </div>
 @endsection
 
-@push('scripts')
+@push('js')
+
+<script>
+	$(document).ready(function() {
+		$('.select2').select2({
+			placeholder: "Select Role",
+			allowClear: true
+		});
+	});
+</script>
 @endpush
