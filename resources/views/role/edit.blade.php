@@ -37,7 +37,7 @@
 						</div>
 						<div class="col-12">
 							<label class="form-label">Permission <strong>*</strong></label>
-							<ul class="role-wrapper">
+							<ul class="permission-list">
 							@foreach($permission as $key => $value)
 								<li>
 									<input class="form-check-input" name="permission[]" value="{{ $value->name }}" type="checkbox" id="basic_checkbox_{{$key}}" {{ in_array($value->name, $rolePermissions) ? 'checked' : '' }} />
