@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MakeController;
 use App\Http\Controllers\ModelsController;
 use App\Http\Controllers\BodyTypeController;
+use App\Http\Controllers\VehicleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,4 +31,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('makes', MakeController::class);
     Route::resource('models', ModelsController::class);
     Route::resource('body-types', BodyTypeController::class);
+    Route::resource('vehicles', VehicleController::class);
+    Route::post('vehicles/remove-image', [VehicleController::class, 'removeImage'])->name('vehicles.remove-image');
+    Route::post('vehicles/upload-image', [VehicleController::class, 'removeImage'])->name('vehicles.upload-image');
 });

@@ -11,3 +11,37 @@ ul.permission-list {
 ul.permission-list li {
     flex: 0 0 25%;
 }
+
+ul.sidebar-menu.active {
+    display: block;
+}
+
+.dz-progress {
+    display: none;
+}
+div#existing-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+div#existing-images div {
+}
+
+button.remove-existing-image {
+    position: absolute;
+    right: 5px;
+    top: 4px;
+    background: red;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+}
+.user-select {
+    width: auto !important;
+}

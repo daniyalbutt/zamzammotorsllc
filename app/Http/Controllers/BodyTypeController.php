@@ -20,7 +20,7 @@ class BodyTypeController extends Controller
      */
     public function index()
     {
-        $data = BodyType::where('status', 0)->orderBy('id', 'desc')->get();
+        $data = BodyType::where('status', 1)->orderBy('id', 'desc')->get();
         return view('bodytype.index', compact('data'));
     }
 
@@ -84,7 +84,7 @@ class BodyTypeController extends Controller
     public function destroy($id)
     {
         $data = BodyType::find($id);
-        $data->status = 1;
+        $data->status = 0;
         $data->save();
         return redirect()->back()->with('success', 'Body Type Deleted Successfully');
     }

@@ -21,7 +21,7 @@ class MakeController extends Controller
      */
     public function index()
     {
-        $data = Make::where('status', 0)->orderBy('id', 'desc')->get();
+        $data = Make::where('status', 1)->orderBy('id')->get();
         return view('make.index', compact('data'));
 
     }
@@ -86,7 +86,7 @@ class MakeController extends Controller
     public function destroy($id)
     {
         $data = Make::find($id);
-        $data->status = 1;
+        $data->status = 0;
         $data->save();
         return redirect()->back()->with('success', 'Make Deleted Successfully');
     }

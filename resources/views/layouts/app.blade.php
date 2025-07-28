@@ -172,6 +172,31 @@
                                 </ul>
                             </li>
                         @endcan
+
+
+                         @can('vehicles')
+                            <li class="slide has-sub {{ request()->routeIs('vehicles.*') ? 'active' : '' }}">
+                                <a href="javascript:void(0);"
+                                    class="sidebar__menu-item {{ request()->routeIs('vehicles.*') ? 'active' : '' }}">
+                                    <div class="side-menu__icon"><i class="fa-sharp fa-regular fa-right-left"></i></div>
+                                    <span class="sidebar__menu-label">Vehicles</span>
+                                    <i class="fa-regular fa-angle-down side-menu__angle"></i>
+                                </a>
+                                <ul class="sidebar-menu child1 {{ request()->routeIs('vehicles.*') ? 'active' : '' }}">
+                                    @can('create vehicles')
+                                        <li class="slide {{ Request::routeIs('vehicles.create') ? 'active' : '' }}">
+                                            <a href="{{ route('vehicles.create') }}"
+                                                class="sidebar__menu-item {{ Request::routeIs('vehicles.create') ? 'active' : '' }}">Add
+                                                Vehicles</a>
+                                        </li>
+                                    @endcan
+                                    <li class="slide {{ Request::routeIs('vehicles.index') ? 'active' : '' }}">
+                                        <a href="{{ route('vehicles.index') }}"
+                                            class="sidebar__menu-item {{ Request::routeIs('vehicles.index') ? 'active' : '' }}">Vehicles</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        @endcan
                     </ul>
                     <div class="sidebar-right" id="sidebar-right"></div>
                 </nav>

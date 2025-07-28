@@ -27,15 +27,14 @@ class UserController extends Controller
     {
         $data = User::orderBy('id', 'desc');
 
-        if (Auth::user()->getRole() == 'agent') {
-            $data = $data->role('customer');
-        }
-        if (Auth::user()->hasPermissionTo('user')) {
+        if (Auth::user()->hasPermissionTo('user') && Auth::user()->getRole() == 'admin') {
             $data = $data
                 ->where('id', '!=', Auth::id())
                 ->whereDoesntHave('roles', function ($query) {
-        $query->where('name', 'admin');
-    });
+                    $query->where('name', 'admin');
+                });
+        } else if (Auth::user()->hasPermissionTo('show all customer')) {
+            $data = $data->role('customer');
         } else if (Auth::user()->hasPermissionTo('assigned customer')) {
             $data = $data->where('created_by', Auth::user()->id);
         }
@@ -118,6 +117,7 @@ class UserController extends Controller
 
         $permission = Permission::get();
         $userPermissions = $data->getAllPermissions()->pluck('name')->toArray();
+        
         return view('user.edit', compact('data', 'roles', 'permission', 'userPermissions'));
     }
 

@@ -21,7 +21,7 @@ class ModelsController extends Controller
      */
     public function index()
     {
-        $data = Models::where('status', 0)->orderBy('id', 'desc')->get();
+        $data = Models::where('status', 1)->orderBy('id', 'desc')->get();
         return view('model.index', compact('data'));
     }
 
@@ -85,7 +85,7 @@ class ModelsController extends Controller
     public function destroy($id)
     {
         $data = Models::find($id);
-        $data->status = 1;
+        $data->status = 0;
         $data->save();
         return redirect()->back()->with('success', 'Model Deleted Successfully');
     }

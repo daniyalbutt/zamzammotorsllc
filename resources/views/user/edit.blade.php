@@ -64,23 +64,25 @@
                                         <input type="text" class="form-control" name="password">
                                     </div>
                                 </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-										<ul class="permission-list">
+                                @if (Auth::user()->getRole() == 'admin')
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <ul class="permission-list">
 
-											@foreach ($permission as $key => $value)
-												<li>
-													<input class="form-check-input" name="permission[]"
-														value="{{ $value->name }}" type="checkbox"
-														id="basic_checkbox_{{ $key }}"
-														{{ in_array($value->name, $userPermissions) ? 'checked' : '' }} />
-													<label
-														for="basic_checkbox_{{ $key }}">{{ $value->name }}</label>
-												</li>
-											@endforeach
-										</ul>
+                                                @foreach ($permission as $key => $value)
+                                                    <li>
+                                                        <input class="form-check-input" name="permission[]"
+                                                            value="{{ $value->name }}" type="checkbox"
+                                                            id="basic_checkbox_{{ $key }}"
+                                                            {{ in_array($value->name, $userPermissions) ? 'checked' : '' }} />
+                                                        <label
+                                                            for="basic_checkbox_{{ $key }}">{{ $value->name }}</label>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
                                     </div>
-                                </div>
+                                @endif
                                 <div class="col-12">
                                     <button type="submit" class="btn btn-primary">Update User</button>
                                 </div>
