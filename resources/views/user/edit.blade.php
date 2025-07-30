@@ -21,15 +21,17 @@
                     </div>
 
                     @role('sales manager')
-                        <div class="col-md-3">
-                            <select name="assigned" id="assigned" class="form-control user-select select2">
-                                <option value="Not Assign">Not Assigned to Any Agent</option>
-                                @foreach ($users->get() as $item)
-                                    <option value="{{ $item->id }}">{{ $item->name }} -- {{ $item->email }}</option>
-                                @endforeach
+                        @if ($data->hasRole('customer'))
+                            <div class="col-md-3">
+                                <select name="assigned" id="assigned" class="form-control user-select select2">
+                                    <option value="Not Assign">Not Assigned to Any Agent</option>
+                                    @foreach ($users->get() as $item)
+                                        <option value="{{ $item->id }}">{{ $item->name }} -- {{ $item->email }}</option>
+                                    @endforeach
 
-                            </select>
-                        </div>
+                                </select>
+                            </div>
+                        @endif
                     @endrole
                 </div>
                 <form class="form" method="post" id="main-form" action="{{ route('users.update', $data->id) }}">
@@ -114,7 +116,7 @@
     <script>
         $('#main-form').submit(function(e) {
             e.preventDefault();
-            
+
 
             let form = document.getElementById('main-form');
             let formData = new FormData(form);
@@ -132,7 +134,7 @@
                 },
                 processData: false,
                 contentType: false,
-                data: formData,     
+                data: formData,
                 success: function(res) {
                     alert('Vehicle saved successfully!');
                     window.location.href = "{{ route('vehicles.index') }}";

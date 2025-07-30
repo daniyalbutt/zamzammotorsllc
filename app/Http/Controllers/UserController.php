@@ -28,8 +28,11 @@ class UserController extends Controller
     {
 
         $query = User::orderBy('id', 'desc');
-
-        // Admin with user permission - exclude themselves and other admins
+        if (Auth::user()->hasRole('agent')) {
+            $query->whereHas('assignedAgent', function ($q) {
+                $q->where('agent_id', Auth::id());
+            });
+        }
         if (Auth::user()->hasPermissionTo('user') && Auth::user()->getRole() == 'admin') {
             $query->where('id', '!=', Auth::id())
                 ->whereDoesntHave('roles', fn($q) => $q->where('name', 'admin'));
@@ -54,6 +57,8 @@ class UserController extends Controller
         if (Auth::user()->hasPermissionTo('show assigned agent')) {
             $query->orWhereHas('roles', fn($q) => $q->where('name', 'agent'))->where('created_by', Auth::id());
         }
+
+
 
         // Search filters
         if ($request->name) {
@@ -142,7 +147,7 @@ class UserController extends Controller
         $permission = Permission::get();
         $userPermissions = $data->getAllPermissions()->pluck('name')->toArray();
 
-        $users = null;
+        $users = null;                     
         if (Auth::user()->hasRole('sales manager')) {
             $users = User::orderBy('id', 'desc');
 
@@ -181,8 +186,8 @@ class UserController extends Controller
         $data->syncPermissions($request->permission);
         if ($request->has('assigned')) {
             if ($request->assigned == 'Not Assign') {
-                DB::table('assigned_agents')->where('customer_id' , $data->id)->delete();
-            }else{
+                DB::table('assigned_agents')->where('customer_id', $data->id)->delete();
+            } else {
                 DB::table('assigned_agents')->updateOrInsert(
                     ['agent_id' => $request->assigned],
                     ['sales_manager_id' => Auth::id(), 'customer_id' => $data->id]

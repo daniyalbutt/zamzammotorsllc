@@ -24,7 +24,7 @@
                 <div class="card__wrapper">
                     <div class="authentication-top text-center mb-20">
                         <a href="javascript:;" class="authentication-logo logo-black">
-                            <img src="assets/images/logo/logo.svg" alt="logo">
+                            <img src="{{asset('img/logo.png')}}" alt="logo">
                         </a>
                         <a href="javascript:;" class="authentication-logo logo-white">
                             <img src="{{ asset('img/logo.png') }}" alt="logo">

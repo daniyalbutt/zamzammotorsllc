@@ -61,5 +61,18 @@ class User extends Authenticatable
         return $this->belongsToMany(Vehicle::class, 'assigned_vehicles', 'user_id', 'vehicle_id');
     }
 
-   
+    public function assignedCustomer()
+    {
+        return $this->belongsToMany(User::class, 'assigned_agents', 'agent_id', 'customer_id');
+    }
+
+    public function assignedAgent()
+    {
+        return $this->belongsToMany(User::class, 'assigned_agents', 'customer_id', 'agent_id')->limit(1);
+    }
+
+    public function getAssignedAgentAttribute()
+    {
+        return $this->belongsToMany(User::class, 'assigned_agents', 'customer_id', 'agent_id')->first();
+    }
 }

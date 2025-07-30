@@ -188,7 +188,9 @@ class VehicleController extends Controller
             if (Auth::user()->hasPermissionTo('show all customer')) {
                 $users = $users->role('customer');
             } else if (Auth::user()->hasPermissionTo('assigned customer')) {
-                $users = $users->where('created_by', Auth::user()->id);
+                $users = $users->whereHas('assignedAgent', function ($q) {
+                    $q->where('agent_id', Auth::id());
+                });
             }
         }
         return view('vehicle.create', compact('data', 'make', 'model', 'body_type', 'users'));

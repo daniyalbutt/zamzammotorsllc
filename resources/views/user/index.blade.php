@@ -41,10 +41,20 @@
                                 <td>#{{ $value->id }}</td>
                                 <td>{{ $value->name }}</td>
                                 <td>{{ $value->email }}</td>
-                                <td><span
+                                <td>
+
+                                    <span
                                         class="badge text-sm fw-semibold rounded-pill bg-danger px-20 py-9 radius-4 text-white badge-sm">{{ $value->getRole() }}</span></span>
+
+                                    @if ($value->getRole() == 'customer')
+                                        @if ($value->assignedAgent()->exists())
+                                            <span
+                                                class="badge text-sm fw-semibold rounded-pill bg-success px-20 py-9 radius-4 text-white badge-sm">Assigned
+                                                to {{ $value->assignedAgent->name }}</span></span>
+                                        @endif
+                                    @endif
                                 </td>
-                                <td>{{ $value->createdByUser ? $value->createdByUser->name : 'N/A'}}</td>
+                                <td>{{ $value->createdByUser ? $value->createdByUser->name : 'N/A' }}</td>
                                 <td>
                                     <div class="d-flex align-items-center justify-content-start gap-10">
                                         @can('edit user')
