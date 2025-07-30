@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\{Role, Permission};
 use Hash;
-use Auth;
+use Auth, DB;
 
 class UserController extends Controller
 {
@@ -17,37 +17,54 @@ class UserController extends Controller
      */
     function __construct()
     {
-        $this->middleware('permission:user|create user|edit user|delete user', ['only' => ['index', 'show']]);
-        $this->middleware('permission:create user', ['only' => ['create', 'store']]);
-        $this->middleware('permission:edit user', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:delete user', ['only' => ['destroy']]);
+        // $this->middleware('permission:user|create user|edit user|delete user', ['only' => ['index', 'show']]);
+        // $this->middleware('permission:create user', ['only' => ['create', 'store']]);
+        // $this->middleware('permission:edit user', ['only' => ['edit', 'update']]);
+        // $this->middleware('permission:delete user', ['only' => ['destroy']]);
+        // $this->middleware('permission:users');
     }
 
     public function index(Request $request)
     {
-        $data = User::orderBy('id', 'desc');
 
+        $query = User::orderBy('id', 'desc');
+
+        // Admin with user permission - exclude themselves and other admins
         if (Auth::user()->hasPermissionTo('user') && Auth::user()->getRole() == 'admin') {
-            $data = $data
-                ->where('id', '!=', Auth::id())
-                ->whereDoesntHave('roles', function ($query) {
-                    $query->where('name', 'admin');
-                });
-        } else if (Auth::user()->hasPermissionTo('show all customer')) {
-            $data = $data->role('customer');
-        } else if (Auth::user()->hasPermissionTo('assigned customer')) {
-            $data = $data->where('created_by', Auth::user()->id);
+            $query->where('id', '!=', Auth::id())
+                ->whereDoesntHave('roles', fn($q) => $q->where('name', 'admin'));
         }
 
-        if ($request->name != null) {
-            $user_name = $request->name;
-            $data = $data->where('name', 'like', '%' . $user_name . '%');
+        // Show all customers
+        if (Auth::user()->hasPermissionTo('show all customer')) {
+            $query->orWhereHas('roles', fn($q) => $q->where('name', 'customer'));
         }
-        if ($request->email != null) {
-            $user_email = $request->email;
-            $data = $data->where('email', 'like', '%' . $user_email . '%');
+        if (Auth::user()->hasPermissionTo('show all agent')) {
+            $query->orWhereHas('roles', fn($q) => $q->where('name', 'agent'));
         }
-        $data = $data->get();
+
+
+        // Show assigned customers (additional condition)
+        if (Auth::user()->hasPermissionTo('show assigned customer')) {
+
+            $query->orWhereHas('roles', fn($q) => $q->where('name', 'customer'))->where('created_by', Auth::id());
+        }
+
+        // Show assigned agents
+        if (Auth::user()->hasPermissionTo('show assigned agent')) {
+            $query->orWhereHas('roles', fn($q) => $q->where('name', 'agent'))->where('created_by', Auth::id());
+        }
+
+        // Search filters
+        if ($request->name) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        if ($request->email) {
+            $query->where('email', 'like', '%' . $request->email . '%');
+        }
+
+        $data = $query->get();
         return view('user.index', compact('data'));
     }
 
@@ -58,11 +75,16 @@ class UserController extends Controller
      */
     public function create()
     {
-        if (Auth::user()->getRole() == 'agent') {
-            $roles = Role::where('name', 'customer')->get();
-        } else {
-            $roles = Role::all();
+        $roles = Role::orderBy('id', 'desc');
+        if (Auth::user()->hasPermissionTo('create edit assigned customer')) {
+            $roles = $roles->orWhere('name', 'customer');
         }
+        if (Auth::user()->hasPermissionTo('create edit assigned agent')) {
+
+            $roles = $roles->orWhere('name', 'agent');
+        }
+        $roles = $roles->get();
+
 
 
         return view('user.create', compact('roles'));
@@ -115,10 +137,23 @@ class UserController extends Controller
         $data = User::find($id);
         $roles = Role::all();
 
+
+
         $permission = Permission::get();
         $userPermissions = $data->getAllPermissions()->pluck('name')->toArray();
-        
-        return view('user.edit', compact('data', 'roles', 'permission', 'userPermissions'));
+
+        $users = null;
+        if (Auth::user()->hasRole('sales manager')) {
+            $users = User::orderBy('id', 'desc');
+
+            if (Auth::user()->hasPermissionTo('show all agent')) {
+                $users = $users->orWhereHas('roles', fn($q) => $q->where('name', 'agent'));
+            } else if (Auth::user()->hasPermissionTo('show assigned agent')) {
+                $users = $users->orWhereHas('roles', fn($q) => $q->where('name', 'agent'))->where('created_by', Auth::id());
+            }
+        }
+
+        return view('user.edit', compact('data', 'roles', 'permission', 'userPermissions', 'users'));
     }
 
     /**
@@ -144,6 +179,16 @@ class UserController extends Controller
         $data->save();
         $data->syncRoles($request->role);
         $data->syncPermissions($request->permission);
+        if ($request->has('assigned')) {
+            if ($request->assigned == 'Not Assign') {
+                DB::table('assigned_agents')->where('customer_id' , $data->id)->delete();
+            }else{
+                DB::table('assigned_agents')->updateOrInsert(
+                    ['agent_id' => $request->assigned],
+                    ['sales_manager_id' => Auth::id(), 'customer_id' => $data->id]
+                );
+            }
+        }
         return redirect()->back()->with('success', 'User Updated Successfully');
     }
 

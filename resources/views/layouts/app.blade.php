@@ -64,7 +64,7 @@
                                     <li class="slide {{ Request::routeIs('roles.index') ? 'active' : '' }}">
                                         <a href="{{ route('roles.index') }}"
                                             class="sidebar__menu-item {{ Request::routeIs('roles.index') ? 'active' : '' }}">Role
-                                            List</a>
+                                            List</a>    
                                     </li>
                                 </ul>
                             </li>
@@ -78,13 +78,13 @@
                                     <i class="fa-regular fa-angle-down side-menu__angle"></i>
                                 </a>
                                 <ul class="sidebar-menu child1 {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                                    @can('create user')
+                                    @canany(['create user', 'create edit assigned customer','create edit assigned agent','create edit all customer','create edit all agent'])
                                         <li class="slide {{ Request::routeIs('users.create') ? 'active' : '' }}">
                                             <a href="{{ route('users.create') }}"
                                                 class="sidebar__menu-item {{ Request::routeIs('users.create') ? 'active' : '' }}">Add
                                                 User</a>
                                         </li>
-                                    @endcan
+                                    @endcanany
                                     <li class="slide {{ Request::routeIs('users.index') ? 'active' : '' }}">
                                         <a href="{{ route('users.index') }}"
                                             class="sidebar__menu-item {{ Request::routeIs('users.index') ? 'active' : '' }}">User

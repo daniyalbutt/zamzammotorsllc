@@ -20,14 +20,17 @@ class VehicleController extends Controller
     public function index()
     {
         $shouldFilterByUser = Auth::user()->getRole() === 'agent' && !Auth::user()->hasPermissionTo('show all vehicles');
-
         $data = Vehicle::where('status', 1)
             ->when($shouldFilterByUser, function ($query) {
                 $query->where('user_id', Auth::id());
             })
+            ->when(Auth::user()->hasPermissionTo('assigned vehicles'), function ($query) {
+                $query->whereHas('assigned_users', function ($q) {
+                    $q->where('user_id', Auth::id());
+                });
+            })
             ->orderBy('id', 'desc')
             ->get();
-
 
         return view('vehicle.index', compact('data'));
     }
@@ -164,9 +167,10 @@ class VehicleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Vehicle $vehicle)
+    public function show(string $id)
     {
-        //
+        $data = Vehicle::find($id);
+        return view('vehicle.show', compact('data'));
     }
 
     /**
@@ -187,7 +191,7 @@ class VehicleController extends Controller
                 $users = $users->where('created_by', Auth::user()->id);
             }
         }
-        return view('vehicle.create', compact('data', 'make', 'model', 'body_type','users'));
+        return view('vehicle.create', compact('data', 'make', 'model', 'body_type', 'users'));
     }
 
     /**
@@ -222,10 +226,6 @@ class VehicleController extends Controller
 
             // Find the vehicle
             $vehicle = Vehicle::findOrFail($id);
-
-            // Update vehicle data
-
-
 
             $vehicle->make_id = $request->make_id;
             $vehicle->model_id = $request->model_id;
@@ -295,8 +295,15 @@ class VehicleController extends Controller
             $vehicle->save();
 
             if ($request->has('assigned')) {
-                
+                if ($request->assigned == 'Not Assign') {
+                    if ($vehicle->assigned_users()->exists()) {
+                        $vehicle->assigned_users()->detach();
+                    }
+                } else {
+                    $vehicle->assigned_users()->sync([$request->assigned]);
+                }
             }
+
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true,

@@ -46,7 +46,8 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function getRole(){
+    public function getRole()
+    {
         return $this->getRoleNames()->first();
     }
 
@@ -54,4 +55,11 @@ class User extends Authenticatable
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function vehicles()
+    {
+        return $this->belongsToMany(Vehicle::class, 'assigned_vehicles', 'user_id', 'vehicle_id');
+    }
+
+   
 }

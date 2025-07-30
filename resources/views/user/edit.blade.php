@@ -15,10 +15,24 @@
     <div class="row">
         <div class="col-xxl-12 col-xl-12 col-lg-12">
             <div class="card__wrapper">
-                <div class="card__title-wrap mb-20">
-                    <h5 class="card__heading-title">Edit User Form</h5>
+                <div class="card__title-wrap mb-20 row">
+                    <div class="col-md-9">
+                        <h5 class="card__heading-title">User Form</h5>
+                    </div>
+
+                    @role('sales manager')
+                        <div class="col-md-3">
+                            <select name="assigned" id="assigned" class="form-control user-select select2">
+                                <option value="Not Assign">Not Assigned to Any Agent</option>
+                                @foreach ($users->get() as $item)
+                                    <option value="{{ $item->id }}">{{ $item->name }} -- {{ $item->email }}</option>
+                                @endforeach
+
+                            </select>
+                        </div>
+                    @endrole
                 </div>
-                <form class="form" method="post" action="{{ route('users.update', $data->id) }}">
+                <form class="form" method="post" id="main-form" action="{{ route('users.update', $data->id) }}">
                     <div class="row gx-0 g-20 gy-20 align-items-center justify-content-center">
                         @csrf
                         @method('PUT')
@@ -96,5 +110,38 @@
     </div>
 @endsection
 
-@push('scripts')
+@push('js')
+    <script>
+        $('#main-form').submit(function(e) {
+            e.preventDefault();
+            
+
+            let form = document.getElementById('main-form');
+            let formData = new FormData(form);
+
+            let assignedValue = $('#assigned').find(':selected').val();
+            if (assignedValue) {
+                formData.append('assigned', assignedValue);
+            }
+
+            $.ajax({
+                url: form.action,
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                processData: false,
+                contentType: false,
+                data: formData,     
+                success: function(res) {
+                    alert('Vehicle saved successfully!');
+                    window.location.href = "{{ route('vehicles.index') }}";
+                },
+                error: function(xhr) {
+                    alert('Something went wrong');
+                    console.log(xhr.responseText);
+                }
+            });
+        })
+    </script>
 @endpush

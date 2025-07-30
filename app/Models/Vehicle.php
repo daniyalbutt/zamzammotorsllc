@@ -96,4 +96,19 @@ class Vehicle extends Model
     {
         return $this->image_paths ? count($this->image_paths) : 0;
     }
+
+    public function assigned_users()
+    {
+        return $this->belongsToMany(User::class, 'assigned_vehicles', 'vehicle_id', 'user_id');
+    }
+
+    public function assigned()
+    {
+        if ( $this->assigned_users->isNotEmpty()) {
+            $name = $this->assigned_users->first()->name;
+            return '<span class="badge bg-success" data-toggle="tooltip" data-placement="bottom" title="' . $name . '">Assigned</span>';
+        } else {
+            return '<span class="badge bg-danger" data-toggle="tooltip" data-placement="bottom" title="Tooltip on top">Not Assigned</span>';
+        }
+    }
 }

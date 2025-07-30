@@ -32,7 +32,7 @@
                             <th>Body Type</th>
                             <th>Make</th>
                             <th>Condition</th>
-                            <th>Transmission</th>
+                            <th>Assigned To</th>
                             <th>Created By</th>
                             <th>Action</th>
                         </tr>
@@ -45,7 +45,7 @@
                                 <td>{{ $item->bodyType?->name ?? 'No Body Type' }}</td>
                                 <td>{{ $item->make?->name ?? 'No Make' }}</td>
                                 <td>{{ $item->condition }}</td>
-                                <td>{{ $item->transmission }}</td>
+                                <td>{!! $item->assigned() !!}</td>
                                 <td>{{ $item->created_at->format('d F Y h:i A') }}</td>
                                 <td>
                                     <div class="d-flex align-items-center justify-content-start gap-10">
@@ -63,6 +63,9 @@
                                                 </button>
                                             </form>
                                         @endcan
+                                        <a href="{{ route('vehicles.show', $item->id) }}" class="table__icon edit">
+                                                <i class="fa-sharp fa-light fa-eye"></i>
+                                            </a>
                                     </div>
                                 </td>
                             </tr>

@@ -23,9 +23,12 @@
                         @if ($data)
                             <div class="col-md-3">
                                 <select name="assigned" id="assigned" class="form-control user-select select2">
-                                    <option value="" hidden>Assigned Customer</option>
+                                    <option value="Not Assign">Not Assigned Customer</option>
                                     @foreach ($users->get() as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }} -- {{$item->email}}</option>
+                                        <option value="{{ $item->id }}"
+                                            {{ $data->assigned_users->contains($item->id) ? 'selected' : '' }}>
+                                            {{ $item->name }} -- {{ $item->email }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -422,19 +425,31 @@
                 let form = document.getElementById('main-form');
                 let formData = new FormData(form);
 
+                // Add Dropzone files to FormData
                 myDropzone.getAcceptedFiles().forEach((file) => {
                     formData.append('images[]', file);
                 });
 
+                // Add assigned user if it exists
+                let assignedValue = $('#assigned').find(':selected').val();
+                if (assignedValue) {
+                    formData.append('assigned', assignedValue);
+                }
+
+                // For Laravel resource controllers, updates should use PUT
+                if (form.action.includes('update')) {
+                    formData.append('_method', 'PUT');
+                }
+
                 $.ajax({
                     url: form.action,
-                    method: form.method,
+                    method: 'POST', // Always use POST for FormData
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    processData: false,
-                    contentType: false,
-                    data: formData,
+                    processData: false, // Required for FormData
+                    contentType: false, // Required for FormData
+                    data: formData, // Use FormData directly
                     success: function(res) {
                         alert('Vehicle saved successfully!');
                         window.location.href = "{{ route('vehicles.index') }}";
@@ -445,7 +460,6 @@
                     }
                 });
             });
-
             // Remove existing image
             $('.remove-existing-image').click(function(e) {
                 e.preventDefault();
