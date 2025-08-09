@@ -43,11 +43,11 @@
                                 <a href="{{ route('roles.edit', $value->id) }}" class="table__icon edit"><i class="fa-sharp fa-light fa-pen"></i></a>
                                 @endcan
                                 @can('delete role')
-                                <form action="{{ route('roles.destroy', $value->id) }}" method="post">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="removeBtn table__icon delete"><i class="fa-regular fa-trash"></i></button>
-                                </form>
+                                    <form action="{{ route('roles.destroy', $value->id) }}" method="post">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="removeBtn table__icon delete"><i class="fa-regular fa-trash"></i></button>
+                                    </form>
                                 @endcan
                             </div>
                         </td>

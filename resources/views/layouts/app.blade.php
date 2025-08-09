@@ -197,6 +197,9 @@
                                 </ul>
                             </li>
                         @endcan
+                        @role('hr')
+                            <x:hr-sidebar />
+                        @endrole
                     </ul>
                     <div class="sidebar-right" id="sidebar-right"></div>
                 </nav>
