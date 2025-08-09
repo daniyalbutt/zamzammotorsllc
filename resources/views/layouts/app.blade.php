@@ -200,6 +200,10 @@
                         @role('hr')
                             <x:hr-sidebar />
                         @endrole
+                        @role('employee')
+                            <x:employee-sidebar />
+                        @endrole
+
                     </ul>
                     <div class="sidebar-right" id="sidebar-right"></div>
                 </nav>
