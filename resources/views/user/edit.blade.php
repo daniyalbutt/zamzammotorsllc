@@ -137,7 +137,6 @@
                 data: formData,
                 success: function(res) {
                     alert('Vehicle saved successfully!');
-                    window.location.href = "{{ route('vehicles.index') }}";
                 },
                 error: function(xhr) {
                     alert('Something went wrong');

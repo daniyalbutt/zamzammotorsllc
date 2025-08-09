@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -34,4 +35,10 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('vehicles', VehicleController::class);
     Route::post('vehicles/remove-image', [VehicleController::class, 'removeImage'])->name('vehicles.remove-image');
     Route::post('vehicles/upload-image', [VehicleController::class, 'removeImage'])->name('vehicles.upload-image');
+
+    Route::middleware(['role:employee'])
+        ->as('attendance.')
+        ->group(function () {
+            Route::post('/timein', [AttendanceController::class, 'timeIn'])->name('timeIn');
+        });
 });

@@ -45,3 +45,13 @@ button.remove-existing-image {
 .user-select {
     width: auto !important;
 }
+
+ul.attendance-list li {
+    padding: 14px 0;
+    border-top: 1px solid;
+    border-color: #c9ccdf;
+}
+ul.attendance-list li {
+    display: flex;
+    justify-content: space-between;
+}
