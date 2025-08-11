@@ -155,7 +155,6 @@
                         
                         @foreach ($attendance as $day)
                             @php
-                            dump($day);
                                 $joiningDate = strtotime($user->getMeta('date_of_joining'));
                                 $isBeforeJoining = $day['date'] < $joiningDate;
                             @endphp

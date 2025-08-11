@@ -119,9 +119,9 @@ class AttendanceController extends Controller
                 // Show "--" for timeout when not checked out today
                 $data = ['status' => 'today', 'timein' => $perdayattendance->time_in, 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'day' => $day, 'name' => 'Today'];
             } elseif ($perdayattendance->totalhours >= 16200 && $perdayattendance->totalhours <= 21600) {
-                $data = ['status' => 'halfday', 'timein' => $perdayattendance->time_in, 'timeout' => $perdayattendance->time_out, 'totalhours' => $perdayattendance->totalhours, 'date' => $i, 'day' => $day, 'name' => 'Half Day'];
+                $data = ['status' => 'halfday', 'timein' => $perdayattendance->time_in, 'timeout' => $perdayattendance->time_out ?? '-', 'totalhours' => $perdayattendance->totalhours ?? '-', 'date' => $i, 'day' => $day, 'name' => 'Half Day'];
             } elseif ($perdayattendance->totalhours < 16200 && $perdayattendance->totalhours != null) {
-                $data = ['status' => 'nohalfday', 'timein' => $perdayattendance->time_in, 'timeout' => $perdayattendance->time_out, 'totalhours' => $perdayattendance->totalhours, 'date' => $i, 'day' => $day, 'name' => 'Less than Half Day (Absent)'];
+                $data = ['status' => 'nohalfday', 'timein' => $perdayattendance->time_in, 'timeout' => $perdayattendance->time_out ?? '-', 'totalhours' => $perdayattendance->totalhours ?? '-', 'date' => $i, 'day' => $day, 'name' => 'Less than Half Day (Absent)'];
             } elseif ($perdayattendance->time_out == null && $perdayattendance->time_in != null) {
                 // Show "--" for timeout when not checked out, regardless of time elapsed
                 $data = ['status' => 'active', 'timein' => $perdayattendance->time_in, 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'day' => $day, 'name' => 'Active'];
