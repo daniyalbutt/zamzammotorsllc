@@ -1,22 +1,11 @@
 @php
     use Carbon\Carbon;
 
-    // Get user's current shift window
-$shiftWindow = Auth::user()->getCurrentShiftWindow();
-
-if ($shiftWindow) {
-    // Get the appropriate attendance date (handles night shifts)
-    $attendanceDate = Auth::user()->getAttendanceDate();
-
-    // Get latest attendance for the appropriate date
-    $attendance = App\Models\Attendance::where('user_id', Auth::id())
-        ->where('date', $attendanceDate)
-        ->latest()
-        ->first();
-} else {
-    // If no shift assigned, just check today's attendance
+    // Always try to get the user's current active attendance first (works across midnight)
     $attendance = Auth::user()->getCurrentAttendance();
-}
+
+    // Also compute shift window for display info
+    $shiftWindow = Auth::user()->getCurrentShiftWindow();
 @endphp
 
 <div class="col-xxl-6 col-xl-12 col-lg-12 float-right">

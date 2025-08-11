@@ -29,7 +29,6 @@ class AttendanceController extends Controller
             ->where('date', $date)
             ->whereNull('time_out')
             ->first();
-            
         if ($existingAttendance) {
             return redirect()->back()->with('error', 'You are already checked in for this date!');
         }
@@ -101,6 +100,8 @@ class AttendanceController extends Controller
             $perdayattendance = Attendance::where([['user_id', '=', $userid], ['date', '=', $i]])->first();
             
             $day = date('l', $i);
+
+           
             
             if ($perdayattendance == null) {
                 if ($i > strtotime(date('d-M-Y'))) {
@@ -115,13 +116,15 @@ class AttendanceController extends Controller
                     }
                 }
             } elseif ($perdayattendance->date == strtotime(date('d-M-Y')) && $perdayattendance->time_out == null) {
+                // Show "--" for timeout when not checked out today
                 $data = ['status' => 'today', 'timein' => $perdayattendance->time_in, 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'day' => $day, 'name' => 'Today'];
             } elseif ($perdayattendance->totalhours >= 16200 && $perdayattendance->totalhours <= 21600) {
                 $data = ['status' => 'halfday', 'timein' => $perdayattendance->time_in, 'timeout' => $perdayattendance->time_out, 'totalhours' => $perdayattendance->totalhours, 'date' => $i, 'day' => $day, 'name' => 'Half Day'];
             } elseif ($perdayattendance->totalhours < 16200 && $perdayattendance->totalhours != null) {
                 $data = ['status' => 'nohalfday', 'timein' => $perdayattendance->time_in, 'timeout' => $perdayattendance->time_out, 'totalhours' => $perdayattendance->totalhours, 'date' => $i, 'day' => $day, 'name' => 'Less than Half Day (Absent)'];
             } elseif ($perdayattendance->time_out == null && $perdayattendance->time_in != null) {
-                $data = ['status' => 'forgettotimeout', 'timein' => $perdayattendance->time_in, 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'day' => $day, 'name' => 'Forgot to Timeout'];
+                // Show "--" for timeout when not checked out, regardless of time elapsed
+                $data = ['status' => 'active', 'timein' => $perdayattendance->time_in, 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'day' => $day, 'name' => 'Active'];
             } else {
                 $data = ['status' => 'present', 'timein' => $perdayattendance->time_in, 'timeout' => $perdayattendance->time_out, 'totalhours' => $perdayattendance->totalhours, 'date' => $i, 'day' => $day, 'name' => 'Present'];
                 
@@ -141,6 +144,9 @@ class AttendanceController extends Controller
                         }
                     }
                 }
+            }
+             if (strtotime(date('d-M-Y')) == 1754852400) {
+                dd($data);
             }
             
             array_push($attendance, $data);

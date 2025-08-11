@@ -152,8 +152,10 @@
                         </tr>
                     </thead>
                     <tbody>
+                        
                         @foreach ($attendance as $day)
                             @php
+                            dump($day);
                                 $joiningDate = strtotime($user->getMeta('date_of_joining'));
                                 $isBeforeJoining = $day['date'] < $joiningDate;
                             @endphp
@@ -165,7 +167,7 @@
                                 <td>
                                     @if ($isBeforeJoining)
                                         <span class="text-muted">---</span>
-                                    @elseif ($day['timein'] == '-')
+                                    @elseif ($day['timein'] == '-' || $day['timein'] == null)
                                         <span class="text-muted">---</span>
                                     @else
                                         <span class="badge bg-secondary">{{ date('h:i A', $day['timein']) }}</span>
@@ -174,7 +176,7 @@
                                 <td>
                                     @if ($isBeforeJoining)
                                         <span class="text-muted">---</span>
-                                    @elseif ($day['timeout'] == '-')
+                                    @elseif ($day['timeout'] == '-' || $day['timeout'] == null)
                                         <span class="text-muted">---</span>
                                     @else
                                         <span class="badge bg-secondary">{{ date('h:i A', $day['timeout']) }}</span>
@@ -183,7 +185,7 @@
                                 <td>
                                     @if ($isBeforeJoining)
                                         <span class="text-muted">---</span>
-                                    @elseif ($day['totalhours'] == '-')
+                                    @elseif ($day['totalhours'] == '-' || $day['totalhours'] == null)
                                         <span class="text-muted">---</span>
                                     @else
                                         <span class="badge bg-info">{{ gmdate('H:i', $day['totalhours']) }}</span>
@@ -203,6 +205,7 @@
                                                 'today' => 'bg-secondary',
                                                 'weekend' => 'bg-info',
                                                 'future' => 'bg-light text-dark',
+                                                'active' => 'bg-primary',
                                                 'forgettotimeout' => 'bg-warning',
                                                 'nohalfday' => 'bg-danger'
                                             ];

@@ -179,16 +179,55 @@ class User extends Authenticatable
      */
     public function getCurrentAttendance()
     {
-        $shiftWindow = $this->getCurrentShiftWindow();
-        if (!$shiftWindow) {
-            $date = strtotime(date('Y-m-d'));
-        } else {
-            $date = $this->getAttendanceDate();
+        // 1) If there is any open attendance (time_out is null), return it
+        //    but ONLY if we are not past "shift end + 3 hours" for that attendance date
+        $openAttendance = Attendance::where('user_id', $this->id)
+            ->whereNull('time_out')
+            ->latest('time_in')
+            ->first();
+
+        if ($openAttendance) {
+            $shift = $this->shiftTiming();
+            if ($shift) {
+                $attendanceDate = \Carbon\Carbon::createFromTimestamp($openAttendance->date)->startOfDay();
+                // Build shift window for the recorded attendance date
+                $shiftStart = $attendanceDate->copy()->setTimeFrom($shift->start_time);
+                $shiftEnd = $attendanceDate->copy()->setTimeFrom($shift->end_time);
+                if ($shiftEnd->lessThan($shiftStart)) {
+                    $shiftEnd->addDay(); // night shift crosses midnight
+                }
+
+                $graceCutoff = $shiftEnd->copy()->addHours(3);
+                if (now()->lessThanOrEqualTo($graceCutoff)) {
+                    return $openAttendance; // Still within grace window → allow Check Out
+                }
+                // Past grace window → treat as "forgot to timeout"; do not return as active
+            } else {
+                // No shift assigned: apply a conservative grace period based on calendar day
+                $attendanceDate = \Carbon\Carbon::createFromTimestamp($openAttendance->date)->startOfDay();
+                $graceCutoff = $attendanceDate->copy()->addDay()->addHours(3); // end of day + 3h
+                if (now()->lessThanOrEqualTo($graceCutoff)) {
+                    return $openAttendance;
+                }
+                // Else, beyond grace → treat as forgotten
+            }
         }
-        
+
+        // 2) Otherwise, derive the appropriate attendance date and attempt to fetch today's record
+        $shiftWindow = $this->getCurrentShiftWindow();
+        if ($shiftWindow) {
+            $date = $this->getAttendanceDate();
+        } else {
+            // Fallback logic when no shift is assigned: early morning belongs to previous day
+            $now = now();
+            $date = ($now->hour >= 0 && $now->hour <= 6)
+                ? $now->copy()->subDay()->startOfDay()->timestamp
+                : $now->copy()->startOfDay()->timestamp;
+        }
+
         return Attendance::where('user_id', $this->id)
             ->where('date', $date)
-            ->whereNull('time_out')
+            ->latest('time_in')
             ->first();
     }
 }
