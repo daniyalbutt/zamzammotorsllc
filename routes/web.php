@@ -50,6 +50,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/timeout', [AttendanceController::class, 'timeOut'])->name('timeOut');
 
             Route::get('get-attendance/{month?}/{year?}/{userid?}', [AttendanceController::class, 'showAttendance'])->name('show');
+            
 
             // Test route for timezone verification
             Route::get('/test-timezone', function () {
@@ -69,5 +70,6 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('employees', EmployeeController::class);
         Route::resource('departments', DepartmentController::class);
         Route::resource('shifts', ShiftController::class);
+        Route::post('generate-csv',[AttendanceController::class, 'generateCSV'])->name('generate.csv');
     });
 });

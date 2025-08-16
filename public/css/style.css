@@ -63,3 +63,11 @@ li.att-li {
 li.att-li * {
     flex: 0 0 50%;
 }
+
+.attendance-head span.icon-clock {
+    color: #FAC641;
+    font-size: 20px;
+}
+.attendance-head {
+    font-size: 18px;
+}
