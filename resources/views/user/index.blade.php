@@ -45,14 +45,14 @@
 
                                     <span
                                         class="badge text-sm fw-semibold rounded-pill bg-danger px-20 py-9 radius-4 text-white badge-sm">{{ $value->getRole() }}</span></span>
-
                                     @if ($value->getRole() == 'customer')
-                                        @if ($value->assignedAgent()->exists())
-                                            <span
-                                                class="badge text-sm fw-semibold rounded-pill bg-success px-20 py-9 radius-4 text-white badge-sm">Assigned
-                                                to {{ $value->assignedAgent->name }}</span></span>
+                                        @if ($value->assignedCustomer()->exists())
+                                            <span class="badge bg-success">Assigned to
+                                                {{ $value->assignedCustomer->first()->name }}</span>
                                         @endif
                                     @endif
+
+
                                 </td>
                                 <td>{{ $value->createdByUser ? $value->createdByUser->name : 'N/A' }}</td>
                                 <td>

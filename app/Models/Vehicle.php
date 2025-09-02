@@ -104,7 +104,7 @@ class Vehicle extends Model
 
     public function assigned()
     {
-        if ( $this->assigned_users->isNotEmpty()) {
+        if ($this->assigned_users->isNotEmpty()) {
             $name = $this->assigned_users->first()->name;
             return '<span class="badge bg-success" data-toggle="tooltip" data-placement="bottom" title="' . $name . '">Assigned</span>';
         } else {

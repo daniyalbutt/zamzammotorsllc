@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Forum;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\{Auth, DB, Hash};
 use Spatie\Permission\Models\{Role, Permission};
-use Hash;
-use Auth, DB;
 
 class UserController extends Controller
 {
@@ -15,24 +15,11 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    function __construct()
+    public function index()
     {
-        // $this->middleware('permission:user|create user|edit user|delete user', ['only' => ['index', 'show']]);
-        // $this->middleware('permission:create user', ['only' => ['create', 'store']]);
-        // $this->middleware('permission:edit user', ['only' => ['edit', 'update']]);
-        // $this->middleware('permission:delete user', ['only' => ['destroy']]);
-        // $this->middleware('permission:users');
-    }
+        $query = User::query()->orderBy('id', 'desc');
 
-    public function index(Request $request)
-    {
-
-        $query = User::orderBy('id', 'desc');
-        if (Auth::user()->hasRole('agent')) {
-            $query->whereHas('assignedAgent', function ($q) {
-                $q->where('agent_id', Auth::id());
-            });
-        }
+        // Admin with user permission - exclude themselves and other admins
         if (Auth::user()->hasPermissionTo('user') && Auth::user()->getRole() == 'admin') {
             $query->where('id', '!=', Auth::id())
                 ->whereDoesntHave('roles', fn($q) => $q->where('name', 'admin'));
@@ -40,36 +27,36 @@ class UserController extends Controller
 
         // Show all customers
         if (Auth::user()->hasPermissionTo('show all customer')) {
-            $query->orWhereHas('roles', fn($q) => $q->where('name', 'customer'));
-        }
-        if (Auth::user()->hasPermissionTo('show all agent')) {
-            $query->orWhereHas('roles', fn($q) => $q->where('name', 'agent'));
+            $query->whereHas('roles', fn($q) => $q->where('name', 'customer'));
         }
 
+        // Show assigned customers (created by current user) /agent
+        if (Auth::user()->hasPermissionTo('assigned customer')) {
+            $query->orWhereHas('assignedCustomer', fn($q) => $q->where('agent_id', Auth::id()));
+        }
 
-        // Show assigned customers (additional condition)
+        // Show assigned customers (additional condition) /sales manager
         if (Auth::user()->hasPermissionTo('show assigned customer')) {
 
-            $query->orWhereHas('roles', fn($q) => $q->where('name', 'customer'))->where('created_by', Auth::id());
+            $query->orWhere(function ($q) {
+                $q->whereHas('roles', fn($q) => $q->where('name', 'customer'))
+                    ->where('created_by', Auth::id());
+            });
         }
+
+
 
         // Show assigned agents
         if (Auth::user()->hasPermissionTo('show assigned agent')) {
-            $query->orWhereHas('roles', fn($q) => $q->where('name', 'agent'))->where('created_by', Auth::id());
+
+            $query->orWhere(function ($q) {
+                $q->whereHas('roles', fn($q) => $q->where('name', 'agent'))
+                    ->where('created_by', Auth::id());
+            });
         }
 
 
-
-        // Search filters
-        if ($request->name) {
-            $query->where('name', 'like', '%' . $request->name . '%');
-        }
-
-        if ($request->email) {
-            $query->where('email', 'like', '%' . $request->email . '%');
-        }
-
-        $data = $query->get();
+        $data = $query->paginate(10);
         return view('user.index', compact('data'));
     }
 
@@ -80,18 +67,11 @@ class UserController extends Controller
      */
     public function create()
     {
-        $roles = Role::orderBy('id', 'desc');
-        if (Auth::user()->hasPermissionTo('create edit assigned customer')) {
-            $roles = $roles->orWhere('name', 'customer');
+        if (Auth::user()->getRole() == 'sales manager') {
+            $roles = Role::where('name', 'customer')->orWhere('name', 'agent')->get();
+        } else {
+            $roles = Role::where('name', '!=', 'admin')->get();
         }
-        if (Auth::user()->hasPermissionTo('create edit assigned agent')) {
-
-            $roles = $roles->orWhere('name', 'agent');
-        }
-        $roles = $roles->get();
-
-
-
         return view('user.create', compact('roles'));
     }
 
@@ -103,11 +83,11 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $this->validate($request, [
             'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'role' => 'required',
-            'password' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|same:confirm-password',
+            'roles' => 'required'
         ]);
         $data = new User();
         $data->name = $request->name;
@@ -115,102 +95,105 @@ class UserController extends Controller
         $data->password = Hash::make($request->password);
         $data->created_by = Auth::user()->id;
         $data->save();
-        $data->assignRole($request->role);
-        $data->syncPermissions($request->permission);
-        return redirect()->back()->with('success', 'User Created Successfully');
+        $data->assignRole($request->roles);
+
+        return redirect()->route('user.index')->with('success', 'User created successfully');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Client  $client
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(Client $client)
+    public function show(User $user)
     {
-        //
+        return view('user.show', compact('user'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Client  $client
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(User $user)
     {
-        $data = User::find($id);
-        $roles = Role::all();
 
-
-
-        $permission = Permission::get();
-        $userPermissions = $data->getAllPermissions()->pluck('name')->toArray();
-
-        $users = null;                     
+        $roles = Role::where('name', '!=', 'admin')->get();
+        $permission = Permission::all();
+        $userPermissions = $user->getAllPermissions()->pluck('name')->toArray();
+        $agents = null;
         if (Auth::user()->hasRole('sales manager')) {
-            $users = User::orderBy('id', 'desc');
-
-            if (Auth::user()->hasPermissionTo('show all agent')) {
-                $users = $users->orWhereHas('roles', fn($q) => $q->where('name', 'agent'));
-            } else if (Auth::user()->hasPermissionTo('show assigned agent')) {
-                $users = $users->orWhereHas('roles', fn($q) => $q->where('name', 'agent'))->where('created_by', Auth::id());
-            }
+            $agents = User::role('agent')->where('created_by', Auth::id())->get();
         }
-
-        return view('user.edit', compact('data', 'roles', 'permission', 'userPermissions', 'users'));
+        return view('user.edit', compact('user', 'roles', 'permission', 'userPermissions', 'agents'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Client  $client
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        $request->validate([
+        $this->validate($request, [
             'name' => 'required',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'role' => 'required',
+            'email' => 'required|email|unique:users,email,' . $user->id
         ]);
-        $data = User::find($id);
+        $data = $user;
         $data->name = $request->name;
         $data->email = $request->email;
         if ($request->password != null) {
             $data->password = Hash::make($request->password);
         }
         $data->save();
-        $data->syncRoles($request->role);
-        $data->syncPermissions($request->permission);
-        if ($request->has('assigned')) {
-            if ($request->assigned == 'Not Assign') {
-                DB::table('assigned_agents')->where('customer_id', $data->id)->delete();
-            } else {
-                DB::table('assigned_agents')->updateOrInsert(
-                    ['agent_id' => $request->assigned],
-                    ['sales_manager_id' => Auth::id(), 'customer_id' => $data->id]
-                );
-            }
+        if ($request->has('roles')) {
+            $data->syncRoles($request->roles);
         }
-        return redirect()->back()->with('success', 'User Updated Successfully');
+        if ($request->has('assigned')) {
+            DB::table('assigned_agents')->updateOrInsert(
+                ['customer_id' => $data->id],
+                [
+                    'sales_manager_id' => Auth::id(),
+                    'agent_id' => $request->assigned
+                ]
+            );
+            $forum =  Forum::updateOrCreate([
+                'agent_id' => $request->assigned,
+                'customer_id' => $data->id
+            ],[
+                    'title' => "New Customer: ".$data->name." is assigned"
+            ]);
+            $forum->discussions()->create([
+                'content' => '<p>Welcome '.$data->name.' to '.env('APP_NAME').'</p>',
+                'user_id' => Auth::id()
+            ]);
+            
+        }
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status'  => true,
+                'message' => 'User updated successfully'
+            ]);
+        }
+
+        return redirect()
+            ->route('user.index')
+            ->with('success', 'User updated successfully');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Client  $client
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Client $client)
+    public function destroy(User $user)
     {
-        //
-    }
-
-    public function logoBrief($id)
-    {
-        $data = Client::find($id);
-        return view('logo-brief.index', compact('data'));
+        $user->delete();
+        return redirect()->route('user.index')->with('success', 'User deleted successfully');
     }
 }

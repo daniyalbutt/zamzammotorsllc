@@ -6,7 +6,7 @@
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Users</li>
-                    <li class="breadcrumb-item active" aria-current="page">Edit User - {{ $data->name }}</li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit User - {{ $user->name }}</li>
                 </ol>
             </nav>
         </div>
@@ -21,12 +21,17 @@
                     </div>
 
                     @role('sales manager')
-                        @if ($data->hasRole('customer'))
+                        @if ($user->hasRole('customer'))
                             <div class="col-md-3">
                                 <select name="assigned" id="assigned" class="form-control user-select select2">
                                     <option value="Not Assign">Not Assigned to Any Agent</option>
-                                    @foreach ($users->get() as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }} -- {{ $item->email }}</option>
+                                    @foreach ($agents as $item)
+                                        @php
+                                            $exists = \DB::table('assigned_agents')->where('agent_id',$item->id)->where('customer_id',$user->id)->exists();
+                                        @endphp
+                                        <option
+                                            {{$user->id}} {{$exists ? 'selected' : ''}}
+                                            value="{{ $item->id }}">{{ $item->name }} -- {{ $item->email }}</option>
                                     @endforeach
 
                                 </select>
@@ -34,7 +39,7 @@
                         @endif
                     @endrole
                 </div>
-                <form class="form" method="post" id="main-form" action="{{ route('users.update', $data->id) }}">
+                <form class="form" method="post" id="main-form" action="{{ route('users.update', $user->id) }}">
                     <div class="row gx-0 g-20 gy-20 align-items-center justify-content-center">
                         @csrf
                         @method('PUT')
@@ -52,14 +57,14 @@
                                     <div class="form-group">
                                         <label class="form-label">Name <strong>*</strong></label>
                                         <input type="text" class="form-control" name="name"
-                                            value="{{ old('name', $data->name) }}" required>
+                                            value="{{ old('name', $user->name) }}" required>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label class="form-label">E-mail <strong>*</strong></label>
                                         <input type="email" class="form-control" name="email"
-                                            value="{{ old('email', $data->email) }}" required>
+                                            value="{{ old('email', $user->email) }}" required>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -68,7 +73,7 @@
                                         <select name="role" id="role" class="form-control" required>
                                             @foreach ($roles as $key => $value)
                                                 <option value="{{ $value->name }}"
-                                                    {{ $data->getRole() == $value->name ? 'selected' : '' }}>
+                                                    {{ $user->getRole() == $value->name ? 'selected' : '' }}>
                                                     {{ $value->name }}</option>
                                             @endforeach
                                         </select>

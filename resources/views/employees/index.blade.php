@@ -45,62 +45,62 @@
                                     @can('edit employee')
                                         <a href="{{ route('employees.edit', $value->id) }}" class="table__icon edit"><i
                                                 class="fa-sharp fa-light fa-pen"></i></a>
-                                                @endcan
-                                        @can('delete employee')
-                                            <form action="{{ route('roles.destroy', $value->id) }}" method="post">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="removeBtn table__icon delete"><i
-                                                        class="fa-regular fa-trash"></i></button>
-                                            </form>
-                                        @endcan
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                                    @endcan
+                                    @can('delete employee')
+                                        <form action="{{ route('roles.destroy', $value->id) }}" method="post">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="removeBtn table__icon delete"><i
+                                                    class="fa-regular fa-trash"></i></button>
+                                        </form>
+                                    @endcan
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
-    @endsection
-    @push('scripts')
-        <!-- <script type="text/javascript">
+    </div>
+@endsection
+@push('scripts')
+    <!-- <script type="text/javascript">
+        -- >
+        <
+        !--$(function() {
             -- >
             <
-            !--$(function() {
+            !--'use strict';
+            -- >
+            <
+            !--$('#example1').DataTable({
                 -- >
                 <
-                !--'use strict';
+                !--'paging': true,
                 -- >
                 <
-                !--$('#example1').DataTable({
-                    -- >
-                    <
-                    !--'paging': true,
-                    -- >
-                    <
-                    !--'lengthChange': false,
-                    -- >
-                    <
-                    !--'searching': false,
-                    -- >
-                    <
-                    !--'ordering': true,
-                    -- >
-                    <
-                    !--'info': true,
-                    -- >
-                    <
-                    !--'autoWidth': false-- >
-                        <
-                        !--
-                });
+                !--'lengthChange': false,
                 -- >
                 <
-                !--
+                !--'searching': false,
+                -- >
+                <
+                !--'ordering': true,
+                -- >
+                <
+                !--'info': true,
+                -- >
+                <
+                !--'autoWidth': false-- >
+                    <
+                    !--
             });
             -- >
             <
             !--
-        </script>-->
-    @endpush
+        });
+        -- >
+        <
+        !--
+    </script>-->
+@endpush

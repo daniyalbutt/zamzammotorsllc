@@ -188,7 +188,7 @@ class VehicleController extends Controller
             if (Auth::user()->hasPermissionTo('show all customer')) {
                 $users = $users->role('customer');
             } else if (Auth::user()->hasPermissionTo('assigned customer')) {
-                $users = $users->whereHas('assignedAgent', function ($q) {
+                $users = $users->whereHas('assignedCustomer', function ($q) {
                     $q->where('agent_id', Auth::id());
                 });
             }
@@ -302,9 +302,12 @@ class VehicleController extends Controller
                         $vehicle->assigned_users()->detach();
                     }
                 } else {
-                    $vehicle->assigned_users()->sync([$request->assigned]);
+                    $vehicle->assigned_users()->sync([
+                        $request->assigned => ['assigned_by' => Auth::id()]
+                    ]);
                 }
             }
+
 
             if ($request->ajax()) {
                 return response()->json([

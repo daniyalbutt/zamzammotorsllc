@@ -63,14 +63,19 @@ class User extends Authenticatable
         return $this->belongsToMany(Vehicle::class, 'assigned_vehicles', 'user_id', 'vehicle_id');
     }
 
+    public function assignedSales()
+    {
+        return $this->belongsToMany(User::class,'assigned_agents','sales_manager_id');
+    }
+
     public function assignedCustomer()
     {
-        return $this->belongsToMany(User::class, 'assigned_agents', 'agent_id', 'customer_id');
+        return $this->belongsToMany(User::class, 'assigned_agents', 'customer_id', 'agent_id');
     }
 
     public function assignedAgent()
     {
-        return $this->belongsToMany(User::class, 'assigned_agents', 'customer_id', 'agent_id')->limit(1);
+        return $this->belongsToMany(User::class, 'assigned_agents', 'agent_id', 'customer_id')->limit(1);
     }
 
     public function getAssignedAgentAttribute()
@@ -213,7 +218,6 @@ class User extends Authenticatable
             }
         }
 
-        // 2) Otherwise, derive the appropriate attendance date and attempt to fetch today's record
         $shiftWindow = $this->getCurrentShiftWindow();
         if ($shiftWindow) {
             $date = $this->getAttendanceDate();
@@ -230,4 +234,6 @@ class User extends Authenticatable
             ->latest('time_in')
             ->first();
     }
+
+    
 }
