@@ -41,10 +41,14 @@
                                 <td>{{ $value->name }}</td>
                                 <td>{{ $value->email }}</td>
                                 <td>{{ $value->created_at->format('d, F Y') }}</td>
-                                <td>
+                                <td class="d-flex gap-2">
+                                    <a href="{{ route('employees.show', $value->id) }}" class="table__icon download"><i
+                                        class="fa-sharp fa-light fa-eye"></i></a>
+                                        <a href="{{ route('attendance.show',  ['month' => now()->format('m'), 'year' => now()->format('Y'), 'userid' => $value->id]) }}" class="table__icon bg-warning text-white" title="Show Attendance"><i
+                                            class="fa-sharp fa-light fa-file"></i></a>
                                     @can('edit employee')
                                         <a href="{{ route('employees.edit', $value->id) }}" class="table__icon edit"><i
-                                                class="fa-sharp fa-light fa-pen"></i></a>
+                                                class="fa-sharp fa-light fa-pen" ></i></a>
                                     @endcan
                                     @can('delete employee')
                                         <form action="{{ route('roles.destroy', $value->id) }}" method="post">

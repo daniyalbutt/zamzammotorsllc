@@ -88,6 +88,11 @@ class User extends Authenticatable
         return Shift::find($this->getMeta('shift_id'));
     }
 
+    public function profileImage()
+    {
+        return $this->image ? asset($this->image) : asset('img/user.png');
+    }
+
     /**
      * Get the current shift window considering night shifts
      */
@@ -137,6 +142,10 @@ class User extends Authenticatable
 
         $now = now();
         return $now->between($shiftWindow['start'], $shiftWindow['end']);
+    }
+
+    public function getDepartment(){
+        return Department::find($this->getMeta('department_id'))->name;
     }
 
     /**

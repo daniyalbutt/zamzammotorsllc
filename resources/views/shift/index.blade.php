@@ -5,8 +5,8 @@
             <nav>
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Roles</li>
-                    <li class="breadcrumb-item active" aria-current="page">Role List</li>
+                    <li class="breadcrumb-item active" aria-current="page">Shift</li>
+                    <li class="breadcrumb-item active" aria-current="page">Shift List</li>
                 </ol>
             </nav>
         </div>
@@ -17,7 +17,7 @@
         <div class="col-xxl-12">
             <div class="card__wrapper">
                 <div class="card__title-wrap mb-20">
-                    <h3 class="card__heading-title">Role List</h3>
+                    <h3 class="card__heading-title">Shift List</h3>
                 </div>
                 @if (session()->has('success'))
                     <div class="alert alert-success">
@@ -39,8 +39,8 @@
                             <tr>
                                 <td>{{ ++$key }}</td>
                                 <td>{{ $value->name }}</td>
-                                <td>{{ $value->start_time->format('h:i:s A') }}</td>
-                                <td>{{ $value->end_time->format('h:i:s A') }}</td>
+                                <td>{{ $value->start_time->format('h:i A') }}</td>
+                                <td>{{ $value->end_time->format('h:i A') }}</td>
                                 <td>
                                     @can('edit shift')
                                         <a href="{{ route('shifts.edit', $value->id) }}" class="table__icon edit"><i

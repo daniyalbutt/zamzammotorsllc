@@ -412,14 +412,14 @@
                             <a id="userportfolio" href="#">
                                 <div class="user__portfolio">
                                     <div class="user__portfolio-thumb">
-                                        <img src="{{ asset('img/avatar.png') }}" alt="img not found">
+                                        <img src="{{ Auth::user()->profileImage() }}" alt="img not found">
                                     </div>
                                     <div class="user__content">
                                         <h5>{{ Auth::user()->name }}</h5>
                                         <span>online</span>
                                     </div>
                                 </div>
-                            </a>
+                        </a>
                             <div class="user__dropdown">
                                 <ul>
                                     <li>
@@ -526,6 +526,8 @@
     <script src="{{ asset('js/main.js') }}"></script>
     <script src="{{ asset('js/sidebar.js') }}"></script>
     @stack('js')
+
+    @include('includes.modals')
 </body>
 
 </html>

@@ -76,6 +76,90 @@ class AttendanceController extends Controller
         return redirect()->back()->with('error', 'No active attendance found!');
     }
 
+    public function datewise(Request $request)
+    {
+        if (request()->has('date')) {
+            $date = strtotime(request()->date);
+        } else {
+            $date = strtotime(date('d-M-Y'));
+        }
+
+        $users = User::role('employee')->get();
+
+        $attendanceData = [];
+        $presentCount = 0;
+        $halfDayCount = 0;
+        $leaveCount = 0;
+
+        foreach ($users as $user) {
+            $perdayattendance = Attendance::where('date', $date)->where('user_id', $user->id)->first();
+            $day = date('l', $date);
+
+            if ($perdayattendance == null) {
+                if ($date > strtotime(date('d-M-Y'))) {
+                    $statusData = ['status' => 'future', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'name' => 'Future'];
+                } else {
+                    if (date('D', $date) == 'Sat' || date('D', $date) == 'Sun') {
+                        $statusData = ['status' => 'weekend', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'name' => 'Weekend'];
+                    } elseif ($date == strtotime(date('d-M-Y'))) {
+                        $statusData = ['status' => 'today', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'name' => 'Today'];
+                    } else {
+                        $statusData = ['status' => 'absent', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'name' => 'Absent'];
+                    }
+                }
+            } elseif ($perdayattendance->date == strtotime(date('d-M-Y')) && $perdayattendance->time_out == null) {
+                $statusData = ['status' => 'today', 'timein' => $perdayattendance->time_in, 'timeout' => '-', 'totalhours' => '-', 'name' => 'Today'];
+            } elseif ($perdayattendance->totalhours >= 16200 && $perdayattendance->totalhours <= 21600) {
+                $statusData = ['status' => 'halfday', 'timein' => $perdayattendance->time_in, 'timeout' => $perdayattendance->time_out ?? '-', 'totalhours' => $perdayattendance->totalhours ?? '-', 'name' => 'Half Day'];
+                $halfDayCount++;
+            } elseif ($perdayattendance->totalhours < 16200 && $perdayattendance->totalhours != null) {
+                $statusData = ['status' => 'nohalfday', 'timein' => $perdayattendance->time_in, 'timeout' => $perdayattendance->time_out ?? '-', 'totalhours' => $perdayattendance->totalhours ?? '-', 'name' => 'Less than Half Day (Absent)'];
+            } elseif ($perdayattendance->time_out == null && $perdayattendance->time_in != null) {
+                $statusData = ['status' => 'active', 'timein' => $perdayattendance->time_in, 'timeout' => '-', 'totalhours' => '-', 'name' => 'Active'];
+            } else {
+                $statusData = ['status' => 'present', 'timein' => $perdayattendance->time_in, 'timeout' => $perdayattendance->time_out, 'totalhours' => $perdayattendance->totalhours, 'name' => 'Present'];
+                $presentCount++;
+
+                if ($statusData['timein'] != null) {
+                    $timeIn = \Carbon\Carbon::createFromTimestamp($perdayattendance->time_in);
+
+                    if ($user->shift) {
+                        $shiftStartTime = \Carbon\Carbon::parse($user->shift->start_time);
+                        $graceTime = $user->shift->grace_time ?? 0;
+                        $shiftStartTimeWithGrace = $shiftStartTime->copy()->addMinutes($graceTime);
+
+                        if ($timeIn->format('H:i:s') > $shiftStartTimeWithGrace->format('H:i:s')) {
+                            $statusData['status'] = 'late';
+                            $statusData['name'] = 'Late';
+                        } elseif ($perdayattendance->totalhours < ($user->shift->shift_hours * 3600)) {
+                            $statusData['status'] = 'early';
+                            $statusData['name'] = 'Early Leave';
+                        }
+                    }
+                }
+            }
+
+            // Check if employee is on leave (you'll need to implement your leave logic)
+            // This is a placeholder - adjust based on your leave system
+            $isOnLeave = false; // Implement your leave check logic here
+            if ($isOnLeave) {
+                $statusData = ['status' => 'leave', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'name' => 'On Leave'];
+                $leaveCount++;
+            }
+
+            $attendanceData[] = [
+                'user' => $user,
+                'attendance' => $statusData,
+                'date' => $date
+            ];
+        }
+
+        $totalEmployees = $users->count();
+
+        return view('attendance.datewise', compact('attendanceData', 'date', 'totalEmployees', 'presentCount', 'halfDayCount', 'leaveCount'));
+    }
+
+
     public function showAttendance($month = null, $year = null, $userid = null)
     {
         if ($month === null) {

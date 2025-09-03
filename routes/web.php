@@ -43,14 +43,15 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-    Route::middleware(['role:employee'])
+
+    Route::middleware(['role:employee|hr'])
         ->as('attendance.')
         ->group(function () {
             Route::post('/timein', [AttendanceController::class, 'timeIn'])->name('timeIn');
             Route::post('/timeout', [AttendanceController::class, 'timeOut'])->name('timeOut');
 
             Route::get('get-attendance/{month?}/{year?}/{userid?}', [AttendanceController::class, 'showAttendance'])->name('show');
-            
+            Route::get('attendance/company', [AttendanceController::class, 'datewise'])->name('datewise');
 
             // Test route for timezone verification
             Route::get('/test-timezone', function () {
