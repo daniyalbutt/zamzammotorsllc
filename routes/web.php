@@ -52,6 +52,7 @@ Route::middleware(['auth'])->group(function () {
 
             Route::get('get-attendance/{month?}/{year?}/{userid?}', [AttendanceController::class, 'showAttendance'])->name('show');
             Route::get('attendance/company', [AttendanceController::class, 'datewise'])->name('datewise');
+            Route::get('attendance/live/{month?}/{year?}', [AttendanceController::class, 'liveCalendar'])->name('live');
 
             // Test route for timezone verification
             Route::get('/test-timezone', function () {

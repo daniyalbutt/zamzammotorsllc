@@ -74,7 +74,7 @@
 
 
 <li class="slide">
-    <a href="{{ route('attendance.datewise') }}" class="sidebar__menu-item ">
+    <a href="{{ route('attendance.live') }}" class="sidebar__menu-item ">
         <div class="side-menu__icon"><i class="icon-clock"></i></div>
         <span class="sidebar__menu-label">Attendance</span>
     </a>
