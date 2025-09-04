@@ -16,3 +16,7 @@
         </ul>
     </li>
 @endcanany
+@can('apply leave')
+    
+@endcan
+

@@ -89,7 +89,7 @@
 
         <div class="card__wrapper">
             <div class="table-responsive">
-                <table class="table table-striped table-nowrap mb-0" id="companyAttendanceCalendar">
+                <table class="table table-striped table-nowrap m-0" id="companyAttendanceCalendar">
                     <thead>
                         <tr>
                             <th>Employee</th>

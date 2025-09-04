@@ -107,65 +107,63 @@
         </div>
 
         <!-- Filters Section -->
-        @role('hr')
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Filter Attendance</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <form id="attendanceForm">
-                            <input type="hidden" name="userid" value="{{ $user->id }}">
-                            <div class="row">
-                                <div class="col-md-3 mb-3">
-                                    <label for="monthSelect" class="form-label">Month</label>
-                                    <select class="form-select" name="month" id="monthSelect">
-                                        @for ($i = 1; $i <= 12; $i++)
-                                            <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}"
-                                                {{ request('month', $month) == $i ? 'selected' : '' }}>
-                                                {{ date('F', mktime(0, 0, 0, $i, 10)) }}
-                                            </option>
-                                        @endfor
-                                    </select>
-                                </div>
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Filter Attendance</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <form id="attendanceForm">
+                        <input type="hidden" name="userid" value="{{ $user->id }}">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="monthSelect" class="form-label">Month</label>
+                                <select class="form-select" name="month" id="monthSelect">
+                                    @for ($i = 1; $i <= 12; $i++)
+                                        <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}"
+                                            {{ request('month', $month) == $i ? 'selected' : '' }}>
+                                            {{ date('F', mktime(0, 0, 0, $i, 10)) }}
+                                        </option>
+                                    @endfor
+                                </select>
+                            </div>
 
-                                <div class="col-md-3 mb-3">
-                                    <label for="yearSelect" class="form-label">Year</label>
-                                    <select class="form-select" name="year" id="yearSelect">
-                                        @for ($i = 2023; $i <= 2026; $i++)
-                                            <option value="{{ $i }}"
-                                                {{ request('year', $year) == $i ? 'selected' : '' }}>
-                                                {{ $i }}
-                                            </option>
-                                        @endfor
-                                    </select>
-                                </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="yearSelect" class="form-label">Year</label>
+                                <select class="form-select" name="year" id="yearSelect">
+                                    @for ($i = 2023; $i <= 2026; $i++)
+                                        <option value="{{ $i }}"
+                                            {{ request('year', $year) == $i ? 'selected' : '' }}>
+                                            {{ $i }}
+                                        </option>
+                                    @endfor
+                                </select>
+                            </div>
 
-                                <div class="col-md-3 mb-3 d-flex align-items-center">
-                                    <button type="submit" class="btn btn-primary mt-3">
-                                        <i class="fas fa-search me-1"></i> Search
-                                    </button>
-                                </div>
+                            <div class="col-md-3 mb-3 d-flex align-items-center">
+                                <button type="submit" class="btn btn-primary mt-3">
+                                    <i class="fas fa-search me-1"></i> Search
+                                </button>
+                            </div>
 
-                                <div class="col-md-3 mb-3 d-flex align-items-center">
-                                    <div class="card bg-light border-0 w-100">
-                                        <div class="card-body text-center py-2">
-                                            <small class="text-muted d-block">
-                                                Month: {{ date('F Y', mktime(0, 0, 0, $month, 10)) }}
-                                            </small>
-                                            <h5 class="mb-0 text-primary">
-                                                {{ number_format($totalhours / 3600, 1) }}h Total
-                                            </h5>
-                                        </div>
+                            <div class="col-md-3 mb-3 d-flex align-items-center">
+                                <div class="card bg-light border-0 w-100">
+                                    <div class="card-body text-center py-2">
+                                        <small class="text-muted d-block">
+                                            Month: {{ date('F Y', mktime(0, 0, 0, $month, 10)) }}
+                                        </small>
+                                        <h5 class="mb-0 text-primary">
+                                            {{ number_format($totalhours / 3600, 1) }}h Total
+                                        </h5>
                                     </div>
                                 </div>
                             </div>
-                        </form>
+                        </div>
+                    </form>
 
-                    </div>
                 </div>
             </div>
-        @endrole
+        </div>
 
         <!-- Main Attendance Table -->
         <div class="col-xxl-12">
@@ -227,7 +225,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="table-responsive">
-                            <table class="table table-striped table-nowrap mb-0" id="attendanceCalendar">
+                            <table class="table table-striped table-nowrap m-0" id="attendanceCalendar">
                                 <thead>
                                     <tr>
                                         <th>Employee</th>
@@ -552,7 +550,7 @@
 
             let baseUrl = "{{ url('get-attendance') }}";
             let newUrl = `${baseUrl}/${month}/${year}/${userid}`;
-            
+
             window.location.href = newUrl;
         });
     </script>

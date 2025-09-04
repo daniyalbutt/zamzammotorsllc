@@ -359,7 +359,7 @@ class AttendanceController extends Controller
 
         foreach ($users as $user) {
             $attendanceByDay = [];
-
+            
             for ($i = $firstDay; $i <= $lastDay; $i += 86400) {
                 $perdayattendance = Attendance::where('user_id', $user->id)
                     ->where('date', $i)
