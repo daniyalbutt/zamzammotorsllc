@@ -261,7 +261,8 @@
 
                                             <td class="text-center">
                                                 @if ($isBeforeJoining)
-                                                    <i class="fa fa-minus text-muted" title="Before Joining"></i>
+                                                    <i class="fa fa-calendar-minus text-warning"
+                                                        title="Before Joining"></i>
                                                 @elseif ($dayAttendance)
                                                     @if ($dayAttendance['status'] == 'present')
                                                         <a href="javascript:void(0);" data-bs-toggle="modal"
@@ -271,6 +272,13 @@
                                                             data-timeout="{{ $dayAttendance['timeout'] != '-' ? date('h:i A', $dayAttendance['timeout']) : 'N/A' }}"
                                                             data-hours="{{ $dayAttendance['totalhours'] != '-' ? gmdate('H:i', $dayAttendance['totalhours']) : 'N/A' }}">
                                                             <i class="fa-solid fa-check text-success" title="Present"></i>
+                                                        </a>
+                                                    @elseif($dayAttendance['status'] == 'leave')
+                                                        <a href="javascript:void(0);" data-bs-toggle="modal"
+                                                            data-bs-target="#attendance_info"
+                                                            data-date="{{ date('Y-m-d', $dayAttendance['date']) }}">
+                                                            <i class="fa fa-plane-departure text-link"
+                                                                title="{{ $dayAttendance['name'] }}"></i>
                                                         </a>
                                                     @elseif ($dayAttendance['status'] == 'late')
                                                         <a href="javascript:void(0);" data-bs-toggle="modal"

@@ -13,6 +13,7 @@ use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\VehicleController;
 use App\Models\Attendance;
+use App\Models\Leave;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -56,6 +57,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('attendance/live/{month?}/{year?}', [AttendanceController::class, 'liveCalendar'])->name('live');
 
             Route::get('my-leaves',[LeaveController::class, 'myLeaves'])->name('myLeaves');
+            Route::post('apply-leave',[LeaveController::class, 'applyLeave'])->name('applyLeave');
 
             // Test route for timezone verification
             Route::get('/test-timezone', function () {
@@ -76,5 +78,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('departments', DepartmentController::class);
         Route::resource('shifts', ShiftController::class);
         Route::post('generate-csv',[AttendanceController::class, 'generateCSV'])->name('generate.csv');
+        Route::get('company-leaves', [LeaveController::class, 'companyLeaves'])->name('company.leaves');
+        Route::post('change-leave-status', [LeaveController::class, 'changeLeaveStatus'])->name('leave.updateStatus');
     });
 });

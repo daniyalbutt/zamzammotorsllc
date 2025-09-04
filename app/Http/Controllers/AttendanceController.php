@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\Leave;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -99,8 +100,12 @@ class AttendanceController extends Controller
             for ($date = $firstDay; $date <= $lastDay; $date += 86400) {
                 $perdayattendance = Attendance::where('date', $date)->where('user_id', $user->id)->first();
                 $day = date('l', $date);
+                $leave = Leave::where('date', $date)->where('user_id', $user->id)->first();
 
-                if ($perdayattendance == null) {
+                if($leave){
+                    $statusData = ['status' => 'leave', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'name' => $leave->status];
+                }
+                else if ($perdayattendance == null) {
                     if ($date > strtotime(date('d-M-Y'))) {
                         $statusData = ['status' => 'future', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'name' => 'Future'];
                     } else {
@@ -196,9 +201,12 @@ class AttendanceController extends Controller
 
             $day = date('l', $i);
 
+            $leave = Leave::where('date', $i)->where('user_id', $userid)->first();
 
-
-            if ($perdayattendance == null) {
+            if($leave){
+                $data = ['status' => 'leave','timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'day' => $day, 'name' => $leave->status];
+            }
+            else if ($perdayattendance == null) {
                 if ($i > strtotime(date('d-M-Y'))) {
                     $data = ['status' => 'future', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'day' => $day, 'name' => ''];
                 } else {
@@ -206,7 +214,11 @@ class AttendanceController extends Controller
                         $data = ['status' => 'weekend', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'day' => $day, 'name' => 'Weekend'];
                     } elseif ($i == strtotime(date('d-M-Y'))) {
                         $data = ['status' => 'today', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'day' => $day, 'name' => 'Today'];
-                    } else {
+                    } else if($i < strtotime(date($user->getMeta('date_of_joining')))){
+                        $data = ['status' => 'beforejoining', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'name' => 'Before Joining'];
+
+                    }
+                     else {
                         $data = ['status' => 'absent', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'day' => $day, 'name' => 'Absent'];
                     }
                 }
@@ -282,6 +294,9 @@ class AttendanceController extends Controller
                             $data = ['status' => 'weekend', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'name' => 'Weekend'];
                         } elseif ($i == strtotime(date('d-M-Y'))) {
                             $data = ['status' => 'today', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'name' => 'Today'];
+                        } else if($i < strtotime(date($user->getMeta('date_of_joining')))){
+                            $data = ['status' => 'beforejoining', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'name' => 'Before Joining'];
+
                         } else {
                             $data = ['status' => 'absent', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'name' => 'Absent'];
                         }
@@ -366,8 +381,12 @@ class AttendanceController extends Controller
                     ->first();
 
                 $statusData = [];
-
-                if ($perdayattendance == null) {
+                $leave = Leave::where('date', $i)->where('user_id', $user->id)->first();
+                
+                if($leave){
+                    $statusData = ['status' => 'leave', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'name' => $leave->status];
+                }
+                else if ($perdayattendance == null) {
                     if ($i > strtotime(date('d-M-Y'))) {
                         $statusData = ['status' => 'future', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'name' => 'Future'];
                     } else {
@@ -375,6 +394,9 @@ class AttendanceController extends Controller
                             $statusData = ['status' => 'weekend', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'name' => 'Weekend'];
                         } elseif ($i == strtotime(date('d-M-Y'))) {
                             $statusData = ['status' => 'today', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'name' => 'Today'];
+                        } else if($i < strtotime(date($user->getMeta('date_of_joining')))){
+                            $statusData = ['status' => 'beforejoining', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'name' => 'Before Joining'];
+
                         } else {
                             $statusData = ['status' => 'absent', 'timein' => '-', 'timeout' => '-', 'totalhours' => '-', 'date' => $i, 'name' => 'Absent'];
                         }

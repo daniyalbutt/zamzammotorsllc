@@ -73,10 +73,21 @@
 @endcanany
 
 @can('view all live attendance')
-<li class="slide">
-    <a href="{{ route('attendance.live') }}" class="sidebar__menu-item {{ request()->routeIs('attendance.live')  ? 'active' : '' }}">
-        <div class="side-menu__icon"><i class="icon-clock"></i></div>
-        <span class="sidebar__menu-label">Company Attendance</span>
-    </a>
-</li>
+    <li class="slide">
+        <a href="{{ route('attendance.live') }}"
+            class="sidebar__menu-item {{ request()->routeIs('attendance.live') ? 'active' : '' }}">
+            <div class="side-menu__icon"><i class="icon-clock"></i></div>
+            <span class="sidebar__menu-label">Company Attendance</span>
+        </a>
+    </li>
+@endcan
+@can('view company leaves')
+    <li class="slide">
+        <a href="{{ route('company.leaves') }}"
+            class="sidebar__menu-item {{ request()->routeIs('company.leaves') ? 'active' : '' }}">
+            <div class="side-menu__icon"><i class="icon-plane"></i></div>
+            <span class="sidebar__menu-label">Company Leaves</span>
+        </a>
+    </li>
+
 @endcan

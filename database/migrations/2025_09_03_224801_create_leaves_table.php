@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('date');
             $table->foreignIdFor(User::class);
             $table->string('type');
-            $table->text('reason');
+            $table->text('reason')->nullable();
             $table->string('status');
             $table->timestamps();
         });

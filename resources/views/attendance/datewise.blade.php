@@ -204,6 +204,8 @@
                                                     <span class="badge bg-secondary">Weekend</span>
                                                 @elseif($attendance['status'] == 'today')
                                                     <span class="badge bg-info">Today</span>
+                                                @elseif($attendance['status'] == 'leave')
+                                                    <span class="badge bg-warning">Leave</span>
                                                 @elseif($attendance['status'] == 'future')
                                                     <span class="badge bg-light text-dark">Future</span>
                                                 @else
