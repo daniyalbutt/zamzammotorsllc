@@ -91,3 +91,11 @@
     </li>
 
 @endcan
+
+<li class="slide">
+    <a href="{{ route('payroll.index') }}"
+        class="sidebar__menu-item {{ request()->routeIs('payroll') ? 'active' : '' }}">
+        <div class="side-menu__icon"><i class="fa-sharp fa-light fa-wallet"></i></div>
+        <span class="sidebar__menu-label">Payroll</span>
+    </a>
+</li>
