@@ -89,7 +89,6 @@
             <span class="sidebar__menu-label">Company Leaves</span>
         </a>
     </li>
-
 @endcan
 
 <li class="slide">
@@ -97,5 +96,12 @@
         class="sidebar__menu-item {{ request()->routeIs('payroll') ? 'active' : '' }}">
         <div class="side-menu__icon"><i class="fa-sharp fa-light fa-wallet"></i></div>
         <span class="sidebar__menu-label">Payroll</span>
+    </a>
+</li>
+
+<li class="slide">
+    <a href="announcement.html" class="sidebar__menu-item">
+        <div class="side-menu__icon"><i class="icon-announcement"></i></div>
+        <span class="sidebar__menu-label">Announcement</span>
     </a>
 </li>

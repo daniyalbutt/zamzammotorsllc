@@ -93,3 +93,10 @@ button.btn.btn-secondary.dropdown-toggle {
     height: 0;
     width: 0;
 }
+
+tr.payslip-grand-total td {
+    font-size: 20px;
+    font-weight: 700;
+    color: black;
+    font-style: italic;
+}

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnnoucementController;
 use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
@@ -83,6 +84,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('company-leaves', [LeaveController::class, 'companyLeaves'])->name('company.leaves');
         Route::post('change-leave-status', [LeaveController::class, 'changeLeaveStatus'])->name('leave.updateStatus');
         Route::resource('payroll', PayslipController::class);
+        Route::resource('announcements', AnnoucementController::class);
 
     });
 });
