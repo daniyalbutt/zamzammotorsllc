@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MakeController;
 use App\Http\Controllers\ModelsController;
 use App\Http\Controllers\BodyTypeController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\LeaveController;
@@ -45,6 +46,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('vehicles/remove-image', [VehicleController::class, 'removeImage'])->name('vehicles.remove-image');
     Route::post('vehicles/upload-image', [VehicleController::class, 'removeImage'])->name('vehicles.upload-image');
 
+    Route::resource('customers', CustomerController::class);
 
 
 
