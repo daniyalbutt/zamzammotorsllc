@@ -246,7 +246,7 @@
                                                             <div class="col-md-3">
                                                                 <input type="number" name="earnings[0][amount]"
                                                                     class="form-control earning-amount"
-                                                                    value="{{ isset($data) ? '' : $employee->getMeta('salary') ?? '' }}"
+                                                                    value="{{ isset($data) ?  $data->user->getMeta('salary')  : ''}}"
                                                                     placeholder="Amount" step="0.01" required>
                                                             </div>
                                                             <div class="col-md-1">

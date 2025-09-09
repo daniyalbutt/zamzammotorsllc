@@ -1,4 +1,4 @@
-<div class="col-xxl-12 col-xl-12 col-lg-12">
+<div class="col-xxl-9 col-xl-9 col-lg-9 mx-auto">
     <div class="card__wrapper">
         <div class="card__title-wrap d-flex align-items-center justify-content-between mb-20">
             <h5 class="card__heading-title">Generate Attendance Reports</h5>

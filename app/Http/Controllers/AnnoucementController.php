@@ -30,7 +30,17 @@ class AnnoucementController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'description' => 'required|string',
+        ]);
+
+        Annoucement::create($request->all());
+
+        return redirect()->route('announcements.index')->with('success', 'Announcement created successfully.');
+
     }
 
     /**
@@ -38,7 +48,7 @@ class AnnoucementController extends Controller
      */
     public function show(string $id)
     {
-        //
+        
     }
 
     /**
@@ -54,7 +64,12 @@ class AnnoucementController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'id' => 'required|exists:annoucements,id'
+        ]);
+        $data = Annoucement::find($request->id);
+        $data->update($request->all());
+        return redirect()->route('announcements.index')->with('success', 'Announcement updated successfully.');
     }
 
     /**
