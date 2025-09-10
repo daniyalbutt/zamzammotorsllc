@@ -83,22 +83,22 @@
                                     </div>
                                     <div class="client__btn">
                                         <div class="d-flex align-items-center justify-content-center gap-15">
-                                            @if($customer->getMeta('phone'))
+                                            {{-- @if($customer->getMeta('phone'))
                                                 <a class="btn btn-outline-theme-border" href="tel:{{ $customer->getMeta('phone') }}">
                                                     <i class="fas fa-phone me-1"></i> Call
                                                 </a>
-                                            @endif
-                                            <a href="{{ route('customers.edit', $customer->id) }}" class="btn btn-outline-theme-border">
-                                                <i class="fas fa-edit me-1"></i> Edit
+                                            @endif --}}
+                                            <a href="{{ route('customers.edit', $customer->id) }}" class="table__icon edit">
+                                                <i class="fa-sharp fa-light fa-pen"></i>
                                             </a>
-                                            <a href="{{ route('customers.show', $customer->id) }}" class="btn btn-outline-theme-border">
-                                                <i class="fas fa-eye me-1"></i> View
+                                            <a href="{{ route('customers.show', $customer->id) }}" class="table__icon download">
+                                                <i class="fa-sharp fa-light fa-eye"></i>
                                             </a>
                                             <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this customer?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-outline-danger">
-                                                    <i class="fas fa-trash me-1"></i> Delete
+                                                <button type="submit" class="table__icon delete">
+                                                    <i class="fas fa-trash me-1"></i>
                                                 </button>
                                             </form>
                                         </div>
