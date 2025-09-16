@@ -9,5 +9,14 @@ class ForumDiscussion extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    protected $table = "forums_discussions";
+
+    public function media()
+    {
+        return $this->hasMany(ForumMedia::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Vehicle;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,23 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('forums', function (Blueprint $table) {
+        Schema::create('forum_media', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->foreignId('agent_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('customer_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('forum_discussion_id')->constrained('forum_discussions')->onDelete('cascade');
+            $table->string('file_path');
             $table->timestamps();
         });
     }
-   
-    
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('forums');
+        Schema::dropIfExists('forum_media');
     }
 };

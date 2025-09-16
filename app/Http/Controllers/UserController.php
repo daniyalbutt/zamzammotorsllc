@@ -153,26 +153,6 @@ class UserController extends Controller
         if ($request->has('roles')) {
             $data->syncRoles($request->roles);
         }
-        if ($request->has('assigned')) {
-            DB::table('assigned_agents')->updateOrInsert(
-                ['customer_id' => $data->id],
-                [
-                    'sales_manager_id' => Auth::id(),
-                    'agent_id' => $request->assigned
-                ]
-            );
-            $forum =  Forum::updateOrCreate([
-                'agent_id' => $request->assigned,
-                'customer_id' => $data->id
-            ],[
-                    'title' => "New Customer: ".$data->name." is assigned"
-            ]);
-            $forum->discussions()->create([
-                'content' => '<p>Welcome '.$data->name.' to '.env('APP_NAME').'</p>',
-                'user_id' => Auth::id()
-            ]);
-            
-        }
         if ($request->expectsJson()) {
             return response()->json([
                 'status'  => true,

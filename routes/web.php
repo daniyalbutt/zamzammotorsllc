@@ -11,6 +11,7 @@ use App\Http\Controllers\BodyTypeController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ForumController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\PayslipController;
 use App\Http\Controllers\ShiftController;
@@ -47,6 +48,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('vehicles/upload-image', [VehicleController::class, 'removeImage'])->name('vehicles.upload-image');
 
     Route::resource('customers', CustomerController::class);
+    Route::resource('forums', ForumController::class);
+    Route::put('upload', [ForumController::class, 'upload'])->name('forums.upload');
+
 
 
 

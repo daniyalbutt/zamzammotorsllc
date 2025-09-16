@@ -64,7 +64,7 @@
                                     <li class="slide {{ Request::routeIs('roles.index') ? 'active' : '' }}">
                                         <a href="{{ route('roles.index') }}"
                                             class="sidebar__menu-item {{ Request::routeIs('roles.index') ? 'active' : '' }}">Role
-                                            List</a>    
+                                            List</a>
                                     </li>
                                 </ul>
                             </li>
@@ -78,7 +78,8 @@
                                     <i class="fa-regular fa-angle-down side-menu__angle"></i>
                                 </a>
                                 <ul class="sidebar-menu child1 {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                                    @canany(['create user', 'create edit assigned customer','create edit assigned agent','create edit all customer','create edit all agent'])
+                                    @canany(['create user', 'create edit assigned customer', 'create edit assigned agent',
+                                        'create edit all customer', 'create edit all agent'])
                                         <li class="slide {{ Request::routeIs('users.create') ? 'active' : '' }}">
                                             <a href="{{ route('users.create') }}"
                                                 class="sidebar__menu-item {{ Request::routeIs('users.create') ? 'active' : '' }}">Add
@@ -174,7 +175,7 @@
                         @endcan
 
 
-                         @can('vehicles')
+                        @can('vehicles')
                             <li class="slide has-sub {{ request()->routeIs('vehicles.*') ? 'active' : '' }}">
                                 <a href="javascript:void(0);"
                                     class="sidebar__menu-item {{ request()->routeIs('vehicles.*') ? 'active' : '' }}">
@@ -197,6 +198,9 @@
                                 </ul>
                             </li>
                         @endcan
+                        @role('agent')
+                            <x:agent-sidebar />
+                        @endrole
                         @role('hr')
                             <x:hr-sidebar />
                         @endrole
@@ -282,7 +286,7 @@
                                                         <span>(8)</span>
                                                     </div>
                                                 </div>
-                                               
+
                                             </div>
                                         </div>
                                     </div>
@@ -300,7 +304,7 @@
                                         <span>online</span>
                                     </div>
                                 </div>
-                        </a>
+                            </a>
                             <div class="user__dropdown">
                                 <ul>
                                     <li>
@@ -404,9 +408,13 @@
     <script src="{{ asset('js/dataTables.bootstrap5.min.js') }}"></script>
     <script src="{{ asset('js/dataTables.buttons.min.js') }}"></script>
     <script src="{{ asset('js/select2.full.min.js') }}"></script>
-    <script src="{{ asset('js/main.js') }}"></script>
     <script src="{{ asset('js/sidebar.js') }}"></script>
+    <script src="{{ asset('js/dropzone.js') }}"></script>
+    <script src="{{ asset('js/tinymce.min.js') }}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery-toast-plugin@1.3.2/dist/jquery.toast.min.js"></script>
     @stack('js')
+    <script src="{{ asset('js/main.js') }}"></script>
 
     @include('includes.modals')
 </body>

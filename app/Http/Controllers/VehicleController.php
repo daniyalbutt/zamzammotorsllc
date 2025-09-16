@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\BodyType;
+use App\Models\Forum;
 use App\Models\Make;
 use App\Models\Models;
 use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use File, Auth;
+use File;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class VehicleController extends Controller
@@ -306,6 +308,16 @@ class VehicleController extends Controller
                         $request->assigned => ['assigned_by' => Auth::id()]
                     ]);
                 }
+
+                $forum = Forum::create([
+                    'vehicle_id' => $vehicle->id,
+                    'agent_id' => Auth::id(),
+                    'customer_id' => $request->assigned
+                ]);
+
+                $forum->discussions()->create([
+                    'content' => 'Forum created for vehicle: ' . $vehicle->title .' (ID: ' . $vehicle->id . ') for agent: ' . Auth::user()->name . ' and customer: ' . ($vehicle->user ? User::find($request->assigned)->name : 'N/A')
+                ]);
             }
 
 
