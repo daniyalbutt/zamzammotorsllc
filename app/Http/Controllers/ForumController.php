@@ -6,6 +6,7 @@ use App\Models\Forum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ForumController extends Controller
@@ -59,7 +60,7 @@ class ForumController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        
+
         $request->validate([
             'content' => 'required_without:uploaded_files',
             'uploaded_files' => 'required_without:content',
@@ -130,13 +131,8 @@ class ForumController extends Controller
             $fileSize = (int) $request->input('size', 0);
             $uploadId = $request->input('uploadId', uniqid());
 
-            // Validate file size (100MB max)
-            if ($fileSize > 104857600) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'File size exceeds 100MB limit'
-                ], 400);
-            }
+            // REMOVE the 100MB validation here since we're handling chunked uploads
+            // The chunked upload approach allows files larger than 100MB
 
             // Create temporary directory for chunks
             $tempDir = storage_path('app/temp/chunks/' . $uploadId);
@@ -213,7 +209,7 @@ class ForumController extends Controller
                 'uploadId' => $uploadId
             ]);
         } catch (\Exception $e) {
-            \Log::error('Chunked upload error: ' . $e->getMessage());
+            Log::error('Chunked upload error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'error' => 'Upload failed: ' . $e->getMessage()
@@ -221,6 +217,29 @@ class ForumController extends Controller
         }
     }
 
+    public function uploadDirect(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|file|max:102400', // 100MB max for direct uploads
+            ]);
+
+            $file = $request->file('file');
+            $path = $file->store('forum_images', 'public');
+
+            return response()->json([
+                'success' => true,
+                'file_path' => $path,
+                'file_name' => $file->getClientOriginalName(),
+                'file_size' => $file->getSize()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Upload failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
     public function updateAjax(Request $request, string $id)
     {
         try {
@@ -260,7 +279,6 @@ class ForumController extends Controller
 
     public function addDiscussion(Request $request, string $id)
     {
-        dd($request->all());
         try {
             DB::beginTransaction();
             $forum = Forum::findOrFail($id);

@@ -50,6 +50,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('customers', CustomerController::class);
     Route::resource('forums', ForumController::class);
     Route::post('forums/upload', [ForumController::class, 'upload'])->name('forums.upload');
+    Route::post('forums/upload-direct', [ForumController::class, 'uploadDirect'])->name('forums.upload.direct');
 
     // Add this custom route for adding discussions to existing forums
     Route::post('forums/{id}/add-discussion', [ForumController::class, 'addDiscussion'])->name('forums.add-discussion');

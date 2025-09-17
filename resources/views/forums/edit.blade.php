@@ -88,7 +88,8 @@
             <div class="position-sticky">
                 <div class="card__wrapper">
                     <div class="card__body">
-                        <form action="{{ route('forums.add-discussion', $data->id) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('forums.add-discussion', $data->id) }}" method="POST"
+                            enctype="multipart/form-data">
                             @csrf
                             <input type="hidden" name="uploaded_files" id="uploaded-files" value="">
 
@@ -248,24 +249,30 @@
                         dropZoneTitle: 'Drag & drop files here or click to browse...',
                         dropZoneClickTitle: '<br><small class="text-muted">Click to browse files</small>',
                         overwriteInitial: false,
-                        maxFileSize: 104857600, 
+                        initialPreviewAsData: true,
+                        maxFileSize: 104857600,
                         maxFilesNum: 20,
                         allowedFileTypes: ['image', 'video', 'audio', 'text', 'application'],
-                        allowedFileExtensions: ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'avi', 'mov', 'mp3', 'wav',
+                        allowedFileExtensions: [
+                            'jpg', 'jpeg', 'png', 'gif', 'mp4', 'avi', 'mov', 'mp3', 'wav',
                             'pdf', 'doc', 'docx', 'txt', 'zip', 'rar'
                         ],
                         previewFileType: 'any',
                         browseLabel: 'Browse Files',
                         removeLabel: 'Remove',
                         cancelLabel: 'Cancel',
-                        uploadLabel: 'Upload',
                         msgPlaceholder: 'Select files to upload...',
                         msgFilesTooMany: 'Number of selected files ({n}) exceeds maximum allowed limit of {m}.',
                         msgFileTooBig: 'File "{name}" ({size} KB) exceeds maximum allowed upload size of {maxSize} KB.',
                         msgInvalidFileType: 'Invalid type for file "{name}". Only "{types}" files are supported.',
                         msgInvalidFileExtension: 'Invalid extension for file "{name}". Only "{extensions}" files are supported.',
-                      
+                        fileActionSettings: {
+                            showRemove: true, // show X button on each file
+                            showZoom: true,
+                            showDrag: true,
+                        }
                     });
+
 
                     // Add custom dropzone styling and functionality
                     $('#image-file').on('filebatchselected', function(event, files) {
@@ -328,12 +335,47 @@
                     uploadFiles(fileArray);
                 }
             });
+            async function uploadFileDirectly(file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('name', file.name);
+                formData.append('size', file.size);
 
+                const response = await fetch("{{ route('forums.upload') }}", {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                return await response.json();
+            }
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Update progress bar
+function updateProgressBar(percentage) {
+    $('.progress-bar').css('width', percentage + '%').attr('aria-valuenow', percentage);
+}
+
+// Update upload status
+function updateUploadStatus(message, type = 'info') {
+    const statusDiv = $('#upload-status');
+    const alertClass = type === 'error' ? 'alert-danger' : type === 'success' ? 'alert-success' : 'alert-info';
+    statusDiv.html(`<div class="alert ${alertClass} alert-sm">${message}</div>`);
+}
             // Chunked file upload function
             async function uploadFiles(files) {
                 isUploading = true;
                 $('#upload-progress').show();
                 $('#submit-btn').prop('disabled', true);
+                updateUploadStatus(`Uploading ${files.length} file(s)...`);
 
                 const totalFiles = files.length;
                 let completedFiles = 0;
@@ -343,16 +385,36 @@
                     const uploadId = 'upload_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
                     try {
-                        const result = await uploadFileInChunks(file, uploadId);
-                        if (result.success) {
-                            uploadedFiles.push({
-                                file_path: result.file_path,
-                                file_name: result.file_name,
-                                file_size: result.file_size
-                            });
-                            updateUploadStatus(`File "${file.name}" uploaded successfully`);
+                        // Check if file is larger than 1MB and needs chunking
+                        const needsChunking = file.size > (1024 * 1024); // 1MB threshold for chunking
+
+                        if (needsChunking) {
+                            updateUploadStatus(`Chunking large file: "${file.name}" (${formatFileSize(file.size)})`);
+                            const result = await uploadFileInChunks(file, uploadId);
+                            if (result.success) {
+                                uploadedFiles.push({
+                                    file_path: result.file_path,
+                                    file_name: result.file_name,
+                                    file_size: result.file_size
+                                });
+                                updateUploadStatus(`Large file "${file.name}" uploaded successfully via chunking`);
+                            } else {
+                                updateUploadStatus(`Error uploading "${file.name}": ${result.error}`, 'error');
+                            }
                         } else {
-                            updateUploadStatus(`Error uploading "${file.name}": ${result.error}`, 'error');
+                            // For small files, use regular upload
+                            updateUploadStatus(`Uploading small file: "${file.name}"`);
+                            const result = await uploadFileDirectly(file);
+                            if (result.success) {
+                                uploadedFiles.push({
+                                    file_path: result.file_path,
+                                    file_name: result.file_name,
+                                    file_size: result.file_size
+                                });
+                                updateUploadStatus(`File "${file.name}" uploaded successfully`);
+                            } else {
+                                updateUploadStatus(`Error uploading "${file.name}": ${result.error}`, 'error');
+                            }
                         }
                     } catch (error) {
                         updateUploadStatus(`Error uploading "${file.name}": ${error.message}`, 'error');
@@ -372,10 +434,13 @@
                 updateUploadStatus(`All files uploaded successfully! (${uploadedFiles.length} files)`, 'success');
             }
 
+
             // Upload file in chunks
             async function uploadFileInChunks(file, uploadId) {
-                const chunkSize = 1024 * 1024; // 1MB chunks
+                const chunkSize = 5 * 1024 * 1024; // 5MB chunks (adjust as needed)
                 const totalChunks = Math.ceil(file.size / chunkSize);
+
+                updateUploadStatus(`Chunking file "${file.name}" into ${totalChunks} parts...`);
 
                 for (let chunk = 0; chunk < totalChunks; chunk++) {
                     const start = chunk * chunkSize;
@@ -389,6 +454,10 @@
                     formData.append('name', file.name);
                     formData.append('size', file.size);
                     formData.append('uploadId', uploadId);
+
+                    // Update progress for individual file
+                    const fileProgress = ((chunk + 1) / totalChunks) * 100;
+                    updateUploadStatus(`Uploading "${file.name}": ${Math.round(fileProgress)}% complete`);
 
                     const response = await fetch("{{ route('forums.upload') }}", {
                         method: 'POST',
