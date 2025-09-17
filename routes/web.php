@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Auth;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-    
+
 Route::get('/', function () {
     return redirect()->route('login');
 })->middleware('auth');
@@ -49,7 +49,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('customers', CustomerController::class);
     Route::resource('forums', ForumController::class);
-    Route::put('upload', [ForumController::class, 'upload'])->name('forums.upload');
+    Route::post('forums/upload', [ForumController::class, 'upload'])->name('forums.upload');
+
+    // Add this custom route for adding discussions to existing forums
+    Route::post('forums/{id}/add-discussion', [ForumController::class, 'addDiscussion'])->name('forums.add-discussion');
+
+    Route::post('forums/update-ajax/{id}', [ForumController::class, 'updateAjax'])->name('forums.update-ajax');
 
 
 
@@ -65,8 +70,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('attendance/company', [AttendanceController::class, 'datewise'])->name('datewise');
             Route::get('attendance/live/{month?}/{year?}', [AttendanceController::class, 'liveCalendar'])->name('live');
 
-            Route::get('my-leaves',[LeaveController::class, 'myLeaves'])->name('myLeaves');
-            Route::post('apply-leave',[LeaveController::class, 'applyLeave'])->name('applyLeave');
+            Route::get('my-leaves', [LeaveController::class, 'myLeaves'])->name('myLeaves');
+            Route::post('apply-leave', [LeaveController::class, 'applyLeave'])->name('applyLeave');
 
             // Test route for timezone verification
             Route::get('/test-timezone', function () {
@@ -86,11 +91,10 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('employees', EmployeeController::class);
         Route::resource('departments', DepartmentController::class);
         Route::resource('shifts', ShiftController::class);
-        Route::post('generate-csv',[AttendanceController::class, 'generateCSV'])->name('generate.csv');
+        Route::post('generate-csv', [AttendanceController::class, 'generateCSV'])->name('generate.csv');
         Route::get('company-leaves', [LeaveController::class, 'companyLeaves'])->name('company.leaves');
         Route::post('change-leave-status', [LeaveController::class, 'changeLeaveStatus'])->name('leave.updateStatus');
         Route::resource('payroll', PayslipController::class);
         Route::resource('announcements', AnnoucementController::class);
-
     });
 });

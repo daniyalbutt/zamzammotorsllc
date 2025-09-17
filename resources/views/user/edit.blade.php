@@ -26,11 +26,8 @@
                                 <select name="assigned" id="assigned" class="form-control user-select select2">
                                     <option value="Not Assign">Not Assigned to Any Agent</option>
                                     @foreach ($agents as $item)
-                                        @php
-                                            $exists = \DB::table('assigned_agents')->where('agent_id',$item->id)->where('customer_id',$user->id)->exists();
-                                        @endphp
                                         <option
-                                            {{$user->id}} {{$exists ? 'selected' : ''}}
+                                            {{ isset($user->assigned_agent_id) && $user->assigned_agent_id == $item->id ? 'selected' : '' }}
                                             value="{{ $item->id }}">{{ $item->name }} -- {{ $item->email }}</option>
                                     @endforeach
 
