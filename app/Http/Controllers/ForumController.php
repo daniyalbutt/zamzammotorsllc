@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Forum;
+use App\Models\VehiclesPrice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,9 +19,9 @@ class ForumController extends Controller
     {
         $data = [];
         if (Auth::user()->hasRole('customer')) {
-            $data = Forum::where('customer_id', Auth::id())->get();
+            $data = Forum::where('customer_id', Auth::id())->latest()->get();
         } else if (Auth::user()->hasRole('agent')) {
-            $data = Forum::where('agent_id', Auth::id())->get();
+            $data = Forum::where('agent_id', Auth::id())->latest()->get();
         }
         return view('forums.index', compact('data'));
     }
@@ -243,6 +244,7 @@ class ForumController extends Controller
     public function updateAjax(Request $request, string $id)
     {
         try {
+
             DB::beginTransaction();
             $forum = Forum::findOrFail($id);
             $discussion = $forum->discussions()->create([
@@ -279,6 +281,10 @@ class ForumController extends Controller
 
     public function addDiscussion(Request $request, string $id)
     {
+        $request->validate([
+            'content' => 'required_without:images',
+            'images' => 'required_without:content',
+        ]);
         try {
             DB::beginTransaction();
             $forum = Forum::findOrFail($id);
@@ -304,5 +310,30 @@ class ForumController extends Controller
             DB::rollBack();
             return back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
+    }
+
+    public function updateCustomerCarPrice(Request $request)
+    {
+        $request->validate([
+            'car' => 'required',
+            'forum_id' => 'required',
+            'price' => 'required'
+        ]);
+        $forum = Forum::find($request->forum_id);
+        VehiclesPrice::updateOrCreate([
+            'forum_id' => $forum->id,
+            'vehicle_id' => $request->car,
+            'agent_id' => $request->agent_id,
+            'customer_id' => $request->customer_id
+        ], [
+            'price' => $request->price
+        ]);
+
+        $forum->discussions()->create([
+            'user_id' => Auth::id(),
+            'content' => '<p>Your price is booked for $'.$request->price.'.'
+        ]);
+        
+        return redirect()->back()->with('success','Your price is updated');
     }
 }

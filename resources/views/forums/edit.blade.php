@@ -22,8 +22,13 @@
                 {{ session()->get('error') }}
             </div>
         @endif
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                {!! implode('', $errors->all(':message <br>')) !!}
+            </div>
+        @endif
         <div class="col-xxl-7 col-xl-7">
-            @foreach ($data->discussions as $item)
+            @foreach ($data->discussions()->latest()->get() as $item)
                 <div class="card__wrapper">
                     <div class="project__details-top align-items-center gap-10">
                         <div class="header-user d-flex">
@@ -88,6 +93,16 @@
             <div class="position-sticky">
                 <div class="card__wrapper">
                     <div class="card__body">
+                        <div class="from__input-box">
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="button" data-bs-toggle="modal" data-bs-target="#invoiceModal"
+                                    class="btn btn-primary btn-small rounded-pill">Create Invoice</button>
+                                <button type="button" data-bs-toggle="modal" data-bs-target="#pricingModal"
+                                    class="btn btn-secondary btn-small rounded-pill">Update Price</button>
+
+                            </div>
+                        </div>
+
                         <form action="{{ route('forums.add-discussion', $data->id) }}" method="POST"
                             enctype="multipart/form-data">
                             @csrf
@@ -351,25 +366,26 @@
 
                 return await response.json();
             }
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
 
-// Update progress bar
-function updateProgressBar(percentage) {
-    $('.progress-bar').css('width', percentage + '%').attr('aria-valuenow', percentage);
-}
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
 
-// Update upload status
-function updateUploadStatus(message, type = 'info') {
-    const statusDiv = $('#upload-status');
-    const alertClass = type === 'error' ? 'alert-danger' : type === 'success' ? 'alert-success' : 'alert-info';
-    statusDiv.html(`<div class="alert ${alertClass} alert-sm">${message}</div>`);
-}
+            // Update progress bar
+            function updateProgressBar(percentage) {
+                $('.progress-bar').css('width', percentage + '%').attr('aria-valuenow', percentage);
+            }
+
+            // Update upload status
+            function updateUploadStatus(message, type = 'info') {
+                const statusDiv = $('#upload-status');
+                const alertClass = type === 'error' ? 'alert-danger' : type === 'success' ? 'alert-success' : 'alert-info';
+                statusDiv.html(`<div class="alert ${alertClass} alert-sm">${message}</div>`);
+            }
             // Chunked file upload function
             async function uploadFiles(files) {
                 isUploading = true;
@@ -511,4 +527,62 @@ function updateUploadStatus(message, type = 'info') {
                 $('#submit-btn').prop('disabled', true).text('Submitting...');
             });
         </script>
+    @endpush
+    @push('modal')
+        <div class="modal fade" id="pricingModal" tabindex="-1" aria-labelledby="pricingModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="pricingModalTitle">Update Price</h1>
+                        <button type="button" class="bd-btn-close" data-bs-dismiss="modal" aria-label="Close"><i
+                                class="fa-solid fa-xmark-large"></i></button>
+                    </div>
+                    <form action="{{ route('update.customer.car.price') }}" method="POST">
+                        @csrf
+                        <div class="modal-body">
+                            <input type="hidden" name="car" value="{{ $data->vehicle->id }}">
+                            <input type="hidden" name="forum_id" value="{{ $data->id }}">
+                            <input type="hidden" name="agent_id" value="{{ $data->agent_id }}">
+                            <input type="hidden" name="customer_id" value="{{ $data->customer_id }}">
+
+                            <p><strong>Vechile Name:</strong> {{ $data->vehicle->title }}</p>
+                            <div class="from__input-box">
+                                <div class="form__input-title">
+                                    <label for="text2">Price<span>*</span></label>
+                                </div>
+                                <div class="form__input">
+                                    <input class="form-control" name="price" id="price" type="number"
+                                        placeholder="5000">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="invoiceModal" tabindex="-1" aria-labelledby="invoiceModalCenterTitle"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="invoiceModalCenterTitle">Invoice</h1>
+                        <button type="button" class="bd-btn-close" data-bs-dismiss="modal" aria-label="Close"><i
+                                class="fa-solid fa-xmark-large"></i></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Vechile Name:</strong> {{ $data->vehicle->title }}</p>
+                        <p><strong>Agent:</strong> {{$data->agent->name}}</p>
+                        <p><strong>Customer:</strong> {{$data->agent->name}}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endpush

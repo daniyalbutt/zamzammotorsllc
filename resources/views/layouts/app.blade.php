@@ -417,6 +417,8 @@
     <script src="{{ asset('js/main.js') }}"></script>
 
     @include('includes.modals')
+
+    @stack('modal')
 </body>
 
 </html>

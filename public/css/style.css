@@ -127,3 +127,8 @@ a.anchor-hover:hover {
 .file-preview-thumbnails {
     display: flex;
 }
+
+.btn-small {
+    font-size: 14px;
+    padding: 5px 15px;
+}
