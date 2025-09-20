@@ -29,4 +29,9 @@ class Forum extends Model
     {
         return $this->belongsTo(Vehicle::class);
     }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
 }

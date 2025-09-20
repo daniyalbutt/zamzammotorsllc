@@ -132,3 +132,172 @@ a.anchor-hover:hover {
     font-size: 14px;
     padding: 5px 15px;
 }
+
+.flex-50 * {
+    flex: 0 0 50%;
+}
+
+ul#forums-tab li {
+    width: 50%;
+    text-align: center;
+}
+
+ul#forums-tab {
+    margin-bottom: 1rem;
+}
+
+a.header-logo {
+    display: block;
+    margin: 0 auto;
+}
+
+ul.permission-list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+ul.permission-list li {
+    flex: 0 0 25%;
+}
+
+ul.sidebar-menu.active {
+    display: block;
+}
+
+.dz-progress {
+    display: none;
+}
+div#existing-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+div#existing-images div {
+}
+
+button.remove-existing-image {
+    position: absolute;
+    right: 5px;
+    top: 4px;
+    background: red;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+}
+.user-select {
+    width: auto !important;
+}
+
+ul.attendance-list li {
+    padding: 14px 0;
+    border-top: 1px solid;
+    border-color: #c9ccdf;
+}
+ul.attendance-list li {
+    display: flex;
+    justify-content: space-between;
+}
+
+li.att-li {
+    flex-wrap: wrap;
+}
+
+li.att-li * {
+    flex: 0 0 50%;
+}
+
+.attendance-head span.icon-clock {
+    color: #FAC641;
+    font-size: 20px;
+}
+.attendance-head {
+    font-size: 18px;
+}
+
+body.body-area {}
+
+.dropdown-toggle {}
+
+.ropdown-toggle {}
+
+.dropdown-toggle::after {
+    content: none;
+}
+
+button.btn.btn-secondary.dropdown-toggle {
+    padding: 0;
+    height: 25px;
+    width: 25px;
+}
+
+.dropdown-toggle {
+    padding: 0;
+    height: 0;
+    width: 0;
+}
+
+tr.payslip-grand-total td {
+    font-size: 20px;
+    font-weight: 700;
+    color: #6c5ffc;
+    font-style: italic;
+}
+
+figure.img-vehicle-circle img {
+    width: 100px;
+    height: 100px;
+}
+
+.input-group.file-caption-main.no-browse {
+    display: none;
+}
+
+figure.img-height-user {
+    height: 40px;
+    margin: 0;
+}
+
+figure.img-height-user img {
+    width: 100%;
+    height: 100%;
+}
+
+a.anchor-hover:hover {
+    color: #ffffff;
+}
+
+.file-preview-thumbnails {
+    display: flex;
+}
+
+.btn-small {
+    font-size: 14px;
+    padding: 5px 15px;
+}
+
+.flex-50 * {
+    flex: 0 0 50%;
+}
+
+ul#forums-tab li {
+    width: 50%;
+    text-align: center;
+}
+
+ul#forums-tab {
+    margin-bottom: 1rem;
+}
+
+ul#forums-tab a {
+    background: white;
+}
+
+ul#forums-tab a.active {
+    background: #6c5ffc;
+}

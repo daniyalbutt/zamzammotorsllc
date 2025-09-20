@@ -28,65 +28,103 @@
             </div>
         @endif
         <div class="col-xxl-7 col-xl-7">
-            @foreach ($data->discussions()->latest()->get() as $item)
-                <div class="card__wrapper">
-                    <div class="project__details-top align-items-center gap-10">
-                        <div class="header-user d-flex">
-                            <div class="d-flex gap-2">
-                                <figure class="img-height-user">
-                                    <img src="{{ $item->user->profileImage() }}" alt="">
-                                </figure>
-                                <div class="mr-3">
-                                    <p class="m-0"><strong>{{ $item->user->name }}</strong> </p>
-                                    <p class="m-0">{{ $item->created_at->format('h:i A | d F, Y') }}</p>
+            <ul class="nav nav-pills" id="forums-tab" role="tablist">
+                <li class="nav-item" role="presentation"><a class="nav-link active" id="pills-home-tab"
+                        data-bs-toggle="pill" href="#forums" role="tab" aria-controls="forums" aria-selected="true"><i
+                            class="fa-light fa-newspaper"></i> Forums
+                    </a></li>
+                <li class="nav-item" role="presentation"><a class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+                        href="#invoice" role="tab" aria-controls="pills-profile" aria-selected="false" tabindex="-1"><i
+                            class="fa-light fa-receipt"></i> Invoices</a>
+                </li>
+
+            </ul>
+            <div class="tab-content" id="icon-tabContent">
+                <div class="tab-pane fade active show" id="forums" role="tabpanel" aria-labelledby="icon-home-tab">
+                    @foreach ($data->discussions()->latest()->get() as $item)
+                        <div class="card__wrapper">
+                            <div class="project__details-top align-items-center gap-10">
+                                <div class="header-user d-flex">
+                                    <div class="d-flex gap-2">
+                                        <figure class="img-height-user">
+                                            <img src="{{ $item->user->profileImage() }}" alt="">
+                                        </figure>
+                                        <div class="mr-3">
+                                            <p class="m-0"><strong>{{ $item->user->name }}</strong> </p>
+                                            <p class="m-0">{{ $item->created_at->format('h:i A | d F, Y') }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="project__details-title mt-2">
+                                    <div class="project__details-meta d-flex flex-wrap align-items-center g-5">
+                                        {!! $item->content !!}
+                                    </div>
+                                    @if ($item->media->isNotEmpty())
+                                        <div class="table__wrapper style_two table-responsive mt-10">
+                                            <strong>Files</strong>
+                                            <table class="table mb-0">
+                                                <thead>
+                                                    <tr class="table__title bg-title">
+                                                        <th>File</th>
+                                                        <th>Extension</th>
+                                                        <th>Uploaded</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="table__body">
+                                                    @foreach ($item->media as $media)
+                                                        <tr>
+                                                            <td>
+                                                                <a class="anchor-hover"
+                                                                    href="{{ asset('storage/' . $media->file_path) }}"
+                                                                    download>{{ $media->file_name }}</a>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge bg-secondary">
+                                                                    {{ $media->file_extension }}
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge bg-black">
+                                                                    {{ $item->user->name }}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    @endif
+
                                 </div>
                             </div>
                         </div>
-                        <div class="project__details-title mt-2">
-                            <div class="project__details-meta d-flex flex-wrap align-items-center g-5">
-                                {!! $item->content !!}
-                            </div>
-                            @if ($item->media->isNotEmpty())
-                                <div class="table__wrapper style_two table-responsive mt-10">
-                                    <strong>Files</strong>
-                                    <table class="table mb-0">
-                                        <thead>
-                                            <tr class="table__title bg-title">
-                                                <th>File</th>
-                                                <th>Extension</th>
-                                                <th>Uploaded</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="table__body">
-                                            @foreach ($item->media as $media)
-                                                <tr>
-                                                    <td>
-                                                        <a class="anchor-hover"
-                                                            href="{{ asset('storage/' . $media->file_path) }}"
-                                                            download>{{ $media->file_name }}</a>
-                                                    </td>
-                                                    <td>
-                                                        <span class="badge bg-secondary">
-                                                            {{ $media->file_extension }}
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <span class="badge bg-black">
-                                                            {{ $item->user->name }}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-
-                                        </tbody>
-                                    </table>
-                                </div>
-                            @endif
-
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
-            @endforeach
+                <div class="tab-pane fade" id="profile-icon" role="tabpanel" aria-labelledby="profile-icon-tab">
+                    @dump($data->invoices)
+                    @foreach ($data->invoices()->latest()->get() as $item)
+                        <div class="card__wrapper">
+                            <div class="project__details-top align-items-center gap-10">
+                                <div class="header-user d-flex">
+                                    <div class="d-flex gap-2">
+                                        <figure class="img-height-user">
+                                            <img src="{{ $item->agent->profileImage() }}" alt="">
+                                        </figure>
+                                        <div class="mr-3">
+                                            <p class="m-0"><strong>{{ $item->agent->name }}</strong> </p>
+                                            <p class="m-0">{{ $item->created_at->format('h:i A | d F, Y') }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="project__details-title mt-2">
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
 
         </div>
         <div class="col-xxl-5 col-xl-5">
@@ -516,20 +554,18 @@
                     return;
                 }
 
-                // Update the form with uploaded files data
                 $('#uploaded-files').val(JSON.stringify(uploadedFiles));
 
-                // Get content from TinyMCE
                 const content = tinymce.get('tinymce_simple_textarea').getContent();
                 $('textarea[name="content"]').val(content);
 
-                // Show loading state
                 $('#submit-btn').prop('disabled', true).text('Submitting...');
             });
         </script>
     @endpush
     @push('modal')
-        <div class="modal fade" id="pricingModal" tabindex="-1" aria-labelledby="pricingModalTitle" aria-hidden="true">
+        <div class="modal fade" id="pricingModal" tabindex="-1" aria-labelledby="pricingModalTitle"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -573,15 +609,56 @@
                         <button type="button" class="bd-btn-close" data-bs-dismiss="modal" aria-label="Close"><i
                                 class="fa-solid fa-xmark-large"></i></button>
                     </div>
-                    <div class="modal-body">
-                        <p><strong>Vechile Name:</strong> {{ $data->vehicle->title }}</p>
-                        <p><strong>Agent:</strong> {{$data->agent->name}}</p>
-                        <p><strong>Customer:</strong> {{$data->agent->name}}</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
-                    </div>
+                    <form action="{{ route('payInvoice') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="car" value="{{ $data->vehicle->id }}">
+                        <input type="hidden" name="forum_id" value="{{ $data->id }}">
+                        <input type="hidden" name="agent_id" value="{{ $data->agent_id }}">
+                        <input type="hidden" name="customer_id" value="{{ $data->customer_id }}">
+                        <div class="modal-body">
+                            <div class="from__input-box">
+                                <div class="form__input-title">
+
+                                    <p><label>Vechile Name</label> {{ $data->vehicle->title }}</p>
+
+                                </div>
+                                <div class="d-flex form__input-title flex-50 mt-4">
+                                    <p><label>Agent</label> {{ $data->agent->name }}</p>
+                                    <p><label>Customer</label> {{ $data->agent->name }}</p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+
+                                    <div class="from__input-box">
+                                        <div class="form__input-title">
+                                            <label for="text2">Price<span>*</span></label>
+                                        </div>
+                                        <div class="form__input">
+                                            <input class="form-control" name="price" id="price" type="number"
+                                                required placeholder="5000">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="from__input-box">
+                                        <div class="form__input-title">
+                                            <label for="text2">Amount Date<span>*</span></label>
+                                        </div>
+                                        <div class="form__input">
+                                            <input class="form-control" name="amount_date" id="amount_date"
+                                                type="date" min="1" max="10000000" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

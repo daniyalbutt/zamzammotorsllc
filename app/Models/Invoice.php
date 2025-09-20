@@ -10,4 +10,14 @@ class Invoice extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'customer_id');
+    }
+
+    public function agent()
+    {
+        return $this->belongsTo(User::class, 'agent_id');
+    }
 }

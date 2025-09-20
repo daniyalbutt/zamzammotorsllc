@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Forum;
+use App\Models\Invoice;
 use App\Models\VehiclesPrice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -310,6 +311,29 @@ class ForumController extends Controller
             DB::rollBack();
             return back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
+    }
+
+    public function payInvoice(Request $request)
+    {
+        $request->validate([
+            'car' => 'required',
+            'forum_id' => 'required',
+            'price' => 'required',
+            'amount_date' => 'required|date',
+            'agent_id' => 'required'
+        ]);
+        
+        $invoice = new Invoice;
+        $invoice->agent_id = $request->agent_id;
+        $invoice->customer_id = $request->customer_id;
+        $invoice->vehicle_id = $request->car;
+        $invoice->forum_id = $request->forum_id;
+        $invoice->amount = $request->price;
+        $invoice->amount_date = $request->amount_date;
+        $invoice->save();
+
+        return back()->with('success', 'Invoice created successfully');
+
     }
 
     public function updateCustomerCarPrice(Request $request)
