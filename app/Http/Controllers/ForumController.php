@@ -72,8 +72,8 @@ class ForumController extends Controller
 
             ],
             [
-                'name' => 'Extra Service Paid',
-                'price' => $data->car_price ? (-1 *($data->car_price->price - $data->invoices()->sum('amount')) > 0 ? -1 *($data->car_price->price - $data->invoices()->sum('amount')) : 0) : 0,
+                'name' => $data->car_price ? (-1 *($data->car_price->price - $data->invoices()->sum('amount')) > 0 ? 'Extra Service Paid' : 'Remaining Amount') : 0,
+                'price' => $data->car_price ? (-1 *($data->car_price->price - $data->invoices()->sum('amount')) > 0 ? -1 *($data->car_price->price - $data->invoices()->sum('amount')) : $data->car_price->price - $data->invoices()->sum('amount')) : 0,
                 'icon'=> 'fa-tools',
                 'bg' => '#0046e333',
                 'color' => '#004df9'
