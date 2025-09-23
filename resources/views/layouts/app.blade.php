@@ -207,6 +207,9 @@
                         @role('employee')
                             <x:employee-sidebar />
                         @endrole
+                        @role('customer')
+                            <x:customer-sidebar />
+                        @endrole
 
                     </ul>
                     <div class="sidebar-right" id="sidebar-right"></div>

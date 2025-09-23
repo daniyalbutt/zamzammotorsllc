@@ -11,6 +11,10 @@ class Invoice extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'amount_date' => 'date',
+    ];
+
     public function customer()
     {
         return $this->belongsTo(User::class, 'customer_id');

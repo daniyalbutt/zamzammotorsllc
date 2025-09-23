@@ -34,4 +34,11 @@ class Forum extends Model
     {
         return $this->hasMany(Invoice::class);
     }
+
+    public function car_price()
+    {
+        return $this->hasOne(VehiclesPrice::class);
+    }
+
+
 }

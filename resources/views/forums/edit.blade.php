@@ -27,6 +27,28 @@
                 {!! implode('', $errors->all(':message <br>')) !!}
             </div>
         @endif
+        <div class="col-xxl-12 col-xl-12">
+            <div class="row">
+                @foreach ($info as $key => $item)
+                    <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                        <div class="card__wrapper">
+                            <div class="d-flex align-items-center gap-sm">
+                                <div class="card__icon">
+                                    <span style="background: {{$item['bg']}}"><i style="color: {{$item['color']}};" class="fa-sharp fa-regular {{$item['icon']}}"></i></span>
+                                </div>
+                                <div class="card__title-wrap">
+                                    <h6 class="card__sub-title mb-10">{{ucwords($item['name'])}}</h6>
+                                    <div class="d-flex flex-wrap align-items-end gap-10">
+                                        <h3 class="card__title">${{ number_format($item['price']) }}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+
+            </div>
+        </div>
         <div class="col-xxl-7 col-xl-7">
             <ul class="nav nav-pills" id="forums-tab" role="tablist">
                 <li class="nav-item" role="presentation"><a class="nav-link active" id="pills-home-tab"
@@ -101,8 +123,7 @@
                         </div>
                     @endforeach
                 </div>
-                <div class="tab-pane fade" id="profile-icon" role="tabpanel" aria-labelledby="profile-icon-tab">
-                    @dump($data->invoices)
+                <div class="tab-pane fade" id="invoice" role="tabpanel" aria-labelledby="profile-icon-tab">
                     @foreach ($data->invoices()->latest()->get() as $item)
                         <div class="card__wrapper">
                             <div class="project__details-top align-items-center gap-10">
@@ -118,6 +139,15 @@
                                     </div>
                                 </div>
                                 <div class="project__details-title mt-2">
+                                    <h4 class="text-center">Invoice Details -- ({{ $item->created_at->format('d F, Y') }})
+                                    </h4>
+                                    <div class="invoice">
+                                        <p class="mb-1"><strong>Name:</strong> {{ $item->customer->name }}</p>
+                                        <p class="mb-1"><strong>Agent Name: </strong> {{ $item->agent->name }}</p>
+                                        <p class="mb-1"><strong>Total Amount:</strong> ${{ $item->amount }}</p>
+                                        <p class="mb-1"><strong>Date:</strong> {{ $item->amount_date->format('d F, Y') }}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -131,6 +161,7 @@
             <div class="position-sticky">
                 <div class="card__wrapper">
                     <div class="card__body">
+                        @role('agent')
                         <div class="from__input-box">
                             <div class="d-flex flex-wrap gap-2">
                                 <button type="button" data-bs-toggle="modal" data-bs-target="#invoiceModal"
@@ -140,6 +171,7 @@
 
                             </div>
                         </div>
+                        @endrole
 
                         <form action="{{ route('forums.add-discussion', $data->id) }}" method="POST"
                             enctype="multipart/form-data">

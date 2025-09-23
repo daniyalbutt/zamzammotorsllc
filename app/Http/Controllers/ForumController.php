@@ -54,7 +54,34 @@ class ForumController extends Controller
     public function edit(string $id)
     {
         $data = Forum::findOrFail($id);
-        return view('forums.edit', compact('data'));
+        $info = [
+            [
+                'name' => 'Vehicle Price',
+                'price' => $data->car_price->price ?? 0,
+                'icon'=> 'fa-dollar-sign',
+                'bg' => '#34b53a36',
+                'color' => '#0a7a1d'
+
+            ],
+            [
+                'name' => 'Total Paid',
+                'price' => $data->invoices()->sum('amount') ?? 0,
+                'icon'=> 'fa-money-bill',
+                'bg' => '#e5a93c45',
+                'color' => '#e39c1a'
+
+            ],
+            [
+                'name' => 'Extra Service Paid',
+                'price' => $data->car_price ? (-1 *($data->car_price->price - $data->invoices()->sum('amount')) > 0 ? -1 *($data->car_price->price - $data->invoices()->sum('amount')) : 0) : 0,
+                'icon'=> 'fa-tools',
+                'bg' => '#0046e333',
+                'color' => '#004df9'
+
+            ]
+        ];
+      
+        return view('forums.edit', compact('data','info'));
     }
 
     /**
@@ -355,7 +382,7 @@ class ForumController extends Controller
 
         $forum->discussions()->create([
             'user_id' => Auth::id(),
-            'content' => '<p>Your price is booked for $'.$request->price.'.'
+            'content' => '<p>Your price is booked for <strong>$'.$request->price.'</strong>.'
         ]);
         
         return redirect()->back()->with('success','Your price is updated');
