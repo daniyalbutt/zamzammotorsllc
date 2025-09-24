@@ -20,12 +20,6 @@
                         <h5 class="card__heading-title">User Form</h5>
                     </div>
 
-                    <div class="col-md-3">
-                        <select name="assigned" id="assigned" class="form-control user-select select2">
-                            <option value="Not Assign">Not Assigned to Any Agent</option>
-                            
-                        </select>
-                    </div>
 
                 </div>
                 <form class="form" method="post" action="{{ route('users.store') }}">
@@ -56,7 +50,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label class="form-label">Role <strong>*</strong></label>
-                                        <select name="role" id="role" class="form-control select2" required
+                                        <select name="roles" id="role" class="form-control select2" required
                                             multiple>
                                             <option value="">Select Role</option>
                                             @foreach ($roles as $key => $value)

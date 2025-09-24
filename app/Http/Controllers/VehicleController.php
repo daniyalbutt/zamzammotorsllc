@@ -271,8 +271,8 @@ class VehicleController extends Controller
             // Handle new image uploads
             if ($request->hasFile('images')) {
                 // Get existing image paths
-                $existingPaths = $vehicle->image_paths ? json_decode($vehicle->image_paths, true) : [];
-
+                $existingPaths = $vehicle->image_paths;
+                
                 // Upload new images
                 $newImagePaths = [];
                 foreach ($request->file('images') as $image) {
@@ -288,7 +288,7 @@ class VehicleController extends Controller
                     $allImagePaths = array_slice($allImagePaths, 0, 10);
                 }
 
-                $vehicle->image_paths = json_encode($allImagePaths);
+                $vehicle->image_paths = $allImagePaths;
             }
 
             if ($request->user_id) {
@@ -297,7 +297,6 @@ class VehicleController extends Controller
             $vehicle->status = $request->has('status') ? 1 : 0;
 
             $vehicle->save();
-
             if ($request->has('assigned')) {
                 if ($request->assigned == 'Not Assign') {
                     if ($vehicle->assigned_users()->exists()) {
@@ -309,13 +308,18 @@ class VehicleController extends Controller
                     ]);
                 }
 
-                $forum = Forum::create([
+                $forum = Forum::updateOrCreate([
+                    'vehicle_id' => $vehicle->id,
+                    'agent_id' => Auth::id(),
+                    'customer_id' => $request->assigned
+                ],[
                     'vehicle_id' => $vehicle->id,
                     'agent_id' => Auth::id(),
                     'customer_id' => $request->assigned
                 ]);
 
                 $forum->discussions()->create([
+                    'user_id' => Auth::id(),
                     'content' => 'Forum created for vehicle: ' . $vehicle->title .' (ID: ' . $vehicle->id . ') for agent: ' . Auth::user()->name . ' and customer: ' . ($vehicle->user ? User::find($request->assigned)->name : 'N/A')
                 ]);
             }

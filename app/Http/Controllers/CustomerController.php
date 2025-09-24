@@ -17,7 +17,7 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $data = User::query()->role('customer')->orderBy('id', 'desc');
+        $data = User::query()->orderBy('id', 'desc');
 
         // Show assigned customers (created by current user) /agent
         if (Auth::user()->hasPermissionTo('assigned customer')) {
@@ -31,6 +31,7 @@ class CustomerController extends Controller
                     ->where('created_by', Auth::id());
             });
         }
+
         $data = $data->get();
         return view('customers.index', compact('data'));
     }

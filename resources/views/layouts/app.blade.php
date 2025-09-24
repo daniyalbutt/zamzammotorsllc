@@ -31,7 +31,7 @@
         <div class="app-sidebar" id="sidebar">
             <div class="main-sidebar-header">
                 <a href="{{ route('home') }}" class="header-logo">
-                    <img class="main-logo" src="{{ asset('imgs/logo.png') }}" alt="logo">
+                    <img class="main-logo" src="{{ asset('img/logo.png') }}" alt="logo">
                 </a>
             </div>
             <div class="main-sidebar" id="sidebar-scroll">

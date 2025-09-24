@@ -108,7 +108,7 @@ class Vehicle extends Model
             $name = $this->assigned_users->first()->name;
             return '<span class="badge bg-success" data-toggle="tooltip" data-placement="bottom" title="' . $name . '">Assigned</span>';
         } else {
-            return '<span class="badge bg-danger" data-toggle="tooltip" data-placement="bottom" title="Tooltip on top">Not Assigned</span>';
+            return '<span class="badge bg-danger">Not Assigned</span>';
         }
     }
 }

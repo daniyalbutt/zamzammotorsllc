@@ -393,18 +393,20 @@
     </style>
 @endpush
 @push('js')
-    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify@4.35.3/dist/tagify.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
     <script>
         Dropzone.autoDiscover = false;
-
-        $(document).ready(function() {
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify@4.35.3/dist/tagify.min.js"></script>
+    <script>
+    
+        $(document).ready(function () {
             // Initialize Tagify
             new Tagify(document.querySelector('input[name="features"]'));
             new Tagify(document.querySelector('input[name="safety_features"]'));
-
+    
+            // Initialize Dropzone manually
             let myDropzone = new Dropzone("#image-dropzone", {
-                url: "{{ route('vehicles.upload-image') }}", // Required even if autoProcessQueue: false
+                url: "{{ route('vehicles.upload-image') }}",
                 autoProcessQueue: false,
                 paramName: "images",
                 uploadMultiple: true,
@@ -414,54 +416,55 @@
                 acceptedFiles: "image/*",
                 dictDefaultMessage: "Drop files or click to upload",
                 dictRemoveFile: "Remove",
-                init: function() {
+                init: function () {
                     console.log("Dropzone initialized");
                 }
             });
-
+    
             // Submit Form
-            $('#main-form').submit(function(e) {
+            $('#main-form').submit(function (e) {
                 e.preventDefault();
                 let form = document.getElementById('main-form');
                 let formData = new FormData(form);
-
+    
                 // Add Dropzone files to FormData
                 myDropzone.getAcceptedFiles().forEach((file) => {
                     formData.append('images[]', file);
                 });
-
-                // Add assigned user if it exists
+    
+                // Add assigned user if exists
                 let assignedValue = $('#assigned').find(':selected').val();
                 if (assignedValue) {
                     formData.append('assigned', assignedValue);
                 }
-
-                // For Laravel resource controllers, updates should use PUT
+    
+                // For Laravel PUT
                 if (form.action.includes('update')) {
                     formData.append('_method', 'PUT');
                 }
-
+    
                 $.ajax({
                     url: form.action,
-                    method: 'POST', // Always use POST for FormData
+                    method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    processData: false, // Required for FormData
-                    contentType: false, // Required for FormData
-                    data: formData, // Use FormData directly
-                    success: function(res) {
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    success: function (res) {
                         alert('Vehicle saved successfully!');
                         window.location.href = "{{ route('vehicles.index') }}";
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         alert('Something went wrong');
                         console.log(xhr.responseText);
                     }
                 });
             });
+    
             // Remove existing image
-            $('.remove-existing-image').click(function(e) {
+            $(document).on('click', '.remove-existing-image', function (e) {
                 e.preventDefault();
                 const imagePath = $(this).data('path');
                 if (confirm('Remove this image?')) {
@@ -473,8 +476,9 @@
                     $(this).closest('.col-md-2').remove();
                 }
             });
+    
+            $('.select2').select2();
         });
-
-        $('.select2').select2()
     </script>
+    
 @endpush
