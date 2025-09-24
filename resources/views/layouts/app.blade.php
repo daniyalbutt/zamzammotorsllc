@@ -198,6 +198,9 @@
                                 </ul>
                             </li>
                         @endcan
+                        @role('sales manager')
+                            <x:salesmanager-sidebar />
+                        @endrole
                         @role('agent')
                             <x:agent-sidebar />
                         @endrole

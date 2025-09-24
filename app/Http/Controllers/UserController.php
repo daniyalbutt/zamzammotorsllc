@@ -139,6 +139,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        dd($request->all());
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required|email|unique:users,email,' . $user->id
@@ -153,6 +154,8 @@ class UserController extends Controller
         if ($request->has('roles')) {
             $data->syncRoles($request->roles);
         }
+
+        
         if ($request->expectsJson()) {
             return response()->json([
                 'status'  => true,

@@ -17,7 +17,21 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $data = User::role('customer')->with('assignedAgent')->get();
+        $data = User::query()->role('customer')->orderBy('id', 'desc');
+
+        // Show assigned customers (created by current user) /agent
+        if (Auth::user()->hasPermissionTo('assigned customer')) {
+            $data->orWhereHas('assignedCustomer', fn($q) => $q->where('agent_id', Auth::id()));
+        }
+
+        // Show assigned customers (additional condition) /sales manager
+        if (Auth::user()->hasPermissionTo('show assigned customer')) {
+            $data->orWhere(function ($q) {
+                $q->whereHas('roles', fn($q) => $q->where('name', 'customer'))
+                    ->where('created_by', Auth::id());
+            });
+        }
+        $data = $data->get();
         return view('customers.index', compact('data'));
     }
 
