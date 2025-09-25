@@ -112,9 +112,11 @@
                                         <i class="fas fa-phone me-2"></i> Call Customer
                                     </a>
                                 @endif
-                                <a href="{{ route('customers.edit', $customer->id) }}" class="btn btn-outline-primary">
-                                    <i class="fas fa-edit me-2"></i> Edit Customer
-                                </a>
+                                @can('add or edit customer')
+                                    <a href="{{ route('customers.edit', $customer->id) }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-edit me-2"></i> Edit Customer
+                                    </a>
+                                @endcan
                                 <a href="{{ route('customers.index') }}" class="btn btn-outline-secondary">
                                     <i class="fas fa-arrow-left me-2"></i> Back to Customers
                                 </a>

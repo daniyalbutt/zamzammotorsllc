@@ -5,6 +5,15 @@
         @role('hr')
             <x-hr-dashboard :data="$data" />
         @endrole
+        @role('agent')
+            <x-agent-dashboard :data="$data" />
+        @endrole
+        @role('customer')
+            <x-customer-dashboard :data="$data" />
+        @endrole
+        @role('sales manager')
+            <x-manager-dashboard :data="$data" />
+        @endrole
 
         @can('clocking')
             <x-clockin />

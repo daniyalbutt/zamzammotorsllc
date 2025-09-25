@@ -11,7 +11,6 @@
             </nav>
         </div>
     </div>
-
     <div class="row">
         <div class="col-xxl-12 col-xl-12 col-lg-12">
             <div class="card__wrapper">
@@ -20,8 +19,12 @@
                         <h5 class="card__heading-title">Vehicle Form</h5>
                     </div>
                     @role('agent')
-                        @if ($data)
-                            <div class="col-md-3">
+                        @php
+                            $vechile_assigned = DB::table('assigned_vehicles')->where('vehicle_id', $data->id)->first();
+                        @endphp
+
+                        <div class="col-md-3">
+                            @if ($vechile_assigned && $vechile_assigned->assigned_by == Auth::id())
                                 <select name="assigned" id="assigned" class="form-control user-select select2">
                                     <option value="Not Assign">Not Assigned Customer</option>
                                     @foreach ($users->get() as $item)
@@ -31,9 +34,30 @@
                                         </option>
                                     @endforeach
                                 </select>
-                            </div>
-                        @endif
+                            @elseif ($vechile_assigned && $vechile_assigned->assigned_by != Auth::id())
+                                @php
+                                    $ass = DB::table('users')->where('id', $vechile_assigned->user_id)->first();
+                                    $cus = DB::table('users')->where('id', $vechile_assigned->assigned_by)->first();
+                                @endphp
+                                <span class="text-success text-end">
+                                    Assigned to: {{ $ass->name }}
+                                </span><span class="text-success text-end">
+                                    By Agent: {{ $cus->name }}
+                                </span>
+                            @elseif (!$vechile_assigned)
+                                <select name="assigned" id="assigned" class="form-control user-select select2">
+                                    <option value="Not Assign">Not Assigned Customer</option>
+                                        @foreach ($users->get() as $item)
+                                            <option value="{{ $item->id }}"
+                                                {{ $data->assigned_users->contains($item->id) ? 'selected' : '' }}>
+                                                {{ $item->name }} -- {{ $item->email }}
+                                            </option>
+                                        @endforeach
+                                </select>
+                            @endif
+                        </div>
                     @endrole
+
 
 
                 </div>
@@ -398,12 +422,11 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify@4.35.3/dist/tagify.min.js"></script>
     <script>
-    
-        $(document).ready(function () {
+        $(document).ready(function() {
             // Initialize Tagify
             new Tagify(document.querySelector('input[name="features"]'));
             new Tagify(document.querySelector('input[name="safety_features"]'));
-    
+
             // Initialize Dropzone manually
             let myDropzone = new Dropzone("#image-dropzone", {
                 url: "{{ route('vehicles.upload-image') }}",
@@ -416,33 +439,33 @@
                 acceptedFiles: "image/*",
                 dictDefaultMessage: "Drop files or click to upload",
                 dictRemoveFile: "Remove",
-                init: function () {
+                init: function() {
                     console.log("Dropzone initialized");
                 }
             });
-    
+
             // Submit Form
-            $('#main-form').submit(function (e) {
+            $('#main-form').submit(function(e) {
                 e.preventDefault();
                 let form = document.getElementById('main-form');
                 let formData = new FormData(form);
-    
+
                 // Add Dropzone files to FormData
                 myDropzone.getAcceptedFiles().forEach((file) => {
                     formData.append('images[]', file);
                 });
-    
+
                 // Add assigned user if exists
                 let assignedValue = $('#assigned').find(':selected').val();
                 if (assignedValue) {
                     formData.append('assigned', assignedValue);
                 }
-    
+
                 // For Laravel PUT
                 if (form.action.includes('update')) {
                     formData.append('_method', 'PUT');
                 }
-    
+
                 $.ajax({
                     url: form.action,
                     method: 'POST',
@@ -452,19 +475,19 @@
                     processData: false,
                     contentType: false,
                     data: formData,
-                    success: function (res) {
+                    success: function(res) {
                         alert('Vehicle saved successfully!');
                         window.location.href = "{{ route('vehicles.index') }}";
                     },
-                    error: function (xhr) {
+                    error: function(xhr) {
                         alert('Something went wrong');
                         console.log(xhr.responseText);
                     }
                 });
             });
-    
+
             // Remove existing image
-            $(document).on('click', '.remove-existing-image', function (e) {
+            $(document).on('click', '.remove-existing-image', function(e) {
                 e.preventDefault();
                 const imagePath = $(this).data('path');
                 if (confirm('Remove this image?')) {
@@ -476,9 +499,8 @@
                     $(this).closest('.col-md-2').remove();
                 }
             });
-    
+
             $('.select2').select2();
         });
     </script>
-    
 @endpush

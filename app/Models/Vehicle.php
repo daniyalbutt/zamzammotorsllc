@@ -99,7 +99,7 @@ class Vehicle extends Model
 
     public function assigned_users()
     {
-        return $this->belongsToMany(User::class, 'assigned_vehicles', 'vehicle_id', 'user_id');
+        return $this->belongsToMany(User::class, 'assigned_vehicles', 'vehicle_id', 'user_id')->withPivot('assigned_by');
     }
 
     public function assigned()

@@ -96,6 +96,7 @@ class RoleController extends Controller
         $role->name = $request->name;
         $role->syncPermissions($request->permission);
         $role->save();
+
         return redirect()->back()->with('success', 'Role & Permission Updated Successfully');
     }
 

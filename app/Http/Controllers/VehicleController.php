@@ -22,6 +22,7 @@ class VehicleController extends Controller
     public function index()
     {
         $shouldFilterByUser = Auth::user()->getRole() === 'agent' && !Auth::user()->hasPermissionTo('show all vehicles');
+
         $data = Vehicle::where('status', 1)
             ->when($shouldFilterByUser, function ($query) {
                 $query->where('user_id', Auth::id());
@@ -272,7 +273,7 @@ class VehicleController extends Controller
             if ($request->hasFile('images')) {
                 // Get existing image paths
                 $existingPaths = $vehicle->image_paths;
-                
+
                 // Upload new images
                 $newImagePaths = [];
                 foreach ($request->file('images') as $image) {
@@ -307,21 +308,22 @@ class VehicleController extends Controller
                         $request->assigned => ['assigned_by' => Auth::id()]
                     ]);
                 }
+                if ($request->assigned != 'Not Assign') {
+                    $forum = Forum::updateOrCreate([
+                        'vehicle_id' => $vehicle->id,
+                        'agent_id' => Auth::id(),
+                        'customer_id' => $request->assigned
+                    ], [
+                        'vehicle_id' => $vehicle->id,
+                        'agent_id' => Auth::id(),
+                        'customer_id' => $request->assigned
+                    ]);
 
-                $forum = Forum::updateOrCreate([
-                    'vehicle_id' => $vehicle->id,
-                    'agent_id' => Auth::id(),
-                    'customer_id' => $request->assigned
-                ],[
-                    'vehicle_id' => $vehicle->id,
-                    'agent_id' => Auth::id(),
-                    'customer_id' => $request->assigned
-                ]);
-
-                $forum->discussions()->create([
-                    'user_id' => Auth::id(),
-                    'content' => 'Forum created for vehicle: ' . $vehicle->title .' (ID: ' . $vehicle->id . ') for agent: ' . Auth::user()->name . ' and customer: ' . ($vehicle->user ? User::find($request->assigned)->name : 'N/A')
-                ]);
+                    $forum->discussions()->create([
+                        'user_id' => Auth::id(),
+                        'content' => 'Forum created for vehicle: ' . $vehicle->title . ' (ID: ' . $vehicle->id . ') for agent: ' . Auth::user()->name . ' and customer: ' . ($vehicle->user ? User::find($request->assigned)->name : 'N/A')
+                    ]);
+                }
             }
 
 

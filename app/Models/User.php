@@ -63,6 +63,11 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Vehicle::class, 'assigned_vehicles', 'user_id', 'vehicle_id');
     }
+    
+    public function assignedVehicles()
+    {
+        return $this->belongsToMany(Vehicle::class, 'assigned_vehicles', 'assigned_by', 'vehicle_id');
+    }
 
     public function assignedSales()
     {
@@ -244,6 +249,27 @@ class User extends Authenticatable
             ->latest('time_in')
             ->first();
     }
+
+    public function customerForum()
+    {
+        return $this->hasMany(Forum::class,'customer_id');
+    }
+
+    public function agentForum()
+    {
+        return $this->hasMany(Forum::class,'agent_id');
+    }
+
+    public function invoice()
+    {
+        return $this->hasMany(Invoice::class, 'customer_id');
+    }
+
+    public function agentInvoice()
+    {
+        return $this->hasMany(Invoice::class, 'agent_id');
+    }
+
 
     
 }
