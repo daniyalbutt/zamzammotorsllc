@@ -42,7 +42,7 @@ class CustomerController extends Controller
     public function create()
     {
         $data = null;
-        $agents = User::role('agent')->get();
+        $agents = User::role('agent')->where('created_by', Auth::id())->get();
         return view('customers.create', compact('data', 'agents'));
     }
 
@@ -65,8 +65,7 @@ class CustomerController extends Controller
             'meta.youtube' => 'nullable|url',
             'meta.instagram' => 'nullable|url',
             'meta.website' => 'nullable|url',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'assigned' => 'nullable|exists:users,id'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         DB::beginTransaction();
@@ -138,7 +137,7 @@ class CustomerController extends Controller
     public function edit(string $id)
     {
         $data = User::role('customer')->findOrFail($id);
-        $agents = User::role('agent')->get();
+        $agents = User::role('agent')->where('created_by', Auth::id())->get();
         return view('customers.create', compact('data', 'agents'));
     }
 
@@ -163,8 +162,7 @@ class CustomerController extends Controller
             'meta.youtube' => 'nullable|url',
             'meta.instagram' => 'nullable|url',
             'meta.website' => 'nullable|url',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'assigned' => 'nullable|exists:users,id'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         DB::beginTransaction();
