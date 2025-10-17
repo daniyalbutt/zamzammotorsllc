@@ -63,7 +63,35 @@ class UserController extends Controller
 
         }
 
-        
+        // Show all customers
+        if (Auth::user()->hasPermissionTo('show all customer')) {
+            $query->whereHas('roles', fn($q) => $q->where('name', 'customer'));
+        }
+
+        // Show assigned customers (created by current user) /agent
+        if (Auth::user()->hasPermissionTo('assigned customer')) {
+            $query->orWhereHas('assignedCustomer', fn($q) => $q->where('agent_id', Auth::id()));
+        }
+
+        // Show assigned customers (additional condition) /sales manager
+        if (Auth::user()->hasPermissionTo('show assigned customer')) {
+
+            $query->orWhere(function ($q) {
+                $q->whereHas('roles', fn($q) => $q->where('name', 'customer'))
+                    ->where('created_by', Auth::id());
+            });
+        }
+
+
+        // Show assigned agents
+        if (Auth::user()->hasPermissionTo('show assigned agent')) {
+
+            $query->orWhere(function ($q) {
+                $q->whereHas('roles', fn($q) => $q->where('name', 'agent'))
+                    ->where('created_by', Auth::id());
+            });
+        }
+
 
         $data = $query->paginate(10);
         return view('user.index', compact('data'));
