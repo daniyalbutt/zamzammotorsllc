@@ -17,7 +17,8 @@
         <div class="card__wrapper">
 
             <form class="form" method="post"
-                action="{{ $data ? route('employees.update', $data->id) : route('employees.store') }}" enctype="multipart/form-data">
+                action="{{ $data ? route('employees.update', $data->id) : route('employees.store') }}"
+                enctype="multipart/form-data">
                 @if ($data)
                     @method('PUT')
                 @endif
@@ -60,7 +61,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                             
+
                                             </div>
                                         </div>
 
@@ -536,20 +537,8 @@
         function removeRepeaterItem(element) {
             element.closest('.repeater-item').remove();
         }
-        // Image upload preview
-function readURL(input) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('imagePreview').style.backgroundImage = 'url(' + e.target.result + ')';
-        }
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-document.getElementById('imageUpload').addEventListener('change', function() {
-    readURL(this);
-});
+        
+        
     </script>
 @endpush
 

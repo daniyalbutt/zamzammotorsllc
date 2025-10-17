@@ -46,6 +46,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('vehicles/remove-image', [VehicleController::class, 'removeImage'])->name('vehicles.remove-image');
     Route::post('vehicles/upload-image', [VehicleController::class, 'removeImage'])->name('vehicles.upload-image');
 
+    Route::get('profile', [UserController::class, 'profile'])->name('profile');
+
     Route::resource('customers', CustomerController::class);
     
     Route::resource('forums', ForumController::class);
