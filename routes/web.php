@@ -39,6 +39,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::resource('roles', RoleController::class);
     Route::resource('users', UserController::class);
+    Route::resource('agents', AgentController::class);
     Route::resource('makes', MakeController::class);
     Route::resource('models', ModelsController::class);
     Route::resource('body-types', BodyTypeController::class);
