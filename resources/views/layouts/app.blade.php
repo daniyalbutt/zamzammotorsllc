@@ -71,31 +71,7 @@
                         @endcan
                         
 
-                        @can('user')
-                            <li class="slide has-sub {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                                <a href="javascript:void(0);"
-                                    class="sidebar__menu-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                                    <div class="side-menu__icon"><i class="fa-sharp fa-light fa-user"></i></div>
-                                    <span class="sidebar__menu-label">Users</span>
-                                    <i class="fa-regular fa-angle-down side-menu__angle"></i>
-                                </a>
-                                <ul class="sidebar-menu child1 {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                                    @canany(['create user', 'create edit assigned customer', 'create edit assigned agent',
-                                        'create edit all customer', 'create edit all agent'])
-                                        <li class="slide {{ Request::routeIs('users.create') ? 'active' : '' }}">
-                                            <a href="{{ route('users.create') }}"
-                                                class="sidebar__menu-item {{ Request::routeIs('users.create') ? 'active' : '' }}">Add
-                                                User</a>
-                                        </li>
-                                    @endcanany
-                                    <li class="slide {{ Request::routeIs('users.index') ? 'active' : '' }}">
-                                        <a href="{{ route('users.index') }}"
-                                            class="sidebar__menu-item {{ Request::routeIs('users.index') ? 'active' : '' }}">User
-                                            List</a>
-                                    </li>
-                                </ul>
-                            </li>
-                        @endcan
+                        
 
                         @can('create edit assigned agent')
                             <li class="slide has-sub {{ request()->routeIs('agents.*') ? 'active' : '' }}">
@@ -149,7 +125,7 @@
                         @endcan
 
 
-                        <li class="sidebar__menu-category"><span class="category-name">Listing</span></li>
+                        {{--<li class="sidebar__menu-category"><span class="category-name">Listing</span></li>--}}
 
 
                         @can('make')

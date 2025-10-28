@@ -18,9 +18,10 @@
                     <div class="col-md-9">
                         <h5 class="card__heading-title">Vehicle Form</h5>
                     </div>
+                    @if($data)
                     @role('agent')
                         @php
-                            $vechile_assigned = DB::table('assigned_vehicles')->where('vehicle_id', $data->id)->first();
+                         $vechile_assigned = DB::table('assigned_vehicles')->where('vehicle_id', $data->id)->first();
                         @endphp
 
                         <div class="col-md-3">
@@ -57,7 +58,7 @@
                             @endif
                         </div>
                     @endrole
-
+                    @endif
 
 
                 </div>
