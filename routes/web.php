@@ -46,6 +46,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('vehicles', VehicleController::class);
     Route::post('vehicles/remove-image', [VehicleController::class, 'removeImage'])->name('vehicles.remove-image');
     Route::post('vehicles/upload-image', [VehicleController::class, 'removeImage'])->name('vehicles.upload-image');
+    Route::post('vehicles/delete-video', [VehicleController::class, 'deleteVideo'])->name('vehicles.delete-video');
 
     Route::get('profile', [UserController::class, 'profile'])->name('profile');
 

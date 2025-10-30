@@ -127,7 +127,7 @@
 
                         {{--<li class="sidebar__menu-category"><span class="category-name">Listing</span></li>--}}
 
-
+{{-- 
                         @can('make')
                             <li class="slide has-sub {{ request()->routeIs('makes.*') ? 'active' : '' }}">
                                 <a href="javascript:void(0);"
@@ -203,7 +203,7 @@
                                     </li>
                                 </ul>
                             </li>
-                        @endcan
+                        @endcan --}}
 
 
                         @can('vehicles')

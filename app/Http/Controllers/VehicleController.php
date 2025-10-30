@@ -22,7 +22,6 @@ class VehicleController extends Controller
     public function index()
     {
         $shouldFilterByUser = Auth::user()->getRole() === 'agent' && !Auth::user()->hasPermissionTo('show all vehicles');
-
         $data = Vehicle::where('status', 1)
             ->when($shouldFilterByUser, function ($query) {
                 $query->where('user_id', Auth::id());
@@ -94,12 +93,14 @@ class VehicleController extends Controller
             $vehicle->drive_type = $request->drive_type;
             $vehicle->transmission = $request->transmission;
             $vehicle->fuel_type = $request->fuel_type;
-            $vehicle->cylinders = $request->cylinders;
+            $vehicle->stock_id = $request->stock_id;
             $vehicle->color = $request->color;
             $vehicle->doors = $request->doors;
             $vehicle->year = $request->year;
+            $vehicle->rhd_lhd = $request->rhd_lhd;
+            $vehicle->engine = $request->engine;
+            $vehicle->mileage = $request->mileage;
 
-            // Handle features (convert comma-separated to JSON)
             if ($request->features) {
                 $decodedFeatures = json_decode($request->features, true);
                 $updated = array_map(function ($item) {
@@ -128,6 +129,13 @@ class VehicleController extends Controller
                 }
             }
             $vehicle->image_paths = $imagePaths;
+            
+            // Handle video upload
+            if ($request->hasFile('video')) {
+                $video = $request->file('video');
+                $videoPath = $video->store('vehicle_videos', 'public');
+                $vehicle->video = $videoPath;
+            }
 
             $vehicle->user_id = Auth::id();
             $vehicle->status = $request->has('status') ? 1 : 0;
@@ -246,6 +254,10 @@ class VehicleController extends Controller
             $vehicle->color = $request->color;
             $vehicle->doors = $request->doors;
             $vehicle->year = $request->year;
+            $vehicle->rhd_lhd = $request->rhd_lhd;
+            $vehicle->engine = $request->engine;
+            $vehicle->mileage = $request->mileage;
+            $vehicle->stock_id = $request->stock_id;
 
             // Handle features (convert comma-separated to JSON)
             if ($request->features) {
@@ -290,6 +302,26 @@ class VehicleController extends Controller
                 }
 
                 $vehicle->image_paths = $allImagePaths;
+            }
+            
+            // Handle video upload
+            if ($request->hasFile('video')) {
+                if ($vehicle->video && Storage::disk('public')->exists($vehicle->video)) {
+                    Storage::disk('public')->delete($vehicle->video);
+                }
+                
+                // Upload new video
+                $video = $request->file('video');
+                $videoPath = $video->store('vehicle_videos', 'public');
+                $vehicle->video = $videoPath;
+            }
+            
+            // Handle video removal
+            if ($request->has('remove_video') && $request->remove_video) {
+                if ($vehicle->video && Storage::disk('public')->exists($vehicle->video)) {
+                    Storage::disk('public')->delete($vehicle->video);
+                }
+                $vehicle->video = null;
             }
 
             if ($request->user_id) {
@@ -392,6 +424,50 @@ class VehicleController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error removing image: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * Delete video from a vehicle
+     */
+    public function deleteVideo(Request $request)
+    {
+        try {
+            // Validate the request
+            $request->validate([
+                'video_path' => 'required|string',
+                'vehicle_id' => 'required|integer|exists:vehicles,id',
+            ]);
+            
+            // Find the vehicle
+            $vehicle = Vehicle::findOrFail($request->vehicle_id);
+            
+            // Check if the video path matches
+            if ($vehicle->video != $request->video_path) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Video path does not match the vehicle record'
+                ], 400);
+            }
+            
+            // Delete the video file
+            if (Storage::disk('public')->exists($vehicle->video)) {
+                Storage::disk('public')->delete($vehicle->video);
+            }
+            
+            // Update the vehicle record
+            $vehicle->video = null;
+            $vehicle->save();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Video deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
             ], 500);
         }
     }
