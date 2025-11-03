@@ -6,8 +6,8 @@
             <nav>
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="{{ route('home') }}">Forum Discussions</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Forums</li>
-                    <li class="breadcrumb-item active" aria-current="page">Forums List</li>
+                    <li class="breadcrumb-item active" aria-current="page">Vehicles</li>
+                    <li class="breadcrumb-item active" aria-current="page">Purchased Vehicles</li>
                 </ol>
             </nav>
         </div>
@@ -18,7 +18,7 @@
         <div class="col-xxl-12">
             <div class="card__wrapper">
                 <div class="card__title-wrap mb-20">
-                    <h3 class="card__heading-title">Forums Discussions</h3>
+                    <h3 class="card__heading-title">Purchased Vehicles</h3>
                 </div>
             </div>
         </div>

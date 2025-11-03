@@ -6,7 +6,7 @@
                 <span><i class="fa-sharp fa-regular fa-car"></i></span>
             </div>
             <div class="card__title-wrap">
-                <h6 class="card__sub-title mb-10">Vehicles Assigned</h6>
+                <h6 class="card__sub-title mb-10">Reserved Vehicles</h6>
                 <div class="d-flex flex-wrap align-items-end gap-10">
                     <h3 class="card__title">{{$data['carcount']}}</h3>
                 </div>

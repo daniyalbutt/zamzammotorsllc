@@ -9,6 +9,7 @@ use Spatie\Sluggable\SlugOptions;
 
 class Models extends Model
 {
+    protected $guarded = [];
     use HasFactory, HasSlug;
 
     public function getSlugOptions() : SlugOptions

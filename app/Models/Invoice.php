@@ -24,4 +24,9 @@ class Invoice extends Model
     {
         return $this->belongsTo(User::class, 'agent_id');
     }
+
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class);
+    }
 }

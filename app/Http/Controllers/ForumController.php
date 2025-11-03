@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ForumController extends Controller
 {
@@ -386,5 +387,14 @@ class ForumController extends Controller
         ]);
         
         return redirect()->back()->with('success','Your price is updated');
+    }
+
+    public function downloadInvoicePdf($id)
+    {
+        $invoice = Invoice::with(['customer', 'agent', 'vehicle'])->findOrFail($id);
+        
+        $pdf = Pdf::loadView('invoices.pdf', compact('invoice'));
+        
+        return $pdf->download('invoice-' . str_pad($invoice->id, 6, '0', STR_PAD_LEFT) . '.pdf');
     }
 }

@@ -11,6 +11,8 @@ class Make extends Model
 {
     use HasFactory, HasSlug;
 
+    protected $guarded = [];
+
     public function getSlugOptions() : SlugOptions
     {
         return SlugOptions::create()

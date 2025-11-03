@@ -140,7 +140,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label class="form-label">Make</label>
-                                        <select name="make_id" class="form-control" id="make_id">
+                                        <select name="make_id" class="select2-dynmaic" id="make_id">
                                             <option value="">Select Make</option>
                                             @foreach ($make as $item)
                                                 <option value="{{ $item->id }}"
@@ -156,7 +156,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label class="form-label">Model</label>
-                                        <select name="model_id" class="form-control" id="model_id">
+                                        <select name="model_id" class="select2-dynmaic" id="model_id">
                                             <option value="">Select Model</option>
                                             @foreach ($model as $item)
                                                 <option value="{{ $item->id }}"
@@ -174,7 +174,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label class="form-label">Body Type</label>
-                                        <select name="body_type_id" class="form-control">
+                                        <select name="body_type_id" class="select2-dynmaic">
                                             <option value="">Select Body Type</option>
                                             @foreach ($body_type as $item)
                                                 <option value="{{ $item->id }}"
@@ -277,7 +277,7 @@
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label class="form-label">Mileage Field (km/h)</label>
+                                        <label class="form-label">Mileage Field (km)</label>
                                         <input type="number" name="mileage" class="form-control"
                                             value="{{ old('mileage', $data->mileage ?? '') }}" min="0" />
                                     </div>
@@ -300,7 +300,7 @@
                                 </div>
 
                                 <!-- Features -->
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="form-label">Features (comma separated)</label>
                                         <input name="features" class="tagify"
@@ -308,67 +308,75 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="form-label">Safety Features (comma separated)</label>
                                         <input name="safety_features" class="tagify"
                                             value="{{ old('safety_features', isset($data) && $data->safety_features ? implode(',', $data->safety_features) : '') }}" />
                                     </div>
                                 </div>
-                           <div class="col-md-12">
-    <div class="form-group">
-        <label class="form-label">Vehicle Video</label>
-        <input type="file" 
-               name="video" 
-               id="video-upload"
-               class="dropify" 
-               data-max-file-size="100M" 
-               data-allowed-file-extensions="mp4 mov avi mkv webm"
-               data-max-height="300"
-               @if (isset($data) && $data->video)
-                   data-default-file="{{ asset('storage/' . $data->video) }}"
-               @endif
-        />
-        <small class="form-text text-muted">
-            Accepted formats: MP4, MOV, AVI, MKV, WebM (Max size: 100MB)
-        </small>
-        
-        @if (isset($data) && $data->video)
-            <div class="mt-3 existing-video-preview" id="video-container">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0">Current Video</h6>
-                        <button type="button" 
-                                class="btn btn-sm btn-danger" 
-                                data-path="{{ $data->video }}" 
-                                data-vehicle-id="{{ $data->id }}" 
-                                id="remove-video">
-                            <i class="fa-solid fa-trash"></i> Remove Video
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <video width="100%" height="300" controls class="rounded">
-                            <source src="{{ asset('storage/' . $data->video) }}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                        <div class="mt-2">
-                            <a href="{{ asset('storage/' . $data->video) }}" 
-                               target="_blank" 
-                               class="btn btn-sm btn-outline-primary">
-                                <i class="fa-solid fa-external-link"></i> Open in New Tab
-                            </a>
-                            <a href="{{ asset('storage/' . $data->video) }}" 
-                               download 
-                               class="btn btn-sm btn-outline-secondary">
-                                <i class="fa-solid fa-download"></i> Download
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
-    </div>
-</div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="form-label">Availabilty</label>
+                                        <select name="availability" id="availability" class="form-control">
+                                            <option value="available"
+                                                {{ old('availability', $data->availability ?? '') == 'available' ? 'selected' : '' }}>
+                                                Available</option>
+                                            <option value="reserval"
+                                                {{ old('availability', $data->availability ?? '') == 'reserval' ? 'selected' : '' }}>
+                                                Reserval</option>
+                                            <option value="not available"
+                                                {{ old('availability', $data->availability ?? '') == 'not available' ? 'selected' : '' }}>
+                                                Not Available</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="form-label">Vehicle Video</label>
+                                        <input type="file" name="video" id="video-upload" class="dropify"
+                                            data-max-file-size="100M" data-allowed-file-extensions="mp4 mov avi mkv webm"
+                                            data-max-height="300"
+                                            @if (isset($data) && $data->video) data-default-file="{{ asset('storage/' . $data->video) }}" @endif />
+                                        <small class="form-text text-muted">
+                                            Accepted formats: MP4, MOV, AVI, MKV, WebM (Max size: 100MB)
+                                        </small>
+
+                                        @if (isset($data) && $data->video)
+                                            <div class="mt-3 existing-video-preview" id="video-container">
+                                                <div class="card">
+                                                    <div
+                                                        class="card-header d-flex justify-content-between align-items-center">
+                                                        <h6 class="mb-0">Current Video</h6>
+                                                        <button type="button" class="btn btn-sm btn-danger"
+                                                            data-path="{{ $data->video }}"
+                                                            data-vehicle-id="{{ $data->id }}" id="remove-video">
+                                                            <i class="fa-solid fa-trash"></i> Remove Video
+                                                        </button>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <video width="100%" height="300" controls class="rounded">
+                                                            <source src="{{ asset('storage/' . $data->video) }}"
+                                                                type="video/mp4">
+                                                            Your browser does not support the video tag.
+                                                        </video>
+                                                        <div class="mt-2">
+                                                            <a href="{{ asset('storage/' . $data->video) }}"
+                                                                target="_blank" class="btn btn-sm btn-outline-primary">
+                                                                <i class="fa-solid fa-external-link"></i> Open in New Tab
+                                                            </a>
+                                                            <a href="{{ asset('storage/' . $data->video) }}" download
+                                                                class="btn btn-sm btn-outline-secondary">
+                                                                <i class="fa-solid fa-download"></i> Download
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
 
                                 <!-- Images with Dropzone -->
                                 <div class="col-md-12">
@@ -494,168 +502,173 @@
             height: auto;
             padding: 0;
         }
-         /* Dropify Custom Styles for Video */
-    .dropify-wrapper {
-        border: 2px dashed #0087F7;
-        border-radius: 8px;
-        background: #f8f9fa;
-        transition: all 0.3s ease;
-    }
-    
-    .dropify-wrapper:hover {
-        border-color: #0056b3;
-        background: #e9ecef;
-    }
-    
-    .dropify-wrapper .dropify-message {
-        padding: 40px 20px;
-    }
-    
-    .dropify-wrapper .dropify-message p {
-        font-size: 16px;
-        color: #495057;
-    }
-    
-    .dropify-wrapper .dropify-preview {
-        padding: 20px;
-    }
-    
-    /* Video Preview Card Styles */
-    .existing-video-preview .card {
-        border: 1px solid #dee2e6;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    .existing-video-preview .card-header {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #dee2e6;
-        padding: 12px 20px;
-    }
-    
-    .existing-video-preview video {
-        border: 1px solid #dee2e6;
-        background: #000;
-    }
-    
-    /* Dropify Error Styles */
-    .dropify-wrapper.has-error {
-        border-color: #dc3545;
-    }
-    
-    .dropify-errors-container {
-        background: #f8d7da;
-        border: 1px solid #f5c6cb;
-        color: #721c24;
-        padding: 10px;
-        border-radius: 4px;
-        margin-top: 10px;
-    }
+
+        /* Dropify Custom Styles for Video */
+        .dropify-wrapper {
+            border: 2px dashed #0087F7;
+            border-radius: 8px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .dropify-wrapper:hover {
+            border-color: #0056b3;
+            background: #e9ecef;
+        }
+
+        .dropify-wrapper .dropify-message {
+            padding: 40px 20px;
+        }
+
+        .dropify-wrapper .dropify-message p {
+            font-size: 16px;
+            color: #495057;
+        }
+
+        .dropify-wrapper .dropify-preview {
+            padding: 20px;
+        }
+
+        /* Video Preview Card Styles */
+        .existing-video-preview .card {
+            border: 1px solid #dee2e6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .existing-video-preview .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 12px 20px;
+        }
+
+        .existing-video-preview video {
+            border: 1px solid #dee2e6;
+            background: #000;
+        }
+
+        /* Dropify Error Styles */
+        .dropify-wrapper.has-error {
+            border-color: #dc3545;
+        }
+
+        .dropify-errors-container {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css" integrity="sha512-EZSUkJWTjzDlspOoPSpUFR0o0Xy7jdzW//6qhUkoZ9c4StFkVsp9fbbd0O06p9ELS3H486m4wmrCELjza4JEog==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css"
+        integrity="sha512-EZSUkJWTjzDlspOoPSpUFR0o0Xy7jdzW//6qhUkoZ9c4StFkVsp9fbbd0O06p9ELS3H486m4wmrCELjza4JEog=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 @endpush
 @push('js')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js" integrity="sha512-8QFTrG0oeOiyWo/VM9Y8kgxdlCryqhIxVeRpWSezdRRAvarxVtwLnGroJgnVW9/XBRduxO/z1GblzPrMQoeuew==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"
+        integrity="sha512-8QFTrG0oeOiyWo/VM9Y8kgxdlCryqhIxVeRpWSezdRRAvarxVtwLnGroJgnVW9/XBRduxO/z1GblzPrMQoeuew=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         Dropzone.autoDiscover = false;
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify@4.35.3/dist/tagify.min.js"></script>
     <script>
-$(document).ready(function() {
-    // Initialize Dropify for video upload with enhanced options
-    let videoDropify = $('.dropify').dropify({
-        messages: {
-            default: '<i class="fa-solid fa-video fa-3x mb-3"></i><br>Drag and drop a video here or click to browse',
-            replace: '<i class="fa-solid fa-video fa-3x mb-3"></i><br>Drag and drop or click to replace',
-            remove: '<i class="fa-solid fa-trash"></i> Remove',
-            error: 'Error: Please check the file size and format'
-        },
-        error: {
-            'fileSize': 'The file size is too large (max {{ $maxSize ?? "100MB" }}).',
-            'minWidth': 'The video width is too small.',
-            'maxWidth': 'The video width is too large.',
-            'minHeight': 'The video height is too small.',
-            'maxHeight': 'The video height is too large.',
-            'imageFormat': 'The video format is not allowed ({{ $formats ?? "MP4, MOV, AVI, MKV, WebM" }}).'
-        },
-        tpl: {
-            wrap: '<div class="dropify-wrapper"></div>',
-            loader: '<div class="dropify-loader"></div>',
-            message: '<div class="dropify-message"><span class="file-icon"></span> <p>Drop Video</p></div>',
-            preview: '<div class="dropify-preview"><span class="dropify-render"></span><div class="dropify-infos"><div class="dropify-infos-inner"><p class="dropify-filename"><span class="file-icon"></span> <span class="dropify-filename-inner"></span></p><p class="dropify-infos-message">Drop Video</p></div></div></div>',
-            filename: '<p class="dropify-filename"><span class="file-icon"></span> <span class="dropify-filename-inner"></span></p>',
-            clearButton: '<button type="button" class="dropify-clear">remove </button>',
-            errorLine: '<p class="dropify-error">error</p>',
-            errorsContainer: '<div class="dropify-errors-container"><ul></ul></div>'
-        }
-    });
-
-    // Handle Dropify events
-    let drEvent = $('#video-upload').dropify();
-    
-    drEvent.on('dropify.beforeClear', function(event, element) {
-        return confirm("Are you sure you want to remove this video?");
-    });
-
-    drEvent.on('dropify.afterClear', function(event, element) {
-        console.log('Video removed');
-    });
-
-    drEvent.on('dropify.errors', function(event, element) {
-        console.log('Dropify errors', element);
-        alert('Please check the video file. Ensure it is a valid video format and under 100MB.');
-    });
-
-    // Remove existing video
-    $(document).on('click', '.remove-existing-video', function(e) {
-        e.preventDefault();
-        const videoPath = $(this).data('path');
-        
-        if (confirm('Are you sure you want to remove this video? This action cannot be undone.')) {
-            // Add hidden input to mark video for deletion
-            $('<input>').attr({
-                type: 'hidden',
-                name: 'remove_video',
-                value: '1'
-            }).appendTo('#main-form');
-            
-            // Hide the existing video container
-            $('#existing-video-container').fadeOut(300, function() {
-                $(this).remove();
+        $(document).ready(function() {
+            // Initialize Dropify for video upload with enhanced options
+            let videoDropify = $('.dropify').dropify({
+                messages: {
+                    default: '<i class="fa-solid fa-video fa-3x mb-3"></i><br>Drag and drop a video here or click to browse',
+                    replace: '<i class="fa-solid fa-video fa-3x mb-3"></i><br>Drag and drop or click to replace',
+                    remove: '<i class="fa-solid fa-trash"></i> Remove',
+                    error: 'Error: Please check the file size and format'
+                },
+                error: {
+                    'fileSize': 'The file size is too large (max {{ $maxSize ?? '100MB' }}).',
+                    'minWidth': 'The video width is too small.',
+                    'maxWidth': 'The video width is too large.',
+                    'minHeight': 'The video height is too small.',
+                    'maxHeight': 'The video height is too large.',
+                    'imageFormat': 'The video format is not allowed ({{ $formats ?? 'MP4, MOV, AVI, MKV, WebM' }}).'
+                },
+                tpl: {
+                    wrap: '<div class="dropify-wrapper"></div>',
+                    loader: '<div class="dropify-loader"></div>',
+                    message: '<div class="dropify-message"><span class="file-icon"></span> <p>Drop Video</p></div>',
+                    preview: '<div class="dropify-preview"><span class="dropify-render"></span><div class="dropify-infos"><div class="dropify-infos-inner"><p class="dropify-filename"><span class="file-icon"></span> <span class="dropify-filename-inner"></span></p><p class="dropify-infos-message">Drop Video</p></div></div></div>',
+                    filename: '<p class="dropify-filename"><span class="file-icon"></span> <span class="dropify-filename-inner"></span></p>',
+                    clearButton: '<button type="button" class="dropify-clear">remove </button>',
+                    errorLine: '<p class="dropify-error">error</p>',
+                    errorsContainer: '<div class="dropify-errors-container"><ul></ul></div>'
+                }
             });
-            
-            // Show success message
-            alert('Video marked for removal. Save the form to complete the action.');
-        }
-    });
 
-    // Video file validation before upload
-    $('#video-upload').on('change', function(e) {
-        const file = e.target.files[0];
-        
-        if (file) {
-            const fileSize = file.size / 1024 / 1024; // Convert to MB
-            const allowedExtensions = ['mp4', 'mov', 'avi', 'mkv', 'webm'];
-            const fileExtension = file.name.split('.').pop().toLowerCase();
-            
-            // Check file size
-            if (fileSize > 100) {
-                alert('Video file is too large. Maximum size is 100MB.');
-                $(this).val('');
-                return false;
-            }
-            
-            // Check file extension
-            if (!allowedExtensions.includes(fileExtension)) {
-                alert('Invalid video format. Allowed formats: MP4, MOV, AVI, MKV, WebM');
-                $(this).val('');
-                return false;
-            }
-            
-            console.log('Video file validated:', file.name, fileSize.toFixed(2) + ' MB');
-        }
-    });
-});
-</script>
+            // Handle Dropify events
+            let drEvent = $('#video-upload').dropify();
+
+            drEvent.on('dropify.beforeClear', function(event, element) {
+                return confirm("Are you sure you want to remove this video?");
+            });
+
+            drEvent.on('dropify.afterClear', function(event, element) {
+                console.log('Video removed');
+            });
+
+            drEvent.on('dropify.errors', function(event, element) {
+                console.log('Dropify errors', element);
+                alert('Please check the video file. Ensure it is a valid video format and under 100MB.');
+            });
+
+            // Remove existing video
+            $(document).on('click', '.remove-existing-video', function(e) {
+                e.preventDefault();
+                const videoPath = $(this).data('path');
+
+                if (confirm('Are you sure you want to remove this video? This action cannot be undone.')) {
+                    // Add hidden input to mark video for deletion
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'remove_video',
+                        value: '1'
+                    }).appendTo('#main-form');
+
+                    // Hide the existing video container
+                    $('#existing-video-container').fadeOut(300, function() {
+                        $(this).remove();
+                    });
+
+                    // Show success message
+                    alert('Video marked for removal. Save the form to complete the action.');
+                }
+            });
+
+            // Video file validation before upload
+            $('#video-upload').on('change', function(e) {
+                const file = e.target.files[0];
+
+                if (file) {
+                    const fileSize = file.size / 1024 / 1024; // Convert to MB
+                    const allowedExtensions = ['mp4', 'mov', 'avi', 'mkv', 'webm'];
+                    const fileExtension = file.name.split('.').pop().toLowerCase();
+
+                    // Check file size
+                    if (fileSize > 100) {
+                        alert('Video file is too large. Maximum size is 100MB.');
+                        $(this).val('');
+                        return false;
+                    }
+
+                    // Check file extension
+                    if (!allowedExtensions.includes(fileExtension)) {
+                        alert('Invalid video format. Allowed formats: MP4, MOV, AVI, MKV, WebM');
+                        $(this).val('');
+                        return false;
+                    }
+
+                    console.log('Video file validated:', file.name, fileSize.toFixed(2) + ' MB');
+                }
+            });
+        });
+    </script>
     <script>
         $(document).ready(function() {
             // Initialize Tagify
@@ -678,7 +691,7 @@ $(document).ready(function() {
                     console.log("Image Dropzone initialized");
                 }
             });
-            
+
             // Initialize Dropify for video upload
             $('.dropify').dropify({
                 messages: {
@@ -699,7 +712,7 @@ $(document).ready(function() {
                 myDropzone.getAcceptedFiles().forEach((file) => {
                     formData.append('images[]', file);
                 });
-                
+
                 // Video is already included in the form data via the file input
 
                 // Add assigned user if exists
@@ -746,7 +759,7 @@ $(document).ready(function() {
                     $(this).closest('.col-md-2').remove();
                 }
             });
-            
+
             // Remove existing video
             $(document).on('click', '.remove-existing-video', function(e) {
                 e.preventDefault();
@@ -762,10 +775,10 @@ $(document).ready(function() {
             });
 
             // Remove video via AJAX
-            $('#remove-video').click(function(){
+            $('#remove-video').click(function() {
                 const videoPath = $(this).data('path');
                 const vehicleId = $(this).data('vehicle-id');
-                
+
                 if (confirm('Are you sure you want to remove this video?')) {
                     $.ajax({
                         url: "{{ route('vehicles.delete-video') }}",
@@ -795,6 +808,9 @@ $(document).ready(function() {
             })
 
             $('.select2').select2();
+            $('.select2-dynmaic').select2({
+                tags: true
+            });
         });
     </script>
 @endpush

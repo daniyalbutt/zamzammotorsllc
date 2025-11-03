@@ -11,6 +11,7 @@ use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use File;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -62,9 +63,9 @@ class VehicleController extends Controller
                 'title' => 'required|string|max:255',
                 'condition' => 'nullable|string',
                 'content' => 'nullable|string',
-                'make_id' => 'nullable|integer|exists:makes,id',
-                'model_id' => 'nullable|integer|exists:models,id',
-                'body_type_id' => 'nullable|integer|exists:body_types,id',
+                'make_id' => 'nullable',
+                'model_id' => 'nullable',
+                'body_type_id' => 'nullable',
                 'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 1),
                 'offer_type' => 'nullable|string|max:255',
                 'drive_type' => 'nullable|string',
@@ -80,6 +81,21 @@ class VehicleController extends Controller
                 'status' => 'nullable|boolean',
                 'user_id' => 'nullable|integer|exists:users,id',
             ]);
+            
+            if(!is_numeric($request->make_id)){
+                $make = Make::firstOrCreate(['name' => $request->make_id]);
+                $request->merge(['make_id' => $make->id]);
+            }
+
+            if(!is_numeric($request->model_id)){
+                $model = Models::firstOrCreate(['name' => $request->model_id, 'make_id' => $request->model_id]);
+                $request->merge(['model_id' => $model->id]);
+            }
+
+            if(!is_numeric($request->body_type_id)){
+                $bodyType = BodyType::firstOrCreate(['name' => $request->body_type_id]);
+                $request->merge(['body_type_id' => $bodyType->id]);
+            }
 
             // Create the vehicle
             $vehicle = new Vehicle();
@@ -94,6 +110,7 @@ class VehicleController extends Controller
             $vehicle->transmission = $request->transmission;
             $vehicle->fuel_type = $request->fuel_type;
             $vehicle->stock_id = $request->stock_id;
+            $vehicle->availability = $request->availability;
             $vehicle->color = $request->color;
             $vehicle->doors = $request->doors;
             $vehicle->year = $request->year;
@@ -213,14 +230,14 @@ class VehicleController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            // Validate the request
+            // Validate the request.
             $request->validate([
                 'title' => 'required|string|max:255',
                 'condition' => 'nullable|string',
                 'content' => 'nullable|string',
-                'make_id' => 'nullable|integer|exists:makes,id',
-                'model_id' => 'nullable|integer|exists:models,id',
-                'body_type_id' => 'nullable|integer|exists:body_types,id',
+                'make_id' => 'nullable',
+                'model_id' => 'nullable',
+                'body_type_id' => 'nullable',
                 'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 1),
                 'offer_type' => 'nullable|string|max:255',
                 'drive_type' => 'nullable|string',
@@ -237,6 +254,21 @@ class VehicleController extends Controller
                 'user_id' => 'nullable|integer|exists:users,id',
             ]);
 
+            if(!is_numeric($request->make_id)){
+                $make = Make::firstOrCreate(['name' => $request->make_id]);
+                $request->merge(['make_id' => $make->id]);
+            }
+
+            if(!is_numeric($request->model_id)){
+                $model = Models::firstOrCreate(['name' => $request->model_id]);
+                $request->merge(['model_id' => $model->id]);
+            }
+
+            if(!is_numeric($request->body_type_id)){
+                $bodyType = BodyType::firstOrCreate(['name' => $request->body_type_id]);
+                $request->merge(['body_type_id' => $bodyType->id]);
+            }
+
             // Find the vehicle
             $vehicle = Vehicle::findOrFail($id);
 
@@ -250,6 +282,7 @@ class VehicleController extends Controller
             $vehicle->drive_type = $request->drive_type;
             $vehicle->transmission = $request->transmission;
             $vehicle->fuel_type = $request->fuel_type;
+            $vehicle->availability = $request->availability;
             $vehicle->cylinders = $request->cylinders;
             $vehicle->color = $request->color;
             $vehicle->doors = $request->doors;

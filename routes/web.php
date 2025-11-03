@@ -58,6 +58,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('update-customer-car-price',[ForumController::class,'updateCustomerCarPrice'])->name('update.customer.car.price');
     Route::post('pay-for-invoice', [ForumController::class, 'payInvoice'])->name('payInvoice');
+    Route::get('invoices/{id}/download-pdf', [ForumController::class, 'downloadInvoicePdf'])->name('invoices.download-pdf');
 
 
     // Add this custom route for adding discussions to existing forums

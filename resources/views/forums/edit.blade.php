@@ -139,8 +139,15 @@
                                     </div>
                                 </div>
                                 <div class="project__details-title mt-2">
-                                    <h4 class="text-center">Invoice Details -- ({{ $item->created_at->format('d F, Y') }})
-                                    </h4>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h4 class="text-center flex-grow-1">Invoice Details -- ({{ $item->created_at->format('d F, Y') }})
+                                        </h4>
+                                        <a href="{{ route('invoices.download-pdf', $item->id) }}" 
+                                           class="btn btn-primary btn-sm" 
+                                           target="_blank">
+                                            <i class="fa-light fa-download"></i> Download PDF
+                                        </a>
+                                    </div>
                                     <div class="invoice">
                                         <p class="mb-1"><strong>Name:</strong> {{ $item->customer->name }}</p>
                                         <p class="mb-1"><strong>Agent Name: </strong> {{ $item->agent->name }}</p>
