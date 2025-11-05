@@ -115,9 +115,17 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label class="form-label">RHD - LHD</label>
-                                        <input type="text" class="form-control"
-                                            value="{{ old('rhd_lhd', $data->rhd_lhd ?? '') }}" name="rhd_lhd">
+                                        <label class="form-label">Steering Type</label>
+                                        <select name="rhd_lhd" id="" class="form-control">
+                                            <option value="" hidden>Not Selected</option>
+                                            <option value="RHD"
+                                                {{ old('rhd_lhd', $data->rhd_lhd ?? '') == 'RHD' ? 'selected' : '' }}>
+                                                RHD</option>
+                                            <option value="LHD"
+                                                {{ old('rhd_lhd', $data->rhd_lhd ?? '') == 'LHD' ? 'selected' : '' }}>
+                                                LHD</option>
+                                        </select>
+
                                     </div>
                                 </div>
                                 <div class="col-md-3">
