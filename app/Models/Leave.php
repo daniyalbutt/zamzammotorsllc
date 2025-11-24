@@ -9,19 +9,45 @@ class Leave extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'employee_id',
+        'leave_type',
+        'start_date',
+        'end_date',
+        'days',
+        'reason',
+        'status',
+        'rejection_reason',
+        'approved_by',
+        'approved_at',
+    ];
 
-    public function user(){
-        return $this->belongsTo(User::class);
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'approved_at' => 'datetime',
+        'days' => 'integer',
+    ];
+
+    // Relationships
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
     }
 
-    public function getBadgeAttribute()
+    public function approver()
     {
-        return match ($this->status) {
-            'pending'  => 'warning',
-            'approved' => 'success',
-            'rejected' => 'danger',
-            default    => 'secondary',
-        };
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    // Scopes
+    public function scopePending($query)
+    {
+        return $query->where('status', 'Pending');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'Approved');
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\VehicleApiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -8,12 +8,14 @@ use Illuminate\Support\Facades\Route;
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
+| Public API routes for vehicle listings (NO AUTHENTICATION REQUIRED)
+| These endpoints are for the public website - NO PRICE DATA included
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Public Vehicle API (No Authentication)
+Route::prefix('vehicles')->group(function () {
+    Route::get('/', [VehicleApiController::class, 'index']);
+    Route::get('/filters', [VehicleApiController::class, 'filters']);
+    Route::get('/{id}', [VehicleApiController::class, 'show']);
 });

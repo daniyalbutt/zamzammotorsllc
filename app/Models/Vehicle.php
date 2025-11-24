@@ -4,111 +4,83 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Vehicle extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    protected $guarded = [];
-    protected $casts = [
-        'features' => 'array',
-        'safety_features' => 'array',
-        'image_paths' => 'array',
-        'status' => 'boolean',
-        'year' => 'integer',
-        'cylinders' => 'integer',
-        'make_id' => 'integer',
-        'model_id' => 'integer',
-        'body_type_id' => 'integer',
-        'user_id' => 'integer',
+    protected $fillable = [
+        'title',
+        'condition',
+        'steering_type',
+        'chassis_engine_no',
+        'make',
+        'model',
+        'body_type',
+        'stock_id',
+        'year',
+        'offer_type',
+        'drive_type',
+        'transmission',
+        'fuel_type',
+        'mileage',
+        'color',
+        'doors',
+        'features',
+        'safety_features',
+        'availability',
+        'price',
+        'video',
+        'created_by',
     ];
 
-    public function bodyType()
+    protected $casts = [
+        'year' => 'integer',
+        'mileage' => 'integer',
+        'doors' => 'integer',
+        'price' => 'decimal:2',
+    ];
+
+    // Relationships
+    public function creator()
     {
-        return $this->belongsTo(BodyType::class);
+        return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function model()
+    public function photos()
     {
-        return $this->belongsTo(Models::class, 'model_id');
+        return $this->hasMany(VehiclePhoto::class)->orderBy('order');
     }
 
-    public function make()
+    public function invoices()
     {
-        return $this->belongsTo(Make::class);
-    }
-    public function user()
-    {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(Invoice::class);
     }
 
-    /**
-     * Get all image URLs
-     */
-    public function getImageUrlsAttribute()
+    public function documents()
     {
-        if (!$this->image_paths) {
-            return [];
-        }
-
-        return array_map(function ($path) {
-            return asset('storage/' . $path);
-        }, $this->image_paths);
+        return $this->hasMany(Document::class);
     }
 
-    /**
-     * Get the first image URL
-     */
-    public function getFirstImageUrlAttribute()
+    public function messages()
     {
-        $urls = $this->getImageUrlsAttribute();
-        return count($urls) > 0 ? $urls[0] : null;
+        return $this->hasMany(Message::class);
     }
 
-    /**
-     * Get features as array (for backward compatibility)
-     */
-    public function getFeaturesArrayAttribute()
+    // Scopes
+    public function scopeAvailable($query)
     {
-        return $this->features ?? [];
+        return $query->where('availability', 'Available');
     }
 
-    /**
-     * Get safety features as array (for backward compatibility)
-     */
-    public function getSafetyFeaturesArrayAttribute()
+    public function scopeReserved($query)
     {
-        return $this->safety_features ?? [];
+        return $query->where('availability', 'Reserved');
     }
 
-    /**
-     * Check if vehicle has images
-     */
-    public function hasImages()
+    public function scopeSold($query)
     {
-        return $this->image_paths && count($this->image_paths) > 0;
-    }
-
-    /**
-     * Get image count
-     */
-    public function getImageCountAttribute()
-    {
-        return $this->image_paths ? count($this->image_paths) : 0;
-    }
-
-    public function assigned_users()
-    {
-        return $this->belongsToMany(User::class, 'assigned_vehicles', 'vehicle_id', 'user_id')->withPivot('assigned_by');
-    }
-
-    public function assigned()
-    {
-        if ($this->assigned_users->isNotEmpty()) {
-            $name = $this->assigned_users->first()->name;
-            return '<span class="badge bg-success" data-toggle="tooltip" data-placement="bottom" title="' . $name . '">Assigned</span>';
-        } else {
-            return '<span class="badge bg-danger">Not Assigned</span>';
-        }
+        return $query->where('availability', 'Sold Out');
     }
 }

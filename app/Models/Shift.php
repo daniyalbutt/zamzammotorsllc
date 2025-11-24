@@ -8,11 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 class Shift extends Model
 {
     use HasFactory;
-    
-    protected $fillable = ['name', 'start_time', 'end_time', 'status'];
+
+    protected $fillable = [
+        'name',
+        'start_time',
+        'end_time',
+        'grace_period_minutes',
+        'working_days',
+    ];
 
     protected $casts = [
-        'start_time' => 'datetime:H:i',
-        'end_time' => 'datetime:H:i',
+        'working_days' => 'array',
+        'grace_period_minutes' => 'integer',
     ];
+
+    // Relationships
+    public function employees()
+    {
+        return $this->hasMany(Employee::class);
+    }
 }

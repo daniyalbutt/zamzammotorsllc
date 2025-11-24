@@ -2,515 +2,269 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BodyType;
-use App\Models\Forum;
-use App\Models\Make;
-use App\Models\Models;
-use App\Models\User;
 use App\Models\Vehicle;
+use App\Models\VehiclePhoto;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use File;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Str;
 
 class VehicleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $shouldFilterByUser = Auth::user()->getRole() === 'agent' && !Auth::user()->hasPermissionTo('show all vehicles');
-        $data = Vehicle::where('status', 1)
-            ->when($shouldFilterByUser, function ($query) {
-                $query->where('user_id', Auth::id());
-            })
-            ->when(Auth::user()->hasPermissionTo('assigned vehicles'), function ($query) {
-                $query->whereHas('assigned_users', function ($q) {
-                    $q->where('user_id', Auth::id());
-                });
-            })
-            ->orderBy('id', 'desc')
-            ->get();
 
-        return view('vehicle.index', compact('data'));
+    public function index(Request $request)
+    {
+        $query = Vehicle::with(['creator', 'photos']);
+
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('make', 'like', "%{$search}%")
+                  ->orWhere('model', 'like', "%{$search}%")
+                  ->orWhere('stock_id', 'like', "%{$search}%");
+            });
+        }
+
+        // Filters
+        if ($request->filled('make')) {
+            $query->where('make', $request->make);
+        }
+
+        if ($request->filled('model')) {
+            $query->where('model', $request->model);
+        }
+
+        if ($request->filled('year')) {
+            $query->where('year', $request->year);
+        }
+
+        if ($request->filled('availability')) {
+            $query->where('availability', $request->availability);
+        }
+
+        if ($request->filled('fuel_type')) {
+            $query->where('fuel_type', $request->fuel_type);
+        }
+
+        if ($request->filled('transmission')) {
+            $query->where('transmission', $request->transmission);
+        }
+
+        $vehicles = $query->latest()->paginate(15);
+
+        // Get unique values for filters
+        $makes = Vehicle::distinct()->pluck('make');
+        $years = Vehicle::distinct()->orderBy('year', 'desc')->pluck('year');
+
+        return view('vehicles.index', compact('vehicles', 'makes', 'years'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        $data = null;
-        $make = Make::all();
-        $model = Models::all();
-        $body_type = BodyType::all();
-        return view('vehicle.create', compact('data', 'make', 'model', 'body_type'));
+        return view('vehicles.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        // dd($request->all());
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'condition' => 'required|in:New,Used',
+            'steering_type' => 'required|in:RHD,LHD',
+            'chassis_engine_no' => 'nullable|string|max:255',
+            'make' => 'required|string|max:255',
+            'model' => 'required|string|max:255',
+            'body_type' => 'nullable|string|max:255',
+            'stock_id' => 'required|string|unique:vehicles,stock_id',
+            'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'offer_type' => 'nullable|string|max:255',
+            'drive_type' => 'nullable|in:AWD/4WD,FWD,RWD',
+            'transmission' => 'required|in:Automatic,Manual,CVT,Semi Automatic',
+            'fuel_type' => 'required|in:Diesel,Gasoline,Hybrid,Electric',
+            'mileage' => 'nullable|integer|min:0',
+            'color' => 'nullable|string|max:255',
+            'doors' => 'nullable|integer|min:2|max:7',
+            'features' => 'nullable|string',
+            'safety_features' => 'nullable|string',
+            'availability' => 'required|in:Available,Reserved',
+            'price' => 'nullable|numeric|min:0',
+            'video' => 'nullable|file|mimes:mp4,mov,avi|max:51200',
+            'photos.*' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+        ]);
 
-        try {
-            // Validate the request
-            $request->validate([
-                'title' => 'required|string|max:255',
-                'condition' => 'nullable|string',
-                'content' => 'nullable|string',
-                'make_id' => 'nullable',
-                'model_id' => 'nullable',
-                'body_type_id' => 'nullable',
-                'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 1),
-                'offer_type' => 'nullable|string|max:255',
-                'drive_type' => 'nullable|string',
-                'transmission' => 'nullable|string',
-                'fuel_type' => 'nullable|string',
-                'cylinders' => 'nullable|integer|min:0',
-                'color' => 'nullable|string|max:255',
-                'doors' => 'nullable|string|max:255',
-                'features' => 'nullable|string',
-                'safety_features' => 'nullable|string',
-                'images' => 'nullable|array|max:10',
-                'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB max per image
-                'status' => 'nullable|boolean',
-                'user_id' => 'nullable|integer|exists:users,id',
-            ]);
-            
-            if(!is_numeric($request->make_id)){
-                $make = Make::firstOrCreate(['name' => $request->make_id]);
-                $request->merge(['make_id' => $make->id]);
-            }
+        $validated['created_by'] = Auth::id();
 
-            if(!is_numeric($request->model_id)){
-                $model = Models::firstOrCreate(['name' => $request->model_id, 'make_id' => $request->model_id]);
-                $request->merge(['model_id' => $model->id]);
-            }
+        // Handle video upload
+        if ($request->hasFile('video')) {
+            $video = $request->file('video');
+            $videoName = time() . '_' . Str::random(10) . '.' . $video->getClientOriginalExtension();
+            $validated['video'] = $video->storeAs('vehicles/videos', $videoName, 'public');
+        }
 
-            if(!is_numeric($request->body_type_id)){
-                $bodyType = BodyType::firstOrCreate(['name' => $request->body_type_id]);
-                $request->merge(['body_type_id' => $bodyType->id]);
-            }
+        $vehicle = Vehicle::create($validated);
 
-            // Create the vehicle
-            $vehicle = new Vehicle();
-            $vehicle->make_id = $request->make_id;
-            $vehicle->model_id = $request->model_id;
-            $vehicle->body_type_id = $request->body_type_id;
-            $vehicle->title = $request->title;
-            $vehicle->content = $request->content;
-            $vehicle->condition = $request->condition ?? 'Used';
-            $vehicle->offer_type = $request->offer_type;
-            $vehicle->drive_type = $request->drive_type;
-            $vehicle->transmission = $request->transmission;
-            $vehicle->fuel_type = $request->fuel_type;
-            $vehicle->stock_id = $request->stock_id;
-            $vehicle->availability = $request->availability;
-            $vehicle->color = $request->color;
-            $vehicle->doors = $request->doors;
-            $vehicle->year = $request->year;
-            $vehicle->rhd_lhd = $request->rhd_lhd;
-            $vehicle->engine = $request->engine;
-            $vehicle->mileage = $request->mileage;
+        // Handle photo uploads
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $index => $photo) {
+                $photoName = time() . '_' . Str::random(10) . '.' . $photo->getClientOriginalExtension();
+                $photoPath = $photo->storeAs('vehicles/photos', $photoName, 'public');
 
-            if ($request->features) {
-                $decodedFeatures = json_decode($request->features, true);
-                $updated = array_map(function ($item) {
-                    return $item['value'] ?? null;
-                }, array_filter($decodedFeatures));
-                $vehicle->features = array_filter($updated);
-            }
-
-
-
-            // Handle safety features (convert comma-separated to JSON)
-            if ($request->safety_features) {
-                $decodedFeatures = json_decode($request->safety_features, true);
-                $updated = array_map(function ($item) {
-                    return $item['value'] ?? null;
-                }, array_filter($decodedFeatures));
-                $vehicle->safety_features = array_filter($updated);
-            }
-
-            // Handle image uploads and store paths as JSON
-            $imagePaths = [];
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
-                    $path = $image->store('vehicles', 'public');
-                    $imagePaths[] = $path;
-                }
-            }
-            $vehicle->image_paths = $imagePaths;
-            
-            // Handle video upload
-            if ($request->hasFile('video')) {
-                $video = $request->file('video');
-                $videoPath = $video->store('vehicle_videos', 'public');
-                $vehicle->video = $videoPath;
-            }
-
-            $vehicle->user_id = Auth::id();
-            $vehicle->status = $request->has('status') ? 1 : 0;
-
-            $vehicle->save();
-
-            // Return JSON response for AJAX
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Vehicle created successfully!',
-                    'redirect' => route('vehicles.index')
+                VehiclePhoto::create([
+                    'vehicle_id' => $vehicle->id,
+                    'photo_path' => $photoPath,
+                    'order' => $index,
                 ]);
             }
-
-            // Regular redirect for non-AJAX requests
-            return redirect()->route('vehicles.index')->with('success', 'Vehicle created successfully!');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation failed',
-                    'errors' => $e->validator->errors()
-                ], 422);
-            }
-
-            return back()->withErrors($e->validator)->withInput();
-        } catch (\Exception $e) {
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'An error occurred: ' . $e->getMessage()
-                ], 500);
-            }
-
-            return back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
+
+        // Log activity
+        ActivityLog::create([
+            'action' => 'created',
+            'model_type' => 'Vehicle',
+            'model_id' => $vehicle->id,
+            'description' => 'Vehicle "' . $vehicle->title . '" was created',
+            'user_id' => Auth::id(),
+        ]);
+
+        return redirect()->route('vehicles.index')->with('success', 'Vehicle created successfully!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Vehicle $vehicle)
     {
-        $data = Vehicle::find($id);
-        return view('vehicle.show', compact('data'));
+        $vehicle->load(['creator', 'photos', 'invoices.customer.user']);
+        return view('vehicles.show', compact('vehicle'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(Vehicle $vehicle)
     {
-        $make = Make::all();
-        $model = Models::all();
-        $body_type = BodyType::all();
-        $data = Vehicle::find($id);
-        $users = null;
-        if (Auth::user()->getRole() == 'agent') {
-            $users = User::orderBy('id', 'desc');
-            if (Auth::user()->hasPermissionTo('show all customer')) {
-                $users = $users->role('customer');
-            } else if (Auth::user()->hasPermissionTo('assigned customer')) {
-                $users = $users->whereHas('assignedCustomer', function ($q) {
-                    $q->where('agent_id', Auth::id());
-                });
-            }
-        }
-        return view('vehicle.create', compact('data', 'make', 'model', 'body_type', 'users'));
+        $vehicle->load('photos');
+        return view('vehicles.edit', compact('vehicle'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id)
+    public function update(Request $request, Vehicle $vehicle)
     {
-        try {
-            // Validate the request.
-            $request->validate([
-                'title' => 'required|string|max:255',
-                'condition' => 'nullable|string',
-                'content' => 'nullable|string',
-                'make_id' => 'nullable',
-                'model_id' => 'nullable',
-                'body_type_id' => 'nullable',
-                'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 1),
-                'offer_type' => 'nullable|string|max:255',
-                'drive_type' => 'nullable|string',
-                'transmission' => 'nullable|string',
-                'fuel_type' => 'nullable|string',
-                'cylinders' => 'nullable|integer|min:0',
-                'color' => 'nullable|string|max:255',
-                'doors' => 'nullable|string|max:255',
-                'features' => 'nullable|string',
-                'safety_features' => 'nullable|string',
-                'images' => 'nullable|array|max:10',
-                'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB max per image
-                'status' => 'nullable|boolean',
-                'user_id' => 'nullable|integer|exists:users,id',
-            ]);
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'condition' => 'required|in:New,Used',
+            'steering_type' => 'required|in:RHD,LHD',
+            'chassis_engine_no' => 'nullable|string|max:255',
+            'make' => 'required|string|max:255',
+            'model' => 'required|string|max:255',
+            'body_type' => 'nullable|string|max:255',
+            'stock_id' => 'required|string|unique:vehicles,stock_id,' . $vehicle->id,
+            'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'offer_type' => 'nullable|string|max:255',
+            'drive_type' => 'nullable|in:AWD/4WD,FWD,RWD',
+            'transmission' => 'required|in:Automatic,Manual,CVT,Semi Automatic',
+            'fuel_type' => 'required|in:Diesel,Gasoline,Hybrid,Electric',
+            'mileage' => 'nullable|integer|min:0',
+            'color' => 'nullable|string|max:255',
+            'doors' => 'nullable|integer|min:2|max:7',
+            'features' => 'nullable|string',
+            'safety_features' => 'nullable|string',
+            'availability' => 'required|in:Available,Reserved,Sold Out',
+            'price' => 'nullable|numeric|min:0',
+            'video' => 'nullable|file|mimes:mp4,mov,avi|max:51200',
+            'photos.*' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+            'delete_photos' => 'nullable|array',
+        ]);
 
-            if(!is_numeric($request->make_id)){
-                $make = Make::firstOrCreate(['name' => $request->make_id]);
-                $request->merge(['make_id' => $make->id]);
-            }
-
-            if(!is_numeric($request->model_id)){
-                $model = Models::firstOrCreate(['name' => $request->model_id]);
-                $request->merge(['model_id' => $model->id]);
-            }
-
-            if(!is_numeric($request->body_type_id)){
-                $bodyType = BodyType::firstOrCreate(['name' => $request->body_type_id]);
-                $request->merge(['body_type_id' => $bodyType->id]);
-            }
-
-            // Find the vehicle
-            $vehicle = Vehicle::findOrFail($id);
-
-            $vehicle->make_id = $request->make_id;
-            $vehicle->model_id = $request->model_id;
-            $vehicle->body_type_id = $request->body_type_id;
-            $vehicle->title = $request->title;
-            $vehicle->content = $request->content;
-            $vehicle->condition = $request->condition ?? 'Used';
-            $vehicle->offer_type = $request->offer_type;
-            $vehicle->drive_type = $request->drive_type;
-            $vehicle->transmission = $request->transmission;
-            $vehicle->fuel_type = $request->fuel_type;
-            $vehicle->availability = $request->availability;
-            $vehicle->cylinders = $request->cylinders;
-            $vehicle->color = $request->color;
-            $vehicle->doors = $request->doors;
-            $vehicle->year = $request->year;
-            $vehicle->rhd_lhd = $request->rhd_lhd;
-            $vehicle->engine = $request->engine;
-            $vehicle->mileage = $request->mileage;
-            $vehicle->stock_id = $request->stock_id;
-
-            // Handle features (convert comma-separated to JSON)
-            if ($request->features) {
-                $decodedFeatures = json_decode($request->features, true);
-                $updated = array_map(function ($item) {
-                    return $item['value'] ?? null;
-                }, array_filter($decodedFeatures));
-                $vehicle->features = array_filter($updated);
-            } else {
-                $vehicle->features = null;
-            }
-
-            // Handle safety features (convert comma-separated to JSON)
-            if ($request->safety_features) {
-                $decodedFeatures = json_decode($request->safety_features, true);
-                $updated = array_map(function ($item) {
-                    return $item['value'] ?? null;
-                }, array_filter($decodedFeatures));
-                $vehicle->safety_features = array_filter($updated);
-            } else {
-                $vehicle->safety_features = null;
-            }
-
-            // Handle new image uploads
-            if ($request->hasFile('images')) {
-                // Get existing image paths
-                $existingPaths = $vehicle->image_paths;
-
-                // Upload new images
-                $newImagePaths = [];
-                foreach ($request->file('images') as $image) {
-                    $path = $image->store('vehicles', 'public');
-                    $newImagePaths[] = $path;
-                }
-
-                // Combine existing and new image paths
-                $allImagePaths = array_merge($existingPaths, $newImagePaths);
-
-                // Limit to maximum 10 images
-                if (count($allImagePaths) > 10) {
-                    $allImagePaths = array_slice($allImagePaths, 0, 10);
-                }
-
-                $vehicle->image_paths = $allImagePaths;
-            }
-            
-            // Handle video upload
-            if ($request->hasFile('video')) {
-                if ($vehicle->video && Storage::disk('public')->exists($vehicle->video)) {
-                    Storage::disk('public')->delete($vehicle->video);
-                }
-                
-                // Upload new video
-                $video = $request->file('video');
-                $videoPath = $video->store('vehicle_videos', 'public');
-                $vehicle->video = $videoPath;
-            }
-            
-            // Handle video removal
-            if ($request->has('remove_video') && $request->remove_video) {
-                if ($vehicle->video && Storage::disk('public')->exists($vehicle->video)) {
-                    Storage::disk('public')->delete($vehicle->video);
-                }
-                $vehicle->video = null;
-            }
-
-            if ($request->user_id) {
-                $vehicle->user_id = $request->user_id;
-            }
-            $vehicle->status = $request->has('status') ? 1 : 0;
-
-            $vehicle->save();
-            if ($request->has('assigned')) {
-                if ($request->assigned == 'Not Assign') {
-                    if ($vehicle->assigned_users()->exists()) {
-                        $vehicle->assigned_users()->detach();
-                    }
-                } else {
-                    $vehicle->assigned_users()->sync([
-                        $request->assigned => ['assigned_by' => Auth::id()]
-                    ]);
-                }
-                if ($request->assigned != 'Not Assign') {
-                    $forum = Forum::updateOrCreate([
-                        'vehicle_id' => $vehicle->id,
-                        'agent_id' => Auth::id(),
-                        'customer_id' => $request->assigned
-                    ], [
-                        'vehicle_id' => $vehicle->id,
-                        'agent_id' => Auth::id(),
-                        'customer_id' => $request->assigned
-                    ]);
-
-                    $forum->discussions()->create([
-                        'user_id' => Auth::id(),
-                        'content' => 'Forum created for vehicle: ' . $vehicle->title . ' (ID: ' . $vehicle->id . ') for agent: ' . Auth::user()->name . ' and customer: ' . ($vehicle->user ? User::find($request->assigned)->name : 'N/A')
-                    ]);
-                }
-            }
-
-
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Vehicle updated successfully!',
-                    'redirect' => route('vehicles.index')
-                ]);
-            }
-
-            // Regular redirect for non-AJAX requests
-            return redirect()->route('vehicles.index')->with('success', 'Vehicle updated successfully!');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation failed',
-                    'errors' => $e->validator->errors()
-                ], 422);
-            }
-
-            return back()->withErrors($e->validator)->withInput();
-        } catch (\Exception $e) {
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'An error occurred: ' . $e->getMessage()
-                ], 500);
-            }
-
-            return back()->with('error', 'An error occurred: ' . $e->getMessage());
-        }
-    }
-
-    public function removeImage(Request $request)
-    {
-        try {
-            $request->validate([
-                'vehicle_id' => 'required|integer|exists:vehicles,id',
-                'image_path' => 'required|string'
-            ]);
-
-            $vehicle = Vehicle::findOrFail($request->vehicle_id);
-            $imagePaths = $vehicle->image_paths ? json_decode($vehicle->image_paths, true) : [];
-
-            // Remove the specific image path
-            $imagePaths = array_filter($imagePaths, function ($path) use ($request) {
-                return $path !== $request->image_path;
-            });
-
-            // Delete the file from storage
-            if (Storage::disk('public')->exists($request->image_path)) {
-                Storage::disk('public')->delete($request->image_path);
-            }
-
-            // Update the vehicle with remaining image paths
-            $vehicle->image_paths = json_encode(array_values($imagePaths)); // Re-index array
-            $vehicle->save();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Image removed successfully!'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error removing image: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-    
-    /**
-     * Delete video from a vehicle
-     */
-    public function deleteVideo(Request $request)
-    {
-        try {
-            // Validate the request
-            $request->validate([
-                'video_path' => 'required|string',
-                'vehicle_id' => 'required|integer|exists:vehicles,id',
-            ]);
-            
-            // Find the vehicle
-            $vehicle = Vehicle::findOrFail($request->vehicle_id);
-            
-            // Check if the video path matches
-            if ($vehicle->video != $request->video_path) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Video path does not match the vehicle record'
-                ], 400);
-            }
-            
-            // Delete the video file
-            if (Storage::disk('public')->exists($vehicle->video)) {
+        // Handle video upload
+        if ($request->hasFile('video')) {
+            // Delete old video
+            if ($vehicle->video) {
                 Storage::disk('public')->delete($vehicle->video);
             }
-            
-            // Update the vehicle record
-            $vehicle->video = null;
-            $vehicle->save();
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'Video deleted successfully'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
+
+            $video = $request->file('video');
+            $videoName = time() . '_' . Str::random(10) . '.' . $video->getClientOriginalExtension();
+            $validated['video'] = $video->storeAs('vehicles/videos', $videoName, 'public');
         }
+
+        $vehicle->update($validated);
+
+        // Delete selected photos
+        if ($request->filled('delete_photos')) {
+            $photosToDelete = VehiclePhoto::whereIn('id', $request->delete_photos)->get();
+            foreach ($photosToDelete as $photo) {
+                Storage::disk('public')->delete($photo->photo_path);
+                $photo->delete();
+            }
+        }
+
+        // Handle new photo uploads
+        if ($request->hasFile('photos')) {
+            $currentMaxOrder = $vehicle->photos()->max('order') ?? -1;
+            foreach ($request->file('photos') as $index => $photo) {
+                $photoName = time() . '_' . Str::random(10) . '.' . $photo->getClientOriginalExtension();
+                $photoPath = $photo->storeAs('vehicles/photos', $photoName, 'public');
+
+                VehiclePhoto::create([
+                    'vehicle_id' => $vehicle->id,
+                    'photo_path' => $photoPath,
+                    'order' => $currentMaxOrder + $index + 1,
+                ]);
+            }
+        }
+
+        // Log activity
+        ActivityLog::create([
+            'action' => 'updated',
+            'model_type' => 'Vehicle',
+            'model_id' => $vehicle->id,
+            'description' => 'Vehicle "' . $vehicle->title . '" was updated',
+            'user_id' => Auth::id(),
+        ]);
+
+        return redirect()->route('vehicles.index')->with('success', 'Vehicle updated successfully!');
     }
 
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Vehicle $vehicle)
     {
-        //
+        // Delete associated files
+        if ($vehicle->video) {
+            Storage::disk('public')->delete($vehicle->video);
+        }
+
+        foreach ($vehicle->photos as $photo) {
+            Storage::disk('public')->delete($photo->photo_path);
+        }
+
+        // Log activity
+        ActivityLog::create([
+            'action' => 'deleted',
+            'model_type' => 'Vehicle',
+            'model_id' => $vehicle->id,
+            'description' => 'Vehicle "' . $vehicle->title . '" was deleted',
+            'user_id' => Auth::id(),
+        ]);
+
+        $vehicle->delete();
+
+        return redirect()->route('vehicles.index')->with('success', 'Vehicle deleted successfully!');
+    }
+
+    public function updateStatus(Request $request, Vehicle $vehicle)
+    {
+        $request->validate([
+            'availability' => 'required|in:Available,Reserved,Sold Out',
+        ]);
+
+        $oldStatus = $vehicle->availability;
+        $vehicle->update(['availability' => $request->availability]);
+
+        // Log activity
+        ActivityLog::create([
+            'action' => 'status_updated',
+            'model_type' => 'Vehicle',
+            'model_id' => $vehicle->id,
+            'description' => 'Vehicle "' . $vehicle->title . '" status changed from ' . $oldStatus . ' to ' . $request->availability,
+            'user_id' => Auth::id(),
+        ]);
+
+        return back()->with('success', 'Vehicle status updated successfully!');
     }
 }

@@ -2,253 +2,311 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Models\User;
+use App\Models\ActivityLog;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class CustomerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function index(Request $request)
     {
-        $data = User::query()->orderBy('id', 'desc');
+        $query = Customer::with(['user', 'assignedAgent', 'creator']);
 
-        // Show assigned customers (created by current user) /agent
-        if (Auth::user()->hasPermissionTo('assigned customer')) {
-            $data->orWhereHas('assignedCustomer', fn($q) => $q->where('agent_id', Auth::id()));
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('user', function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            })->orWhere('phone', 'like', "%{$search}%");
         }
 
-        // Show assigned customers (additional condition) /sales manager
-        if (Auth::user()->hasPermissionTo('show assigned customer')) {
-            $data->orWhere(function ($q) {
-                $q->whereHas('roles', fn($q) => $q->where('name', 'customer'))
-                    ->where('created_by', Auth::id());
-            });
+        // Filters
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
         }
 
-        $data = $data->get();
-        return view('customers.index', compact('data'));
+        if ($request->filled('lead_source')) {
+            $query->where('lead_source', $request->lead_source);
+        }
+
+        if ($request->filled('assigned_to')) {
+            $query->where('assigned_to', $request->assigned_to);
+        }
+
+        // If Sales Agent, only show their assigned customers
+        if (Auth::user()->hasRole('Sales Agent')) {
+            $query->where('assigned_to', Auth::id());
+        }
+
+        $customers = $query->latest()->paginate(15);
+
+        // Get agents for filter
+        $agents = User::role('Sales Agent')->get();
+
+        return view('customers.index', compact('customers', 'agents'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        $data = null;
-        $agents = User::role('agent')->where('created_by', Auth::id())->get();
-        return view('customers.create', compact('data', 'agents'));
+        $sales_agents = User::role('Sales Agent')->get();
+        return view('customers.create', compact('sales_agents'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
-            'meta.phone' => 'nullable|string|max:20',
-            'meta.birthday' => 'nullable|date',
-            'meta.address' => 'nullable|string|max:500',
-            'meta.gender' => 'nullable|in:male,female,other',
-            'meta.facebook' => 'nullable|url',
-            'meta.linkedin' => 'nullable|url',
-            'meta.twitter' => 'nullable|url',
-            'meta.youtube' => 'nullable|url',
-            'meta.instagram' => 'nullable|url',
-            'meta.website' => 'nullable|url',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'phone' => 'nullable|string|max:255',
+            'address' => 'nullable|string',
+            'lead_source' => 'required|in:Website,WhatsApp,Referral,Walk-in,Facebook,Instagram,Other',
+            'status' => 'required|in:Follow-up,In Negotiation,Closed',
+            'assigned_to' => 'nullable|exists:users,id',
         ]);
 
-        DB::beginTransaction();
-        try {
-            // Handle image upload
-            $imagePath = null;
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $imageName = time() . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('uploads/customers', $imageName, 'public');
-            }
+        // Generate random password
+        $password = Str::random(10);
 
-            // Create user
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'created_by' => Auth::id(),
-                'image' => $imagePath
+        // Create user account for customer
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($password),
+            'phone' => $validated['phone'],
+            'is_active' => true,
+        ]);
+
+        // Assign Customer role
+        $user->assignRole('Customer');
+
+        // Create customer record
+        $customer = Customer::create([
+            'user_id' => $user->id,
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
+            'lead_source' => $validated['lead_source'],
+            'status' => $validated['status'],
+            'assigned_to' => $validated['assigned_to'],
+            'created_by' => Auth::id(),
+        ]);
+
+        // Send credentials email (you'll need to create this mail class)
+        // Mail::to($user->email)->send(new CustomerCredentials($user, $password));
+
+        // Notify assigned agent
+        if ($validated['assigned_to']) {
+            Notification::create([
+                'user_id' => $validated['assigned_to'],
+                'title' => 'New Customer Assigned',
+                'message' => 'Customer "' . $user->name . '" has been assigned to you.',
+                'type' => 'customer_assigned',
+                'link' => route('customers.show', $customer->id),
             ]);
-
-            // Assign customer role
-            $customerRole = Role::where('name', 'customer')->first();
-            if ($customerRole) {
-                $user->assignRole($customerRole);
-            }
-
-            // Store meta data
-            if ($request->has('meta')) {
-                foreach ($request->meta as $key => $value) {
-                    if ($value !== null && $value !== '') {
-                        $user->setMeta($key, $value);
-                    }
-                }
-            }
-
-            // Handle agent assignment
-            if ($request->assigned && $request->assigned !== 'Not Assign') {
-                DB::table('assigned_agents')->insert([
-                    'agent_id' => $request->assigned,
-                    'customer_id' => $user->id,
-                    'sales_manager_id' => Auth::id(),
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
-            }
-
-            DB::commit();
-            return redirect()->route('customers.index')->with('success', 'Customer created successfully!');
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            return redirect()->back()->with('error', 'Error creating customer: ' . $e->getMessage())->withInput();
         }
+
+        // Log activity
+        ActivityLog::create([
+            'action' => 'created',
+            'model_type' => 'Customer',
+            'model_id' => $customer->id,
+            'description' => 'Customer "' . $user->name . '" was created',
+            'user_id' => Auth::id(),
+        ]);
+
+        return redirect()->route('customers.index')->with('success', 'Customer created successfully! Login credentials sent to their email.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Customer $customer)
     {
-        $customer = User::role('customer')->with('assignedAgent')->findOrFail($id);
+        // Check if Sales Agent can only view their assigned customers
+        if (Auth::user()->hasRole('Sales Agent') && $customer->assigned_to != Auth::id()) {
+            abort(403, 'You can only view your assigned customers.');
+        }
+
+        $customer->load([
+            'user',
+            'assignedAgent',
+            'invoices.vehicle',
+            'messages.sender',
+            'notes.creator',
+            'documents',
+        ]);
+
         return view('customers.show', compact('customer'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(Customer $customer)
     {
-        $data = User::role('customer')->findOrFail($id);
-        $agents = User::role('agent')->where('created_by', Auth::id())->get();
-        return view('customers.create', compact('data', 'agents'));
+        $sales_agents = User::role('Sales Agent')->get();
+        $customer->load('user');
+        return view('customers.edit', compact('customer', 'sales_agents'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Customer $customer)
     {
-        $user = User::role('customer')->findOrFail($id);
-
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:8',
-            'meta.phone' => 'nullable|string|max:20',
-            'meta.birthday' => 'nullable|date',
-            'meta.address' => 'nullable|string|max:500',
-            'meta.gender' => 'nullable|in:male,female,other',
-            'meta.facebook' => 'nullable|url',
-            'meta.linkedin' => 'nullable|url',
-            'meta.twitter' => 'nullable|url',
-            'meta.youtube' => 'nullable|url',
-            'meta.instagram' => 'nullable|url',
-            'meta.website' => 'nullable|url',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'email' => 'required|email|unique:users,email,' . $customer->user_id,
+            'phone' => 'nullable|string|max:255',
+            'address' => 'nullable|string',
+            'lead_source' => 'required|in:Website,WhatsApp,Referral,Walk-in,Facebook,Instagram,Other',
+            'status' => 'required|in:Follow-up,In Negotiation,Closed',
+            'assigned_to' => 'nullable|exists:users,id',
         ]);
 
-        DB::beginTransaction();
-        try {
-            // Handle image upload
-            if ($request->hasFile('image')) {
-                // Delete old image
-                if ($user->image && Storage::disk('public')->exists($user->image)) {
-                    Storage::disk('public')->delete($user->image);
-                }
+        // Update user
+        $customer->user->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+        ]);
 
-                $image = $request->file('image');
-                $imageName = time() . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('uploads/customers', $imageName, 'public');
-                $user->image = $imagePath;
-            }
+        // Check if agent was changed
+        $oldAgent = $customer->assigned_to;
+        $newAgent = $validated['assigned_to'];
 
-            // Update user data
-            $user->name = $request->name;
-            $user->email = $request->email;
-            
-            if ($request->password) {
-                $user->password = Hash::make($request->password);
-            }
-            
-            $user->save();
+        // Update customer
+        $customer->update([
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
+            'lead_source' => $validated['lead_source'],
+            'status' => $validated['status'],
+            'assigned_to' => $validated['assigned_to'],
+        ]);
 
-            // Update meta data
-            if ($request->has('meta')) {
-                foreach ($request->meta as $key => $value) {
-                    if ($value !== null && $value !== '') {
-                        $user->setMeta($key, $value);
-                    } else {
-                        $user->removeMeta($key);
-                    }
-                }
-            }
-
-            // Handle agent assignment
-            DB::table('assigned_agents')->where('customer_id', $user->id)->delete();
-            
-            if ($request->assigned && $request->assigned !== 'Not Assign') {
-                DB::table('assigned_agents')->insert([
-                    'agent_id' => $request->assigned,
-                    'customer_id' => $user->id,
-                    'sales_manager_id' => Auth::id(),
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
-            }
-
-            DB::commit();
-            return redirect()->route('customers.index')->with('success', 'Customer updated successfully!');
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            return redirect()->back()->with('error', 'Error updating customer: ' . $e->getMessage())->withInput();
+        // Notify new agent if reassigned
+        if ($oldAgent != $newAgent && $newAgent) {
+            Notification::create([
+                'user_id' => $newAgent,
+                'title' => 'Customer Assigned',
+                'message' => 'Customer "' . $customer->user->name . '" has been assigned to you.',
+                'type' => 'customer_assigned',
+                'link' => route('customers.show', $customer->id),
+            ]);
         }
+
+        // Log activity
+        ActivityLog::create([
+            'action' => 'updated',
+            'model_type' => 'Customer',
+            'model_id' => $customer->id,
+            'description' => 'Customer "' . $customer->user->name . '" was updated',
+            'user_id' => Auth::id(),
+        ]);
+
+        return redirect()->route('customers.index')->with('success', 'Customer updated successfully!');
+    }
+
+    public function destroy(Customer $customer)
+    {
+        $name = $customer->user->name;
+
+        // Log activity
+        ActivityLog::create([
+            'action' => 'deleted',
+            'model_type' => 'Customer',
+            'model_id' => $customer->id,
+            'description' => 'Customer "' . $name . '" was deleted',
+            'user_id' => Auth::id(),
+        ]);
+
+        // Delete user (this will cascade delete customer)
+        $customer->user->delete();
+
+        return redirect()->route('customers.index')->with('success', 'Customer deleted successfully!');
+    }
+
+    public function assignAgent(Request $request, Customer $customer)
+    {
+        $request->validate([
+            'assigned_to' => 'required|exists:users,id',
+        ]);
+
+        $oldAgent = $customer->assigned_to;
+        $customer->update(['assigned_to' => $request->assigned_to]);
+
+        // Notify new agent
+        Notification::create([
+            'user_id' => $request->assigned_to,
+            'title' => 'Customer Assigned',
+            'message' => 'Customer "' . $customer->user->name . '" has been assigned to you.',
+            'type' => 'customer_assigned',
+            'link' => route('customers.show', $customer->id),
+        ]);
+
+        // Log activity
+        ActivityLog::create([
+            'action' => 'assigned',
+            'model_type' => 'Customer',
+            'model_id' => $customer->id,
+            'description' => 'Customer "' . $customer->user->name . '" was assigned to agent',
+            'user_id' => Auth::id(),
+        ]);
+
+        return back()->with('success', 'Customer assigned successfully!');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Check if customer exists by phone/email
+     * AJAX endpoint for agent dashboard
      */
-    public function destroy(string $id)
+    public function checkCustomer(Request $request)
     {
-        $user = User::role('customer')->findOrFail($id);
+        $request->validate([
+            'search' => 'required|string|min:3',
+        ]);
 
-        DB::beginTransaction();
-        try {
-            // Delete image if exists
-            if ($user->image && Storage::disk('public')->exists($user->image)) {
-                Storage::disk('public')->delete($user->image);
-            }
+        $search = $request->search;
 
-            // Delete assigned agents relationships
-            DB::table('assigned_agents')->where('customer_id', $user->id)->delete();
+        // Search by phone or email
+        $customers = Customer::with(['user', 'assignedAgent'])
+            ->where(function($query) use ($search) {
+                $query->where('phone', 'like', "%{$search}%")
+                      ->orWhereHas('user', function($q) use ($search) {
+                          $q->where('email', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%")
+                            ->orWhere('name', 'like', "%{$search}%");
+                      });
+            })
+            ->limit(10)
+            ->get();
 
-            // Delete user
-            $user->delete();
-
-            DB::commit();
-            return redirect()->route('customers.index')->with('success', 'Customer deleted successfully!');
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            return redirect()->back()->with('error', 'Error deleting customer: ' . $e->getMessage());
+        if ($customers->isEmpty()) {
+            return response()->json([
+                'found' => false,
+                'message' => 'No customer found with this information.'
+            ]);
         }
+
+        $results = $customers->map(function($customer) {
+            return [
+                'id' => $customer->id,
+                'name' => $customer->user->name,
+                'email' => $customer->user->email,
+                'phone' => $customer->phone,
+                'status' => $customer->status,
+                'lead_source' => $customer->lead_source,
+                'assigned_agent' => $customer->assignedAgent ? [
+                    'id' => $customer->assignedAgent->id,
+                    'name' => $customer->assignedAgent->name,
+                    'email' => $customer->assignedAgent->email,
+                ] : null,
+                'is_assigned_to_me' => $customer->assigned_to == Auth::id(),
+                'created_at' => $customer->created_at->format('M d, Y'),
+            ];
+        });
+
+        return response()->json([
+            'found' => true,
+            'customers' => $results
+        ]);
     }
 }

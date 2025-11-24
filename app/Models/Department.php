@@ -9,6 +9,14 @@ class Department extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'status'];   
+    protected $fillable = [
+        'name',
+        'description',
+    ];
+
+    // Relationships
+    public function employees()
+    {
+        return $this->hasMany(Employee::class);
+    }
 }
-    

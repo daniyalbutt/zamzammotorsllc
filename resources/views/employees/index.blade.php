@@ -1,110 +1,63 @@
 @extends('layouts.app')
+
+@section('title', 'Employees')
+
 @section('content')
-    <div class="breadcrumb__area">
-        <div class="breadcrumb__wrapper mb-25">
-            <nav>
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Employees</li>
-                    <li class="breadcrumb-item active" aria-current="page">Employees List</li>
-                </ol>
-            </nav>
-        </div>
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2><i class="bi bi-person-badge"></i> Employees</h2>
     </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ route('employees.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Employee
+        </a>
+    </div>
+</div>
 
-
-    <div class="row">
-        <div class="col-xxl-12">
-            <div class="card__wrapper">
-                <div class="card__title-wrap mb-20">
-                    <h3 class="card__heading-title">Employees List</h3>
-                </div>
-                @if (session()->has('success'))
-                    <div class="alert alert-success">
-                        {{ session()->get('success') }}
-                    </div>
-                @endif
-                <table id="baseStyleToolbar" class="table table-striped">
+<div class="card">
+    <div class="card-body">
+        @if($employees->count() > 0)
+            <div class="table-responsive">
+                <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>SNO</th>
+                            <th>Employee ID</th>
                             <th>Name</th>
-                            <th>Email</th>
-                            <th>Date of Joining</th>
-                            <th>Action</th>
+                            <th>Department</th>
+                            <th>Shift</th>
+                            <th>Designation</th>
+                            <th>Joining Date</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($data as $key => $value)
-                            <tr>
-                                <td>{{ ++$key }}</td>
-                                <td>{{ $value->name }}</td>
-                                <td>{{ $value->email }}</td>
-                                <td>{{ $value->created_at->format('d, F Y') }}</td>
-                                <td class="d-flex gap-2">
-                                    <a href="{{ route('employees.show', $value->id) }}" class="table__icon download"><i
-                                        class="fa-sharp fa-light fa-eye"></i></a>
-                                        <a href="{{ route('attendance.show',  ['month' => now()->format('m'), 'year' => now()->format('Y'), 'userid' => $value->id]) }}" class="table__icon bg-warning text-white" title="Show Attendance"><i
-                                            class="fa-sharp fa-light fa-file"></i></a>
-                                    @can('edit employee')
-                                        <a href="{{ route('employees.edit', $value->id) }}" class="table__icon edit"><i
-                                                class="fa-sharp fa-light fa-pen" ></i></a>
-                                    @endcan
-                                    @can('delete employee')
-                                        <form action="{{ route('roles.destroy', $value->id) }}" method="post">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="removeBtn table__icon delete"><i
-                                                    class="fa-regular fa-trash"></i></button>
-                                        </form>
-                                    @endcan
-                                </td>
-                            </tr>
+                        @foreach($employees as $employee)
+                        <tr>
+                            <td><strong>{{ $employee->employee_id }}</strong></td>
+                            <td>{{ $employee->user->name }}</td>
+                            <td>{{ $employee->department->name }}</td>
+                            <td>{{ $employee->shift->name }}</td>
+                            <td>{{ $employee->designation }}</td>
+                            <td>{{ $employee->joining_date->format('M d, Y') }}</td>
+                            <td>
+                                <a href="{{ route('employees.show', $employee) }}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ route('employees.edit', $employee) }}" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </td>
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-        </div>
+            {{ $employees->links() }}
+        @else
+            <div class="alert alert-info mb-0">
+                <i class="bi bi-info-circle"></i> No employees found.
+            </div>
+        @endif
     </div>
+</div>
 @endsection
-@push('scripts')
-    <!-- <script type="text/javascript">
-        -- >
-        <
-        !--$(function() {
-            -- >
-            <
-            !--'use strict';
-            -- >
-            <
-            !--$('#example1').DataTable({
-                -- >
-                <
-                !--'paging': true,
-                -- >
-                <
-                !--'lengthChange': false,
-                -- >
-                <
-                !--'searching': false,
-                -- >
-                <
-                !--'ordering': true,
-                -- >
-                <
-                !--'info': true,
-                -- >
-                <
-                !--'autoWidth': false-- >
-                    <
-                    !--
-            });
-            -- >
-            <
-            !--
-        });
-        -- >
-        <
-        !--
-    </script>-->
-@endpush
